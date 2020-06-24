@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.DiscountCodeViewController">
+   <children>
+      <ListView fx:id="discountCodesList" layoutX="63.0" layoutY="50.0" prefHeight="500.0" prefWidth="200.0" />
+      <VBox layoutX="322.0" layoutY="183.0" prefHeight="234.0" prefWidth="215.0">
+         <children>
+            <TextField fx:id="codeField" promptText="code" />
+            <TextField fx:id="startField" promptText="start date" />
+            <TextField fx:id="endField" promptText="end date" />
+            <TextField fx:id="percentField" promptText="percent" />
+            <TextField fx:id="maxDiscountField" promptText="maximum discount" />
+            <TextField fx:id="remainingField" promptText="remainig usages" />
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

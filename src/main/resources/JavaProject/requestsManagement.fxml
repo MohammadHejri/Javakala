@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RequestsManagementController">
+   <children>
+      <TextArea fx:id="descriptionArea" editable="false" layoutX="286.0" layoutY="14.0" prefHeight="500.0" prefWidth="300.0" />
+      <TableView fx:id="requestsTable" layoutX="14.0" layoutY="14.0" prefHeight="500.0" prefWidth="250.0">
+        <columns>
+          <TableColumn fx:id="requestIDColumn" prefWidth="139.0" text="RequestID" />
+          <TableColumn fx:id="subjectColumn" prefWidth="110.0" text="Subject" />
+        </columns>
+      </TableView>
+      <Button fx:id="acceptButton" layoutX="14.0" layoutY="538.0" mnemonicParsing="false" onAction="#acceptRequest" prefHeight="39.0" prefWidth="125.0" text="Accept" />
+      <Button fx:id="declineButton" layoutX="139.0" layoutY="538.0" mnemonicParsing="false" onAction="#declineRequest" prefHeight="39.0" prefWidth="125.0" text="Decline" />
+      <Label fx:id="statusLabel" layoutX="286.0" layoutY="538.0" prefHeight="39.0" prefWidth="300.0" text="Label" />
+   </children>
+</AnchorPane>

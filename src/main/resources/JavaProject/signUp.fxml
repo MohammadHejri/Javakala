@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SignUpController">
+   <children>
+      <TextField fx:id="usernameField" layoutX="288.0" layoutY="119.0" promptText="username" />
+      <TextField fx:id="firstNameField" layoutX="288.0" layoutY="214.0" promptText="first name" />
+      <TextField fx:id="lastNameField" layoutX="288.0" layoutY="261.0" promptText="last name" />
+      <TextField fx:id="emailAddressField" layoutX="288.0" layoutY="309.0" promptText="email address" />
+      <TextField fx:id="phoneNumberField" layoutX="288.0" layoutY="358.0" promptText="phone number" />
+      <TextField fx:id="companyNameField" layoutX="288.0" layoutY="405.0" promptText="company name" />
+      <PasswordField fx:id="passwordField" layoutX="288.0" layoutY="165.0" promptText="password" />
+      <Button layoutX="328.0" layoutY="461.0" mnemonicParsing="false" onAction="#signUp" text="Create account" />
+      <Button layoutX="369.0" layoutY="512.0" mnemonicParsing="false" onAction="#changeToPrevScene" text="back" />
+      <Label fx:id="statusLabel" layoutX="288.0" layoutY="63.0" prefHeight="39.0" prefWidth="224.0" text="Label" />
+      <RadioButton fx:id="managerButton" layoutX="73.0" layoutY="145.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Manager">
+         <toggleGroup>
+            <ToggleGroup fx:id="AccountTypes" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="sellerButton" layoutX="73.0" layoutY="185.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Seller" toggleGroup="$AccountTypes" />
+      <RadioButton fx:id="buyerButton" layoutX="73.0" layoutY="220.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Buyer" toggleGroup="$AccountTypes" />
+      <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" layoutX="40.0" layoutY="297.0" pickOnBounds="true" preserveRatio="true" />
+      <Button layoutX="53.0" layoutY="512.0" mnemonicParsing="false" onAction="#chooseImage" text="Change photo" />
+      <Button layoutX="47.0" layoutY="551.0" mnemonicParsing="false" onAction="#resetImageToDefault" text="Reset to default" />
+   </children>
+</AnchorPane>

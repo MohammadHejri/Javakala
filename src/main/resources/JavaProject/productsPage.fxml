@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="g1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductsPageController">
+   <children>
+      <Button layoutX="713.0" layoutY="44.0" mnemonicParsing="false" onAction="#changeToPrevScene" text="back" />
+      <ScrollPane layoutY="100.0" pannable="true" prefHeight="500.0" prefWidth="220.0">
+         <content>
+            <VBox fx:id="filterSection" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="200.0">
+               <children>
+                  <Accordion fx:id="accordion">
+                    <panes>
+                        <TitledPane text="Sort">
+                           <content>
+                              <VBox prefWidth="100.0">
+                                 <children>
+                                    <RadioButton fx:id="mostViewedButton" mnemonicParsing="false" onAction="#updateSort" selected="true" text="Most viewed">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="sortGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="mostPopularButton" mnemonicParsing="false" onAction="#updateSort" text="Most popular" toggleGroup="$sortGroup" />
+                                    <RadioButton fx:id="highestPriceButton" mnemonicParsing="false" onAction="#updateSort" text="Highest price" toggleGroup="$sortGroup" />
+                                    <RadioButton fx:id="lowestPriceButton" mnemonicParsing="false" onAction="#updateSort" text="Lowest Price" toggleGroup="$sortGroup" />
+                                    <RadioButton fx:id="newestButton" mnemonicParsing="false" onAction="#updateSort" text="Newest" toggleGroup="$sortGroup" />
+                                 </children>
+                              </VBox>
+                           </content>
+                        </TitledPane>
+                      <TitledPane fx:id="categoryPane" animated="false" text="Category">
+                           <content>
+                              <TreeView fx:id="categoriesTree" prefHeight="200.0" prefWidth="200.0" />
+                           </content>
+                      </TitledPane>
+                      <TitledPane animated="false" text="Name">
+                           <content>
+                              <VBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <TextField fx:id="productNameField" alignment="CENTER" promptText="Product name" />
+                                    <Button mnemonicParsing="false" onAction="#filterByName" text="Search name" />
+                                    <Button mnemonicParsing="false" onAction="#resetName" text="Reset" />
+                                 </children>
+                              </VBox>
+                           </content>
+                      </TitledPane>
+                      <TitledPane animated="false" text="Price">
+                           <content>
+                              <VBox alignment="CENTER" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <HBox prefWidth="200.0">
+                                       <children>
+                                          <TextField fx:id="minPriceField" alignment="CENTER" promptText="Min" />
+                                          <TextField fx:id="maxPriceField" alignment="CENTER" promptText="Max" />
+                                       </children>
+                                    </HBox>
+                                    <Button mnemonicParsing="false" onAction="#filterByPrice" text="Filter by price" />
+                                    <Button mnemonicParsing="false" onAction="#resetPrice" text="Reset" />
+                                 </children>
+                              </VBox>
+                           </content>
+                      </TitledPane>
+                    </panes>
+                  </Accordion>
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
+      <Pagination fx:id="pagination" layoutX="220.0" layoutY="100.0" prefHeight="500.0" prefWidth="580.0" />
+      <Button layoutX="258.0" layoutY="14.0" mnemonicParsing="false" onAction="#openCartSection" text="Cart" />
+   </children>
+</AnchorPane>

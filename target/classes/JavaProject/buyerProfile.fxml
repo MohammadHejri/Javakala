@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.BuyerProfileController">
+    <left>
+        <VBox prefHeight="600.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" text="Your profile" />
+                <Button mnemonicParsing="false" onAction="#openBuyerSaleHistorySection" text="View Sale History" />
+            <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" text="View discount codes" />
+                <Button mnemonicParsing="false" onAction="#openCartSection" text="View cart" />
+                <Button mnemonicParsing="false" onAction="#signOut" text="Sign out" />
+                <Button mnemonicParsing="false" onAction="#changeToMainMenu" text="back to main menu" />
+            </children>
+        </VBox>
+    </left>
+</BorderPane>

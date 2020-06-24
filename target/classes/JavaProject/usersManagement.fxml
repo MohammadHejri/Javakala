@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.UsersManagementController">
+   <children>
+      <TableView fx:id="userTable" layoutX="17.0" layoutY="35.0" prefHeight="450.0" prefWidth="566.0">
+         <columns>
+            <TableColumn fx:id="usernameColumn" prefWidth="93.0" text="Username" />
+            <TableColumn fx:id="firstNameColumn" prefWidth="95.0" text="First name" />
+            <TableColumn fx:id="lastNameColumn" minWidth="0.0" prefWidth="93.0" text="Last name" />
+            <TableColumn fx:id="emailAddressColumn" prefWidth="136.0" text="Email Address" />
+            <TableColumn fx:id="phoneNumberColumn" prefWidth="131.0" text="Phone number" />
+         </columns>
+      </TableView>
+      <Button layoutX="29.0" layoutY="518.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete user" />
+      <Label fx:id="statusLabel" layoutX="156.0" layoutY="513.0" prefHeight="48.0" prefWidth="203.0" text="Label" />
+      <Button layoutX="364.0" layoutY="518.0" mnemonicParsing="false" onAction="#createManager" text="Create manager account" />
+   </children>
+</AnchorPane>

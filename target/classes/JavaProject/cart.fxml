@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@PaymentPage.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.CartController">
+   <children>
+      <ScrollPane layoutX="50.0" layoutY="250.0" prefHeight="300.0" prefWidth="700.0" vbarPolicy="NEVER">
+         <content>
+            <HBox fx:id="hBox" prefHeight="280.0" prefWidth="700.0" />
+         </content>
+      </ScrollPane>
+      <Button layoutX="672.0" layoutY="27.0" mnemonicParsing="false" onAction="#changeToPrevScene" text="Back" />
+      <Label fx:id="totalPrice" alignment="CENTER" layoutX="240.0" layoutY="186.0" prefHeight="64.0" prefWidth="320.0" text="Total price">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Button fx:id="purchaseButton" layoutX="655.0" layoutY="81.0" mnemonicParsing="false" onAction="#openPurchaseSection" text="Purchase" />
+   </children>
+</AnchorPane>

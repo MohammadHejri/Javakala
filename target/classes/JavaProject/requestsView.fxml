@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RequestsViewController">
+    <children>
+        <TextArea fx:id="descriptionArea" editable="false" layoutX="355.0" layoutY="14.0" prefHeight="550.0" prefWidth="234.0" promptText="description" />
+        <TableView fx:id="requestsTable" layoutX="25.0" layoutY="14.0" prefHeight="550.0" prefWidth="330.0">
+            <columns>
+                <TableColumn fx:id="requestIDColumn" prefWidth="117.0" text="RequestID" />
+                <TableColumn fx:id="subjectColumn" prefWidth="132.0" text="Subject" />
+            <TableColumn fx:id="statusColumn" prefWidth="75.0" text="Status" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>

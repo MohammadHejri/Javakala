@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.CategoriesManagementController">
+   <children>
+      <TreeView fx:id="categoriesTable" layoutX="34.0" layoutY="32.0" prefHeight="494.0" prefWidth="263.0" />
+      <Label fx:id="statusLabel" layoutX="334.0" layoutY="25.0" prefHeight="42.0" prefWidth="243.0" text="Label" />
+      <TextField fx:id="nameField" layoutX="334.0" layoutY="67.0" prefHeight="39.0" prefWidth="243.0" promptText="name" />
+      <TextField fx:id="parentField" layoutX="334.0" layoutY="106.0" prefHeight="39.0" prefWidth="243.0" promptText="parent" />
+      <Button layoutX="334.0" layoutY="544.0" mnemonicParsing="false" onAction="#deleteProduct" prefHeight="39.0" prefWidth="243.0" text="Delete product" />
+      <ListView fx:id="productsList" layoutX="334.0" layoutY="384.0" prefHeight="161.0" prefWidth="243.0" />
+      <ListView fx:id="featuresList" layoutX="334.0" layoutY="145.0" prefHeight="161.0" prefWidth="243.0" />
+      <Button layoutX="334.0" layoutY="345.0" mnemonicParsing="false" onAction="#deleteFeature" prefHeight="39.0" prefWidth="154.0" text="Delete feature" />
+      <Button layoutX="487.0" layoutY="345.0" mnemonicParsing="false" onAction="#addFeature" prefHeight="39.0" prefWidth="90.0" text="Add" />
+      <TextField fx:id="featureField" layoutX="334.0" layoutY="306.0" prefHeight="39.0" prefWidth="243.0" promptText="feature" />
+      <Button layoutX="32.0" layoutY="541.0" mnemonicParsing="false" onAction="#createOrEditCategory" prefHeight="39.0" prefWidth="169.0" text="Create / Edit" />
+      <Button layoutX="201.0" layoutY="541.0" mnemonicParsing="false" onAction="#deleteCategory" prefHeight="39.0" prefWidth="98.0" text="Delete" />
+   </children>
+</AnchorPane>

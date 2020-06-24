@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SellerAuctionsManagementController">
+   <children>
+      <ListView fx:id="auctionsList" prefHeight="600.0" prefWidth="200.0" />
+      <TextField fx:id="startDateField" layoutX="400.0" layoutY="160.0" prefHeight="40.0" prefWidth="200.0" promptText="start date" />
+      <TextField fx:id="endDateField" layoutX="400.0" layoutY="200.0" prefHeight="40.0" prefWidth="200.0" promptText="end date" />
+      <TextField fx:id="percentField" layoutX="400.0" layoutY="240.0" prefHeight="40.0" prefWidth="200.0" promptText="percent" />
+      <Button fx:id="addButton" layoutX="400.0" layoutY="40.0" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="200.0" text="Request add" />
+      <Button fx:id="editButton" layoutX="400.0" layoutY="80.0" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="200.0" text="Request edit" />
+      <Button fx:id="deleteButton" layoutX="400.0" layoutY="120.0" mnemonicParsing="false" onAction="#requestDeleteAuction" prefHeight="40.0" prefWidth="200.0" text="Request delete" />
+      <Label fx:id="statusLabel" alignment="CENTER" layoutX="400.0" prefHeight="40.0" prefWidth="200.0" text="Status" />
+      <ListView fx:id="auctionProductsList" layoutX="400.0" layoutY="280.0" prefHeight="280.0" prefWidth="200.0" />
+      <ListView fx:id="productsList" layoutX="200.0" prefHeight="560.0" prefWidth="200.0" />
+      <Button fx:id="removeProductButton" layoutX="400.0" layoutY="560.0" mnemonicParsing="false" onAction="#removeProduct" prefHeight="40.0" prefWidth="200.0" text="Remove product" />
+      <Button fx:id="addProductButton" layoutX="200.0" layoutY="560.0" mnemonicParsing="false" onAction="#addProduct" prefHeight="40.0" prefWidth="200.0" text="Add product" />
+   </children>
+</AnchorPane>
