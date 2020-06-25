@@ -91,7 +91,7 @@ public class AccountInfoController implements Initializable {
         String newPassword = newPasswordField.getText();
         Account account = App.getSignedInAccount();
         if (!account.getPassword().equals(currentPassword)) {
-            new Alert(Alert.AlertType.ERROR, "Wrong password").showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Enter current password correctly").showAndWait();
         } else if (!newPassword.isBlank() && !newPassword.matches("\\w+")) {
             new Alert(Alert.AlertType.ERROR, "Use word letters for new password").showAndWait();
         } else if (!firstName.matches("\\w+")) {
