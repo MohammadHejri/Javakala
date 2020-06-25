@@ -54,15 +54,11 @@ public class SellerProductsManagementController implements Initializable {
     @FXML
     TextField remainingField;
     @FXML
-    TextField categoryField;
-    @FXML
     TextArea descriptionArea;
     @FXML
     ImageView imageView;
     @FXML
     TextField infoField;
-    @FXML
-    Label statusLabel;
     @FXML
     Button addButton;
     @FXML
@@ -84,7 +80,6 @@ public class SellerProductsManagementController implements Initializable {
         infoColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
 
         selectedCategory = root;
-        categoryField.setText("root");
         categoriesTree.setRoot(getTreeItemByCategory(root));
         categoriesTree.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) selectCategory();
@@ -137,7 +132,7 @@ public class SellerProductsManagementController implements Initializable {
         DualString dualString = specsTable.getSelectionModel().getSelectedItem();
         String info = infoField.getText().trim();
         if (dualString == null || info.isBlank()) {
-            statusLabel.setText("Choose spec & enter info");
+            new Alert(Alert.AlertType.ERROR, "Choose spec and enter info").showAndWait();
         } else {
             specs.replace(dualString.getKey(), dualString.getValue(), info);
             specsTable.getItems().clear();
@@ -157,14 +152,12 @@ public class SellerProductsManagementController implements Initializable {
     private void selectCategory() {
         String name = categoriesTree.getSelectionModel().getSelectedItem().getValue();
         selectedCategory = Database.getInstance().getCategoryByName(name);
-        categoryField.setText(name);
         updateSpecsTable();
     }
 
     private void deselectCategory() {
         String name = selectedProduct == null ? "root" : selectedProduct.getParentCategoryName();
         selectedCategory = Database.getInstance().getCategoryByName(name);
-        categoryField.setText(name);
         updateSpecsTable();
     }
 
@@ -172,7 +165,6 @@ public class SellerProductsManagementController implements Initializable {
         String name = productsList.getSelectionModel().getSelectedItem();
         selectedProduct = Database.getInstance().getProductByName(name);
         selectedCategory = Database.getInstance().getCategoryByName(selectedProduct.getParentCategoryName());
-        categoryField.setText(selectedCategory.getName());
         updateSpecsTable();
         addButton.setDisable(true);
         editButton.setDisable(false);
@@ -213,23 +205,23 @@ public class SellerProductsManagementController implements Initializable {
         String imagePath = imageView.getImage().getUrl();
         Product product = Database.getInstance().getProductByName(name);
         if (name.isBlank()) {
-            statusLabel.setText("Enter name!");
+            new Alert(Alert.AlertType.ERROR, "Enter name").showAndWait();
         } else if (brand.isBlank()) {
-            statusLabel.setText("Enter brand!");
+            new Alert(Alert.AlertType.ERROR, "Enter brand").showAndWait();
         } else if (priceStr.isBlank()) {
-            statusLabel.setText("Enter price!");
+            new Alert(Alert.AlertType.ERROR, "Enter price").showAndWait();
         } else if (remainingStr.isBlank()) {
-            statusLabel.setText("Enter number of items!");
+            new Alert(Alert.AlertType.ERROR, "Enter quantity").showAndWait();
         } else if (description.isBlank()) {
-            statusLabel.setText("Enter description!");
+            new Alert(Alert.AlertType.ERROR, "Enter description").showAndWait();
         } else if (!isSpecsTableComplete()) {
-            statusLabel.setText("Complete specs table!");
+            new Alert(Alert.AlertType.ERROR, "Complete specs table").showAndWait();
         } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
-            statusLabel.setText("Use DOUBLE for price!");
+            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
         } else if (!remainingStr.matches("(\\d+)")) {
-            statusLabel.setText("Use INTEGER for number of items!");
+            new Alert(Alert.AlertType.ERROR, "Use INTEGER for quantity").showAndWait();
         } else if (product != null) {
-            statusLabel.setText("Product name not available");
+            new Alert(Alert.AlertType.ERROR, "Product name not available").showAndWait();
         } else {
             double price = Double.parseDouble(priceStr);
             int remainingItems = Integer.parseInt(remainingStr);
@@ -242,7 +234,7 @@ public class SellerProductsManagementController implements Initializable {
             Request request = new Request(Subject.ADD_PRODUCT, product.toString());
             request.setProduct(product);
             Database.getInstance().saveRequest(request);
-            statusLabel.setText("Adding product requested");
+            new Alert(Alert.AlertType.INFORMATION, "Adding product requested").showAndWait();
         }
     }
 
@@ -255,23 +247,23 @@ public class SellerProductsManagementController implements Initializable {
         String description = descriptionArea.getText().trim();
         String imagePath = imageView.getImage().getUrl();
         if (name.isBlank()) {
-            statusLabel.setText("Enter name!");
+            new Alert(Alert.AlertType.ERROR, "Enter name").showAndWait();
         } else if (brand.isBlank()) {
-            statusLabel.setText("Enter brand!");
+            new Alert(Alert.AlertType.ERROR, "Enter brand").showAndWait();
         } else if (priceStr.isBlank()) {
-            statusLabel.setText("Enter price!");
+            new Alert(Alert.AlertType.ERROR, "Enter price").showAndWait();
         } else if (remainingStr.isBlank()) {
-            statusLabel.setText("Enter number of items!");
+            new Alert(Alert.AlertType.ERROR, "Enter quantity").showAndWait();
         } else if (description.isBlank()) {
-            statusLabel.setText("Enter description!");
+            new Alert(Alert.AlertType.ERROR, "Enter description").showAndWait();
         } else if (!isSpecsTableComplete()) {
-            statusLabel.setText("Complete specs table!");
+            new Alert(Alert.AlertType.ERROR, "Complete specs table").showAndWait();
         } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
-            statusLabel.setText("Use DOUBLE for price!");
+            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
         } else if (!remainingStr.matches("(\\d+)")) {
-            statusLabel.setText("Use INTEGER for number of items!");
+            new Alert(Alert.AlertType.ERROR, "Use INTEGER for quantity").showAndWait();
         } else if (!selectedProduct.getName().equals(name) && Database.getInstance().getProductByName(name) != null) {
-            statusLabel.setText("Product name not available");
+            new Alert(Alert.AlertType.ERROR, "Product name not available").showAndWait();
         } else {
             double price = Double.parseDouble(priceStr);
             int remainingItems = Integer.parseInt(remainingStr);
@@ -289,7 +281,7 @@ public class SellerProductsManagementController implements Initializable {
             Request request = new Request(Subject.EDIT_PRODUCT, "Edited " + product.toString() +  "\n" + "Current" + selectedProduct.toString());
             request.setProduct(product);
             Database.getInstance().saveRequest(request);
-            statusLabel.setText("Editing product requested");
+            new Alert(Alert.AlertType.INFORMATION, "Editing product requested").showAndWait();
         }
     }
 
@@ -299,7 +291,7 @@ public class SellerProductsManagementController implements Initializable {
         Request request = new Request(Subject.DELETE_PRODUCT, product.toString());
         request.setProduct(product);
         Database.getInstance().saveRequest(request);
-        statusLabel.setText("Deleting product requested");
+        new Alert(Alert.AlertType.INFORMATION, "Deleting product requested").showAndWait();
     }
 
     @FXML

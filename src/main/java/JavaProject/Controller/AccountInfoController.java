@@ -50,7 +50,6 @@ public class AccountInfoController implements Initializable {
     @FXML
     ImageView imageView;
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Account account = App.getSignedInAccount();

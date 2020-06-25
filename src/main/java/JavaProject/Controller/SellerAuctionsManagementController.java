@@ -9,12 +9,14 @@ import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -46,10 +48,6 @@ public class SellerAuctionsManagementController implements Initializable {
     Button editButton;
     @FXML
     Button deleteButton;
-    @FXML
-    Button addProductButton;
-    @FXML
-    Button removeProductButton;
 
 
 
@@ -58,8 +56,6 @@ public class SellerAuctionsManagementController implements Initializable {
         addButton.setDisable(false);
         editButton.setDisable(true);
         deleteButton.setDisable(true);
-        addProductButton.setDisable(true);
-        removeProductButton.setDisable(true);
 
         for (String auctionID : ((Seller) App.getSignedInAccount()).getAuctionsID())
             auctionsList.getItems().add(auctionID);
@@ -72,14 +68,26 @@ public class SellerAuctionsManagementController implements Initializable {
             Product product = Database.getInstance().getProductByID(productID);
             productsList.getItems().add(product.getName());
         }
-        productsList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) addProductButton.setDisable(false);
-            else addProductButton.setDisable(true);
-        });
 
-        auctionProductsList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) removeProductButton.setDisable(false);
-            else removeProductButton.setDisable(true);
+        productsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+                if (click.getClickCount() == 2) {
+                    String productName = productsList.getSelectionModel().getSelectedItem();
+                    productsList.getItems().remove(productName);
+                    auctionProductsList.getItems().add(productName);
+                }
+            }
+        });
+        auctionProductsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent click) {
+                if (click.getClickCount() == 2) {
+                    String productName = auctionProductsList.getSelectionModel().getSelectedItem();
+                    auctionProductsList.getItems().remove(productName);
+                    productsList.getItems().add(productName);
+                }
+            }
         });
 
     }
@@ -174,19 +182,4 @@ public class SellerAuctionsManagementController implements Initializable {
         Database.getInstance().saveRequest(request);
         statusLabel.setText("Deleting auction requested");
     }
-
-    @FXML
-    private void addProduct(ActionEvent event) {
-        String productName = productsList.getSelectionModel().getSelectedItem();
-        productsList.getItems().remove(productName);
-        auctionProductsList.getItems().add(productName);
-    }
-
-    @FXML
-    private void removeProduct(ActionEvent event) {
-        String productName = auctionProductsList.getSelectionModel().getSelectedItem();
-        auctionProductsList.getItems().remove(productName);
-        productsList.getItems().add(productName);
-    }
-
 }

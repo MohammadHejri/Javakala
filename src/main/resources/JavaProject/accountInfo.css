@@ -1,5 +1,4 @@
 Label, Button{
-    -fx-font-weight: bold;
     -fx-font-size: 14px;
     -fx-background-color: #a06056;
     -fx-text-fill: #efb7af;
@@ -13,7 +12,6 @@ Button:hover {
 }
 
 TextField, PasswordField{
-    -fx-font-weight: bold;
     -fx-font-size: 14px;
     -fx-background-color: #efb7af;
     -fx-prompt-text-fill: #a06056;
