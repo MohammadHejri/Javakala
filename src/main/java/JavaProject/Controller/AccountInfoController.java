@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Completed
+
 public class AccountInfoController implements Initializable {
 
     @FXML
@@ -102,9 +104,10 @@ public class AccountInfoController implements Initializable {
             new Alert(Alert.AlertType.ERROR, "Email format: example@gmail.com").showAndWait();
         } else if (!phoneNumber.matches("\\d+")) {
             new Alert(Alert.AlertType.ERROR, "Use digits for phone number").showAndWait();
-        } else if (!companyNameField.isDisabled() && !companyName.matches("\\w+")) {
+        } else if (App.getSignedInAccount() instanceof Seller && !companyName.matches("\\w+")) {
             new Alert(Alert.AlertType.ERROR, "Use word letters for company name").showAndWait();
         } else {
+            new Alert(Alert.AlertType.INFORMATION, "Profile updated").showAndWait();
             String imagePath = imageView.getImage().getUrl();
             account.setFirstName(firstName);
             account.setLastName(lastName);
@@ -117,6 +120,8 @@ public class AccountInfoController implements Initializable {
                 account.setPassword(newPassword);
             Database.getInstance().saveAccount(account);
         }
+        currentPasswordField.setText("");
+        newPasswordField.setText("");
     }
 
     @FXML
