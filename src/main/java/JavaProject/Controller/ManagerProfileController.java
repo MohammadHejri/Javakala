@@ -4,6 +4,7 @@ import JavaProject.App;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
@@ -12,6 +13,7 @@ import java.util.ResourceBundle;
 
 public class ManagerProfileController implements Initializable{
 
+    public static Parent prevPane;
     @FXML
     BorderPane borderPane;
 
@@ -68,10 +70,8 @@ public class ManagerProfileController implements Initializable{
     }
 
     @FXML
-    private void changeToMainMenu(ActionEvent event) throws IOException {
-        // TODO: App.setRoot(main);
-        App.setRoot(App.getProductsPage());
-        ProductsPageController.prevFXML = "managerProfile";
+    private void changeToPrevPane(ActionEvent event) throws IOException {
+        App.setRoot(prevPane);
     }
 
 }

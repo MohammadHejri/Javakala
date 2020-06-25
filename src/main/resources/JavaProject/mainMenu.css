@@ -1,0 +1,5 @@
+Label:hover {
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+

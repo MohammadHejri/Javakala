@@ -2,7 +2,6 @@ package JavaProject.Controller;
 
 import JavaProject.App;
 import JavaProject.Model.Database.Database;
-import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Filter.Filter;
 import JavaProject.Model.ProductOrganization.Product;
@@ -13,21 +12,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class ProductsPageController implements Initializable {
 
     public static String prevFXML;
+    public static Parent prevPane;
     private static Filter filter = new Filter();
     private VBox sellerFilterVBox = new VBox();
     private VBox brandFilterVBox = new VBox();
@@ -269,13 +268,14 @@ public class ProductsPageController implements Initializable {
     }
 
     @FXML
-    private void openCartSection(ActionEvent event) throws IOException {
+    private void openCartSection(MouseEvent event) throws IOException {
         App.setRoot("cart");
         CartController.prevFXML = "productsPage";
     }
 
-    public void changeToPrevScene(ActionEvent event) throws IOException {
-        App.setRoot(prevFXML);
+    @FXML
+    private void changeToPrevPane(MouseEvent event) throws IOException {
+        App.setRoot(prevPane);
     }
 
 }

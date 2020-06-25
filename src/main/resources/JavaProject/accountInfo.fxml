@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -7,22 +9,55 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.AccountInfoController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@accountInfo.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.AccountInfoController">
    <children>
-      <TextField fx:id="usernameField" layoutX="288.0" layoutY="65.0" promptText="username" />
-      <TextField fx:id="firstNameField" layoutX="288.0" layoutY="219.0" promptText="first name" />
-      <TextField fx:id="lastNameField" layoutX="288.0" layoutY="266.0" promptText="last name" />
-      <TextField fx:id="emailAddressField" layoutX="288.0" layoutY="313.0" promptText="email address" />
-      <TextField fx:id="phoneNumberField" layoutX="288.0" layoutY="360.0" promptText="phone number" />
-      <TextField fx:id="companyNameField" layoutX="288.0" layoutY="405.0" promptText="company name" />
-      <PasswordField fx:id="currentPasswordField" layoutX="288.0" layoutY="452.0" promptText="current password" />
-      <Button layoutX="351.0" layoutY="547.0" mnemonicParsing="false" onAction="#update" text="update" />
-      <Label fx:id="statusLabel" layoutX="288.0" layoutY="26.0" prefHeight="39.0" prefWidth="224.0" text="Label" />
-      <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" layoutX="47.0" layoutY="119.0" pickOnBounds="true" preserveRatio="true" />
-      <Button layoutX="78.0" layoutY="366.0" mnemonicParsing="false" onAction="#chooseImage" text="Change photo" />
-      <Button layoutX="72.0" layoutY="413.0" mnemonicParsing="false" onAction="#resetImageToDefault" text="Reset to default" />
-      <PasswordField fx:id="newPasswordField" layoutX="288.0" layoutY="491.0" promptText="new password" />
-      <TextField fx:id="accountTypeField" layoutX="288.0" layoutY="119.0" promptText="account type" />
-      <TextField fx:id="balanceField" layoutX="288.0" layoutY="166.0" promptText="balance" />
+      <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true">
+         <image>
+            <Image url="@../Images/profileBG.jpg" />
+         </image>
+      </ImageView>
+      <HBox layoutX="70.0" prefHeight="600.0" prefWidth="660.0" spacing="30.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="550.0" prefWidth="150.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Username :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Balance :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Account type :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Email address :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="First name :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Last name :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Phone number :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Company name :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="Current password :  " />
+                  <Label alignment="CENTER_RIGHT" prefHeight="45.0" prefWidth="200.0" text="New password :  " />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="550.0" prefWidth="200.0" spacing="10.0">
+               <children>
+                  <TextField fx:id="usernameField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="username" />
+                  <TextField fx:id="balanceField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="balance" />
+                  <TextField fx:id="accountTypeField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="account type" />
+                  <TextField fx:id="emailAddressField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="email address" />
+                  <TextField fx:id="firstNameField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="first name" />
+                  <TextField fx:id="lastNameField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="last name" />
+                  <TextField fx:id="phoneNumberField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="phone number" />
+                  <TextField fx:id="companyNameField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="company name" />
+                  <PasswordField fx:id="currentPasswordField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="current password" />
+                  <PasswordField fx:id="newPasswordField" alignment="CENTER" prefHeight="45.0" prefWidth="200.0" promptText="new password" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="250.0" spacing="15.0">
+               <children>
+                  <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+                  <Button mnemonicParsing="false" onAction="#chooseImage" prefHeight="40.0" prefWidth="200.0" text="Change photo" />
+                  <Button mnemonicParsing="false" onAction="#resetImageToDefault" prefHeight="40.0" prefWidth="200.0" text="Reset to default" />
+                  <Button mnemonicParsing="false" onAction="#update" prefHeight="40.0" prefWidth="200.0" text="Update changes" />
+               </children>
+               <padding>
+                  <Insets top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

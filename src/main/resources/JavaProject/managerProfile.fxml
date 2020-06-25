@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ManagerProfileController">
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ManagerProfileController">
    <left>
       <VBox prefHeight="600.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
@@ -18,7 +18,7 @@
             <Button mnemonicParsing="false" onAction="#openDiscountCodesManagementSection" text="Manage discount codes" />
             <Button mnemonicParsing="false" onAction="#openCartSection" text="View Cart" />
             <Button mnemonicParsing="false" onAction="#signOut" text="Sign out" />
-            <Button mnemonicParsing="false" onAction="#changeToMainMenu" text="back to main menu" />
+            <Button mnemonicParsing="false" onAction="#changeToPrevPane" text="back to main menu" />
          </children>
       </VBox>
    </left>

@@ -15,7 +15,7 @@
             <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" text="View discount codes" />
                 <Button mnemonicParsing="false" onAction="#openCartSection" text="View cart" />
                 <Button mnemonicParsing="false" onAction="#signOut" text="Sign out" />
-                <Button mnemonicParsing="false" onAction="#changeToMainMenu" text="back to main menu" />
+                <Button mnemonicParsing="false" onAction="#changeToPrevPane" text="back to main menu" />
             </children>
         </VBox>
     </left>

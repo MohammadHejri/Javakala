@@ -1,39 +1,47 @@
 package JavaProject;
 
-import JavaProject.Controller.ProductViewController;
 import JavaProject.Controller.ProductsPageController;
 import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Cart;
-import JavaProject.Model.ProductOrganization.Category;
-import JavaProject.Model.ProductOrganization.Filter.Filter;
-import JavaProject.Model.ProductOrganization.Product;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 public class App extends Application {
 
     private static Scene scene;
     private static Account signedInAccount;
-    private static Parent productsPage;
+
+    public static Parent mainPage;
+    public static Parent productsPage;
+    public static Parent cartPage;
+
+
     private static ProductsPageController productsPageController;
     private static Cart cart = new Cart();
+
+    public static void initProductsPage() {
+        try {
+            productsPage = loadFXML("productsPage");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     @Override
     public void start(Stage stage) throws Exception {
         Database.getInstance().loadResources();
-        initProductsPage();
-        scene = new Scene(loadFXML("signIn"));
+
+        mainPage = loadFXML("mainMenu");
+        productsPage = loadFXML("productsPage");
+
+        scene = new Scene(mainPage);
         stage.setScene(scene);
         stage.show();
     }
@@ -59,22 +67,6 @@ public class App extends Application {
         App.signedInAccount = signedInAccount;
     }
 
-    public static Parent getProductsPage() {
-        return productsPage;
-    }
-
-    public static void setProductsPage(Parent productsPage) {
-        App.productsPage = productsPage;
-    }
-
-    public static ProductsPageController getProductsPageController() {
-        return productsPageController;
-    }
-
-    public static void setProductsPageController(ProductsPageController productsPageController) {
-        App.productsPageController = productsPageController;
-    }
-
     public static Cart getCart() {
         return cart;
     }
@@ -83,14 +75,8 @@ public class App extends Application {
         App.cart = cart;
     }
 
-    public static void initProductsPage() {
-        try {
-            FXMLLoader loader = new FXMLLoader(App.class.getResource("productsPage.fxml"));
-            productsPage = loader.load();
-            productsPageController = loader.getController();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static Parent getProductsPage() {
+        return productsPage;
     }
 
     public static void main(String[] args) {

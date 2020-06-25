@@ -6,9 +6,12 @@ import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
 import JavaProject.Model.Account.Seller;
 import JavaProject.Model.Database.Database;
+import com.jfoenix.controls.JFXTextField;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -43,9 +46,8 @@ public class AccountInfoController implements Initializable {
     @FXML
     TextField companyNameField;
     @FXML
-    Label statusLabel;
-    @FXML
     ImageView imageView;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -61,8 +63,9 @@ public class AccountInfoController implements Initializable {
         phoneNumberField.setText(account.getPhoneNumber());
         if (account instanceof Manager) {
             accountTypeField.setText("manager");
-            balanceField.setDisable(true);
-            companyNameField.setDisable(true);
+            balanceField.setText("-");
+            companyNameField.setText("-");
+            companyNameField.setEditable(false);
         }
         if (account instanceof Seller) {
             accountTypeField.setText("seller");
@@ -72,7 +75,8 @@ public class AccountInfoController implements Initializable {
         if (account instanceof Buyer) {
             accountTypeField.setText("buyer");
             balanceField.setText(String.valueOf(((Buyer) account).getBalance()));
-            companyNameField.setDisable(true);
+            companyNameField.setText("-");
+            companyNameField.setEditable(false);
         }
     }
 
@@ -87,19 +91,19 @@ public class AccountInfoController implements Initializable {
         String newPassword = newPasswordField.getText();
         Account account = App.getSignedInAccount();
         if (!account.getPassword().equals(currentPassword)) {
-            statusLabel.setText("Wrong password");
+            new Alert(Alert.AlertType.ERROR, "Wrong password").showAndWait();
         } else if (!newPassword.isBlank() && !newPassword.matches("\\w+")) {
-            statusLabel.setText("Use word letters for new password");
+            new Alert(Alert.AlertType.ERROR, "Use word letters for new password").showAndWait();
         } else if (!firstName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for first name");
+            new Alert(Alert.AlertType.ERROR, "Use word letters for first name").showAndWait();
         } else if (!lastName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for last name");
+            new Alert(Alert.AlertType.ERROR, "Use word letters for last name").showAndWait();
         } else if (!emailAddress.matches("(\\S+)@(\\S+)\\.(\\S+)")) {
-            statusLabel.setText("Email format: example@gmail.com");
+            new Alert(Alert.AlertType.ERROR, "Email format: example@gmail.com").showAndWait();
         } else if (!phoneNumber.matches("\\d+")) {
-            statusLabel.setText("Use digits for phone number");
+            new Alert(Alert.AlertType.ERROR, "Use digits for phone number").showAndWait();
         } else if (!companyNameField.isDisabled() && !companyName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for company name");
+            new Alert(Alert.AlertType.ERROR, "Use word letters for company name").showAndWait();
         } else {
             String imagePath = imageView.getImage().getUrl();
             account.setFirstName(firstName);
@@ -126,8 +130,8 @@ public class AccountInfoController implements Initializable {
 
     @FXML
     private void resetImageToDefault(ActionEvent event) {
-        Account account = App.getSignedInAccount();
-        imageView.setImage(new Image(account.getImagePath()));
+        File file = new File("src/main/resources/Images/account.png");
+        imageView.setImage(new Image(file.toURI().toString()));
     }
 
 }

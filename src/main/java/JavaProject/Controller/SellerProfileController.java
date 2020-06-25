@@ -8,6 +8,7 @@ import JavaProject.Model.Log.SellLog;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class SellerProfileController implements Initializable{
+
+    public static Parent prevPane;
 
     @FXML
     BorderPane borderPane;
@@ -80,10 +83,8 @@ public class SellerProfileController implements Initializable{
     }
 
     @FXML
-    private void changeToMainMenu(ActionEvent event) throws IOException {
-        // TODO: App.setRoot(main);
-        App.setRoot("productsPage");
-        ProductsPageController.prevFXML = "sellerProfile";
+    private void changeToPrevPane(ActionEvent event) throws IOException {
+        App.setRoot(prevPane);
     }
 
 

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -19,6 +20,7 @@ import java.util.ResourceBundle;
 public class CartController implements Initializable {
 
     public static String prevFXML;
+    public static Parent prevPane;
     public static Label price;
 
     @FXML
@@ -58,9 +60,9 @@ public class CartController implements Initializable {
         price.setText("Total price: $ " + App.getCart().getPrice());
     }
 
-
-    public void changeToPrevScene(ActionEvent event) throws IOException {
-        App.setRoot(prevFXML);
+    @FXML
+    private void changeToPrevPane(ActionEvent event) throws IOException {
+        App.setRoot(prevPane);
     }
 
 }

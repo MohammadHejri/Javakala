@@ -10,14 +10,18 @@ import JavaProject.Model.Status.Status;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class SignInController implements Initializable {
+
+    public static Parent prevPane;
 
     @FXML
     TextField usernameField;
@@ -48,15 +52,17 @@ public class SignInController implements Initializable {
             statusLabel.setText("Account not allowed");
         } else {
             App.setSignedInAccount(account);
-            // TODO: go to main page
             if (account instanceof Manager) {
                 App.setRoot("managerProfile");
+                ManagerProfileController.prevPane = App.mainPage;
             }
             if (account instanceof Seller) {
                 App.setRoot("sellerProfile");
+                SellerProfileController.prevPane = App.mainPage;
             }
             if (account instanceof Buyer) {
                 App.setRoot("buyerProfile");
+                BuyerProfileController.prevPane = App.mainPage;
             }
         }
     }
@@ -65,5 +71,10 @@ public class SignInController implements Initializable {
     private void changeToSignUp(ActionEvent event) throws IOException {
         App.setRoot("signUp");
         SignUpController.prevFXML = "signIn";
+    }
+
+    @FXML
+    private void changeToPrevPane(MouseEvent mouseEvent) {
+        App.setRoot(prevPane);
     }
 }
