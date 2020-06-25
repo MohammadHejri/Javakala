@@ -33,9 +33,6 @@ public class RequestsManagementController implements Initializable {
     Button acceptButton;
     @FXML
     Button declineButton;
-    @FXML
-    Label statusLabel;
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -54,8 +51,6 @@ public class RequestsManagementController implements Initializable {
             }
         });
     }
-
-    // TODO: implement other requests
 
     @FXML
     public void acceptRequest(ActionEvent event) throws IOException {
@@ -130,7 +125,7 @@ public class RequestsManagementController implements Initializable {
         for (Request req : Database.getInstance().getAllRequests())
             if (req.getStatus().equals(Status.PENDING))
                 requestsTable.getItems().add(req);
-        statusLabel.setText("Request accepted");
+        new Alert(Alert.AlertType.INFORMATION, "Request accepted").showAndWait();
     }
 
     @FXML
@@ -157,10 +152,8 @@ public class RequestsManagementController implements Initializable {
         for (Request req : Database.getInstance().getAllRequests())
             if (req.getStatus().equals(Status.PENDING))
                 requestsTable.getItems().add(req);
-        statusLabel.setText("Request declined");
+        new Alert(Alert.AlertType.INFORMATION, "Request declined").showAndWait();
     }
-
-
 
     private void selectRequest() {
         Request request = requestsTable.getSelectionModel().getSelectedItem();

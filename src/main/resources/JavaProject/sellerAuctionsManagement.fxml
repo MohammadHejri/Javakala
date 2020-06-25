@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SellerAuctionsManagementController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SellerAuctionsManagementController">
    <children>
-      <TextField fx:id="startDateField" layoutX="400.0" layoutY="160.0" prefHeight="40.0" prefWidth="200.0" promptText="start date" />
-      <TextField fx:id="endDateField" layoutX="400.0" layoutY="200.0" prefHeight="40.0" prefWidth="200.0" promptText="end date" />
-      <TextField fx:id="percentField" layoutX="400.0" layoutY="240.0" prefHeight="40.0" prefWidth="200.0" promptText="percent" />
-      <Button fx:id="addButton" layoutX="400.0" layoutY="40.0" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="200.0" text="Request add" />
-      <Button fx:id="editButton" layoutX="400.0" layoutY="80.0" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="200.0" text="Request edit" />
-      <Button fx:id="deleteButton" layoutX="400.0" layoutY="120.0" mnemonicParsing="false" onAction="#requestDeleteAuction" prefHeight="40.0" prefWidth="200.0" text="Request delete" />
-      <Label fx:id="statusLabel" alignment="CENTER" layoutX="400.0" prefHeight="40.0" prefWidth="200.0" text="Status" />
-      <ListView fx:id="auctionProductsList" layoutX="400.0" layoutY="280.0" prefHeight="280.0" prefWidth="200.0" />
-      <ListView fx:id="productsList" layoutX="200.0" prefHeight="560.0" prefWidth="200.0" />
-      <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="10.0">
+      <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/profileBG.jpg" />
+         </image>
+      </ImageView>
+      <HBox alignment="CENTER" layoutX="15.0" prefHeight="600.0" prefWidth="770.0" spacing="13.0">
          <children>
-            <Label alignment="CENTER" prefHeight="40.0" prefWidth="200.0" text="Auctions" />
-            <ListView fx:id="auctionsList" prefHeight="400.0" prefWidth="200.0" />
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="230.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="230.0" text="Auctions" />
+                  <ListView fx:id="auctionsList" prefHeight="450.0" prefWidth="230.0" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="180.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="180.0" text="Addable products" />
+                  <ListView fx:id="productsList" prefHeight="450.0" prefWidth="180.0" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="180.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="180.0" text="Removable products" />
+                  <ListView fx:id="auctionProductsList" prefHeight="450.0" prefWidth="180.0" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="600.0" prefWidth="135.0" spacing="10.0">
+               <children>
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="135.0" text="Start date" />
+                  <TextField fx:id="startDateField" alignment="CENTER" prefHeight="40.0" prefWidth="135.0" />
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="135.0" text="End date" />
+                  <TextField fx:id="endDateField" alignment="CENTER" prefHeight="40.0" prefWidth="135.0" />
+                  <Label alignment="CENTER" prefHeight="40.0" prefWidth="135.0" text="Percent" />
+                  <TextField fx:id="percentField" alignment="CENTER" prefHeight="40.0" prefWidth="135.0" />
+                  <Button fx:id="addButton" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="135.0" text="Request add" />
+                  <Button fx:id="editButton" mnemonicParsing="false" onAction="#requestAddOrEditAuction" prefHeight="40.0" prefWidth="135.0" text="Request edit" />
+                  <Button fx:id="deleteButton" mnemonicParsing="false" onAction="#requestDeleteAuction" prefHeight="40.0" prefWidth="135.0" text="Request delete" />
+               </children>
+            </VBox>
          </children>
-      </VBox>
+      </HBox>
    </children>
 </AnchorPane>

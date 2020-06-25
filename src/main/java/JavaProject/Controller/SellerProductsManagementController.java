@@ -104,6 +104,17 @@ public class SellerProductsManagementController implements Initializable {
         return treeItem;
     }
 
+    private TreeItem<String> getTreeItemByCategoryName(TreeItem<String> item, String name) {
+        if (item.getValue().equals(name))
+            return item;
+        for (TreeItem<String> child : item.getChildren()) {
+            TreeItem<String> childResult = getTreeItemByCategoryName(child, name);
+            if (childResult != null)
+                return childResult;
+        }
+        return null;
+    }
+
     private void updateSpecsTable() {
         specsTable.getItems().clear();
         specs.clear();
@@ -164,6 +175,7 @@ public class SellerProductsManagementController implements Initializable {
     private void selectProduct() {
         String name = productsList.getSelectionModel().getSelectedItem();
         selectedProduct = Database.getInstance().getProductByName(name);
+        categoriesTree.getSelectionModel().select(getTreeItemByCategoryName(categoriesTree.getRoot(), selectedProduct.getParentCategoryName()));
         selectedCategory = Database.getInstance().getCategoryByName(selectedProduct.getParentCategoryName());
         updateSpecsTable();
         addButton.setDisable(true);

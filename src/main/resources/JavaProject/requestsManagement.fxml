@@ -6,17 +6,23 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RequestsManagementController">
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RequestsManagementController">
    <children>
-      <TextArea fx:id="descriptionArea" editable="false" layoutX="286.0" layoutY="14.0" prefHeight="500.0" prefWidth="300.0" />
-      <TableView fx:id="requestsTable" layoutX="14.0" layoutY="14.0" prefHeight="500.0" prefWidth="250.0">
+       <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+           <image>
+               <Image url="@../Images/profileBG.jpg" />
+           </image>
+       </ImageView>
+      <TextArea fx:id="descriptionArea" editable="false" layoutX="450.0" layoutY="25.0" prefHeight="550.0" prefWidth="300.0" />
+      <TableView fx:id="requestsTable" layoutX="50.0" layoutY="25.0" prefHeight="500.0" prefWidth="350.0">
         <columns>
-          <TableColumn fx:id="requestIDColumn" prefWidth="139.0" text="RequestID" />
-          <TableColumn fx:id="subjectColumn" prefWidth="110.0" text="Subject" />
+          <TableColumn fx:id="requestIDColumn" prefWidth="200.0" text="RequestID" />
+          <TableColumn fx:id="subjectColumn" prefWidth="150.0" text="Subject" />
         </columns>
       </TableView>
-      <Button fx:id="acceptButton" layoutX="14.0" layoutY="538.0" mnemonicParsing="false" onAction="#acceptRequest" prefHeight="39.0" prefWidth="125.0" text="Accept" />
-      <Button fx:id="declineButton" layoutX="139.0" layoutY="538.0" mnemonicParsing="false" onAction="#declineRequest" prefHeight="39.0" prefWidth="125.0" text="Decline" />
-      <Label fx:id="statusLabel" layoutX="286.0" layoutY="538.0" prefHeight="39.0" prefWidth="300.0" text="Label" />
+      <Button fx:id="acceptButton" layoutX="50.0" layoutY="535.0" mnemonicParsing="false" onAction="#acceptRequest" prefHeight="40.0" prefWidth="170.0" text="Accept" />
+      <Button fx:id="declineButton" layoutX="230.0" layoutY="535.0" mnemonicParsing="false" onAction="#declineRequest" prefHeight="40.0" prefWidth="170.0" text="Decline" />
    </children>
 </AnchorPane>

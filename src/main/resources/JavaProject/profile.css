@@ -92,12 +92,12 @@ Button:hover {
 }
 
 .table-view .column-header-background .label{
-    -fx-background-color: transparent;
+    -fx-background-color: #a06056;
     -fx-text-fill: #efb7af;
 }
 
 .table-view .column-header {
-    -fx-background-color: transparent;
+    -fx-background-color: #a06056;
 }
 
 .table-view .table-cell{
@@ -122,6 +122,27 @@ Button:hover {
 .table-view > .virtual-flow > .scroll-bar:horizontal > .track,
 .table-view > .virtual-flow > .scroll-bar:horizontal > .track-background {
     -fx-background-color: transparent;
+}
+
+.table-view *.scroll-bar:vertical *.increment-button,
+.table-view *.scroll-bar:vertical *.decrement-button,
+.table-view *.scroll-bar:horizontal *.increment-button,
+.table-view *.scroll-bar:horizontal *.decrement-button {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.table-view *.scroll-bar:vertical *.increment-arrow,
+.table-view *.scroll-bar:vertical *.decrement-arrow,
+.table-view *.scroll-bar:horizontal *.increment-arrow,
+.table-view *.scroll-bar:horizontal *.decrement-arrow {
+    -fx-background-color: null;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+    -fx-shape: null;
 }
 
 

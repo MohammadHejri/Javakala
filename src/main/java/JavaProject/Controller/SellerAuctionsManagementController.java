@@ -12,10 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 
 import java.io.IOException;
@@ -41,15 +38,11 @@ public class SellerAuctionsManagementController implements Initializable {
     @FXML
     TextField percentField;
     @FXML
-    Label statusLabel;
-    @FXML
     Button addButton;
     @FXML
     Button editButton;
     @FXML
     Button deleteButton;
-
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -75,6 +68,7 @@ public class SellerAuctionsManagementController implements Initializable {
                 if (click.getClickCount() == 2) {
                     String productName = productsList.getSelectionModel().getSelectedItem();
                     productsList.getItems().remove(productName);
+                    productsList.getSelectionModel().clearSelection();
                     auctionProductsList.getItems().add(productName);
                 }
             }
@@ -85,6 +79,7 @@ public class SellerAuctionsManagementController implements Initializable {
                 if (click.getClickCount() == 2) {
                     String productName = auctionProductsList.getSelectionModel().getSelectedItem();
                     auctionProductsList.getItems().remove(productName);
+                    auctionProductsList.getSelectionModel().clearSelection();
                     productsList.getItems().add(productName);
                 }
             }
@@ -136,23 +131,23 @@ public class SellerAuctionsManagementController implements Initializable {
         String percentStr = percentField.getText().trim();
         String dateTimeRegex = "([12]\\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]) ([0-1]?[0-9]|2[0-3]):[0-5][0-9]";
         if (startDate.isBlank()) {
-            statusLabel.setText("Enter start date!");
+            new Alert(Alert.AlertType.ERROR, "Enter start date").showAndWait();
         } else if (endDate.isBlank()) {
-            statusLabel.setText("Enter end date!");
+            new Alert(Alert.AlertType.ERROR, "Enter end date").showAndWait();
         } else if (percentStr.isBlank()) {
-            statusLabel.setText("Enter discount percent!");
+            new Alert(Alert.AlertType.ERROR, "Enter discount percent").showAndWait();
         } else if (!startDate.matches(dateTimeRegex)) {
-            statusLabel.setText("Use format yyyy-mm-dd hh:mm for start date!");
+            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for start date").showAndWait();
         } else if (!endDate.matches(dateTimeRegex)) {
-            statusLabel.setText("Use format yyyy-mm-dd hh:mm for end date!");
+            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for end date").showAndWait();
         } else if (startDate.compareTo(endDate) >= 0) {
-            statusLabel.setText("Start date should be before end date");
+            new Alert(Alert.AlertType.ERROR, "Start date should be before end date").showAndWait();
         } else if (!percentStr.matches("(\\d+)(\\.\\d+)?")) {
-            statusLabel.setText("Use DOUBLE for price!");
+            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
         } else {
             double discountPercent = Double.parseDouble(percentStr);
             if (discountPercent > 100 || discountPercent == 0) {
-                statusLabel.setText("Percent should be in range (0-100]");
+                new Alert(Alert.AlertType.ERROR, "Percent should be in range (0-100]").showAndWait();
             } else {
                 Seller seller = (Seller) App.getSignedInAccount();
                 ArrayList<String> productsID = new ArrayList<>();
@@ -162,11 +157,11 @@ public class SellerAuctionsManagementController implements Initializable {
                 Request request = null;
                 if (selectedAuction == null) {
                     request = new Request(Subject.ADD_AUCTION, auction.toString());
-                    statusLabel.setText("Adding auction requested");
+                    new Alert(Alert.AlertType.INFORMATION, "Adding auction requested").showAndWait();
                 } else {
                     auction.setID(selectedAuction.getID());
                     request = new Request(Subject.EDIT_AUCTION, "Edited " + auction.toString() + "\n" + "Current " + selectedAuction.toString());
-                    statusLabel.setText("Editing auction requested");
+                    new Alert(Alert.AlertType.INFORMATION, "Editing auction requested").showAndWait();
                 }
                 request.setAuction(auction);
                 Database.getInstance().saveRequest(request);
@@ -180,6 +175,6 @@ public class SellerAuctionsManagementController implements Initializable {
         Request request = new Request(Subject.DELETE_AUCTION, auction.toString());
         request.setAuction(auction);
         Database.getInstance().saveRequest(request);
-        statusLabel.setText("Deleting auction requested");
+        new Alert(Alert.AlertType.INFORMATION, "Deleting auction requested").showAndWait();
     }
 }
