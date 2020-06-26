@@ -102,4 +102,5 @@ public class App extends Application {
         mediaPlayer = new MediaPlayer(new Media(backgroundMusics[(++option)%4]));
         mediaPlayer.play();
     }
+    // nothing
 }
