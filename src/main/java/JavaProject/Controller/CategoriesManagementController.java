@@ -31,17 +31,37 @@ public class CategoriesManagementController implements Initializable {
     @FXML
     ListView<String> featuresList;
     @FXML
-    Label statusLabel;
+    Button createButton;
+    @FXML
+    Button editButton;
+    @FXML
+    Button deleteButton;
+    @FXML
+    Button deleteFeatureButton;
+    @FXML
+    Button addFeatureButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Category root = Database.getInstance().getCategoryByName("root");
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
+        deleteFeatureButton.setDisable(true);
         categoriesTable.setRoot(getTreeItemByCategory(root));
         categoriesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 selectCategory();
             } else {
                 deselectCategory();
+            }
+        });
+        featuresList.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                addFeatureButton.setDisable(true);
+                deleteFeatureButton.setDisable(false);
+            } else {
+                addFeatureButton.setDisable(false);
+                deleteFeatureButton.setDisable(true);
             }
         });
     }
@@ -54,9 +74,12 @@ public class CategoriesManagementController implements Initializable {
     }
 
     private void selectCategory() {
+        createButton.setDisable(true);
+        editButton.setDisable(false);
+        deleteButton.setDisable(false);
         Category category = Database.getInstance().getCategoryByName(categoriesTable.getSelectionModel().getSelectedItem().getValue());
         nameField.setText(category.getName());
-        parentField.setText(category.getParentName());
+        parentField.setText(category.getParentName() == null ? "" : category.getParentName());
         productsList.getItems().clear();
         features.clear();
         features.addAll(category.getFeatures());
@@ -68,6 +91,9 @@ public class CategoriesManagementController implements Initializable {
     }
 
     private void deselectCategory() {
+        createButton.setDisable(false);
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
         nameField.setText("");
         parentField.setText("");
         productsList.getItems().clear();
@@ -76,35 +102,19 @@ public class CategoriesManagementController implements Initializable {
     }
 
     @FXML
-    private void deleteProduct(ActionEvent event) throws IOException {
-        String categoryName = categoriesTable.getSelectionModel().getSelectedItem().getValue();
-        Category category = Database.getInstance().getCategoryByName(categoryName);
-        String productName = productsList.getSelectionModel().getSelectedItem();
-        if (productName == null) return;
-        Product product = Database.getInstance().getProductByName(productName);
-        category.getProducts().remove(product);
-        product.setParentCategoryName(category.getParentName());
-        Category parentCat = Database.getInstance().getCategoryByName(category.getParentName());
-        parentCat.getProducts().add(product);
-        Database.getInstance().updateCategories();
-        productsList.getItems().clear();
-        for (Product pro : category.getProducts())
-            productsList.getItems().add(pro.getName());
-    }
-
-    @FXML
     private void addFeature(ActionEvent event) {
         String feature = featureField.getText();
         if (feature.isBlank()) {
-            statusLabel.setText("enter feature in field");
+            new Alert(Alert.AlertType.ERROR, "Enter valid feature").showAndWait();
             return;
         }
         for (String str : featuresList.getItems()) {
             if (str.equals(feature)) {
-                statusLabel.setText("already added feature");
+                new Alert(Alert.AlertType.ERROR, "Feature already added").showAndWait();
                 return;
             }
         }
+        featureField.setText("");
         features.add(feature);
         featuresList.getItems().add(feature);
     }
@@ -112,10 +122,6 @@ public class CategoriesManagementController implements Initializable {
     @FXML
     private void deleteFeature(ActionEvent event) {
         String feature = featuresList.getSelectionModel().getSelectedItem();
-        if (feature == null) {
-            statusLabel.setText("first choose a feature");
-            return;
-        }
         features.remove(feature);
         featuresList.getItems().clear();
         for (String str : features)
@@ -126,28 +132,37 @@ public class CategoriesManagementController implements Initializable {
     private void createOrEditCategory(ActionEvent event) throws IOException {
         String name = nameField.getText().trim();
         String parent = parentField.getText().trim();
+        String prevName = null;
+        if (categoriesTable.getSelectionModel().getSelectedItem() != null)
+            prevName = categoriesTable.getSelectionModel().getSelectedItem().getValue();
+        if (prevName != null && prevName.equals("root")) {
+            new Alert(Alert.AlertType.ERROR, "No changes for ROOT category").showAndWait();
+            return;
+        }
         if (name.isBlank()) {
-            statusLabel.setText("Enter name");
+            new Alert(Alert.AlertType.ERROR, "Enter category name").showAndWait();
         } else if (parent.isBlank()) {
-            statusLabel.setText("Enter parent name");
+            new Alert(Alert.AlertType.ERROR, "Enter parent category name").showAndWait();
         } else if (Database.getInstance().getCategoryByName(parent) == null) {
-            statusLabel.setText("No parent found");
+            new Alert(Alert.AlertType.ERROR, "No parent found").showAndWait();
         } else {
-            String prevName = null;
-            if (categoriesTable.getSelectionModel().getSelectedItem() != null)
-                prevName = categoriesTable.getSelectionModel().getSelectedItem().getValue();
             Category category = Database.getInstance().getCategoryByName(name);
             Category parentCat = Database.getInstance().getCategoryByName(parent);
             features.clear();
             features.addAll(featuresList.getItems());
             if (prevName == null && category != null) {
-                statusLabel.setText("Category name exists");
+                new Alert(Alert.AlertType.ERROR, "Category name exists").showAndWait();
                 return;
             } else if (prevName == null && category == null) {
                 ArrayList<String> catFeatures = new ArrayList<>(features);
                 category = new Category(name, parent, new ArrayList<>(), new ArrayList<>(), catFeatures);
                 parentCat.getSubCategories().add(category);
+                new Alert(Alert.AlertType.INFORMATION, "Category added successfully").showAndWait();
             } else if (prevName != null && category != null) {
+                if (!Database.getInstance().canChangeParentCategory(Database.getInstance().getCategoryByName(prevName), parentCat)) {
+                    new Alert(Alert.AlertType.ERROR, "Can not change parent").showAndWait();
+                    return;
+                }
                 if (prevName.equals(name)) {
                     category.setFeatures(new ArrayList<>(features));
                     Category prevParentCat = Database.getInstance().getCategoryByName(category.getParentName());
@@ -156,11 +171,16 @@ public class CategoriesManagementController implements Initializable {
                         parentCat.getSubCategories().add(category);
                         category.setParentName(parent);
                     }
+                    new Alert(Alert.AlertType.INFORMATION, "Category edited successfully").showAndWait();
                 } else {
-                    statusLabel.setText("Category name exists");
+                    new Alert(Alert.AlertType.ERROR, "Category name exists").showAndWait();
                     return;
                 }
             } else {
+                if (!Database.getInstance().canChangeParentCategory(Database.getInstance().getCategoryByName(prevName), parentCat)) {
+                    new Alert(Alert.AlertType.ERROR, "Can not change parent").showAndWait();
+                    return;
+                }
                 category = Database.getInstance().getCategoryByName(prevName);
                 category.setName(name);
                 category.setFeatures(new ArrayList<>(features));
@@ -170,6 +190,11 @@ public class CategoriesManagementController implements Initializable {
                     parentCat.getSubCategories().add(category);
                     category.setParentName(parent);
                 }
+                for (Product product : category.getProducts())
+                    product.setParentCategoryName(name);
+                for (Category child : category.getSubCategories())
+                    child.setParentName(name);
+                new Alert(Alert.AlertType.INFORMATION, "Category edited successfully").showAndWait();
             }
             Category root = Database.getInstance().getCategoryByName("root");
             categoriesTable.setRoot(getTreeItemByCategory(root));
@@ -182,10 +207,14 @@ public class CategoriesManagementController implements Initializable {
     private void deleteCategory(ActionEvent event) throws IOException {
         for (TreeItem<String> item : categoriesTable.getSelectionModel().getSelectedItems()) {
             Category selected = Database.getInstance().getCategoryByName(item.getValue());
-            if (!selected.getName().equals("root"))
+            if (!selected.getName().equals("root")) {
                 Database.getInstance().deleteCategory(selected);
+            } else {
+                new Alert(Alert.AlertType.ERROR, "You can not delete ROOT category").showAndWait();
+                return;
+            }
         }
-        statusLabel.setText("Deleted successfully");
+        new Alert(Alert.AlertType.INFORMATION, "Category deleted successfully").showAndWait();
         Category root = Database.getInstance().getCategoryByName("root");
         categoriesTable.setRoot(getTreeItemByCategory(root));
     }

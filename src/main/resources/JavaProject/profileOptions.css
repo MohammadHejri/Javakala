@@ -1,0 +1,21 @@
+VBox {
+    -fx-background-color: lightgray;
+}
+
+Button {
+    -fx-text-fill: #4a4a4a;
+    -fx-background-color: darkgray;
+    -fx-background-radius: 15px;
+    -fx-border-radius: 15px;
+    -fx-font-size: 12px;
+}
+
+Button:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(three-pass-box, #4a4a4a, 10, 0, 0, 0);
+    -fx-font-weight: bold;
+}
+
+
+

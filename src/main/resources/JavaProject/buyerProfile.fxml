@@ -6,16 +6,17 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.BuyerProfileController">
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.BuyerProfileController">
     <left>
-        <VBox prefHeight="600.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="15.0" stylesheets="@profileOptions.css" BorderPane.alignment="CENTER">
             <children>
-                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" text="Your profile" />
-                <Button mnemonicParsing="false" onAction="#openBuyerSaleHistorySection" text="View Sale History" />
-            <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" text="View discount codes" />
-                <Button mnemonicParsing="false" onAction="#openCartSection" text="View cart" />
-                <Button mnemonicParsing="false" onAction="#signOut" text="Sign out" />
-                <Button mnemonicParsing="false" onAction="#changeToPrevPane" text="back to main menu" />
+                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" prefHeight="40.0" prefWidth="160.0" text="Your profile" />
+                <Button mnemonicParsing="false" onAction="#openBuyerSaleHistorySection" prefHeight="40.0" prefWidth="160.0" text="View Sale History" />
+            <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" prefHeight="40.0" prefWidth="160.0" text="View discount codes" />
+                <Button mnemonicParsing="false" onAction="#openCartSection" prefHeight="40.0" prefWidth="160.0" text="View cart" />
+                <Button mnemonicParsing="false" onAction="#signOut" prefHeight="40.0" prefWidth="160.0" text="Sign out" />
+                <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />
+            <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to previous page" />
             </children>
         </VBox>
     </left>

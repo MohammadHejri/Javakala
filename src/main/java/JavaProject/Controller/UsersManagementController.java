@@ -6,9 +6,7 @@ import JavaProject.Model.Database.Database;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
@@ -30,10 +28,11 @@ public class UsersManagementController implements Initializable {
     @FXML
     TableColumn<Account, String> phoneNumberColumn;
     @FXML
-    Label statusLabel;
+    Button deleteUserButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        deleteUserButton.setDisable(true);
         usernameColumn.setCellValueFactory(new PropertyValueFactory<>("username"));
         firstNameColumn.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
@@ -41,16 +40,23 @@ public class UsersManagementController implements Initializable {
         phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
         for (Account account : Database.getInstance().getAllAccounts())
             userTable.getItems().add(account);
+        userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+            if (newSelection != null) {
+                deleteUserButton.setDisable(false);
+            } else {
+                deleteUserButton.setDisable(true);
+            }
+        });
     }
 
     @FXML
     private void deleteUser(ActionEvent event) {
         Account toBeDeletedAccount = userTable.getSelectionModel().getSelectedItem();
         if (toBeDeletedAccount == App.getSignedInAccount()) {
-            statusLabel.setText("You can not delete yourself idiot");
+            new Alert(Alert.AlertType.ERROR, "You can not delete yourself").showAndWait();
         } else if (toBeDeletedAccount != null) {
             Database.getInstance().deleteAccount(toBeDeletedAccount);
-            statusLabel.setText("User successfully deleted");
+            new Alert(Alert.AlertType.INFORMATION, "User successfully deleted").showAndWait();
             userTable.getItems().clear();
             for (Account account : Database.getInstance().getAllAccounts())
                 userTable.getItems().add(account);

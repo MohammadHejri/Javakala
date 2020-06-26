@@ -10,6 +10,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.net.URL;
@@ -17,9 +19,6 @@ import java.util.*;
 
 public class ProductsManagementController implements Initializable {
 
-
-    @FXML
-    Label statusLabel;
     @FXML
     TableView<Product> productsTable;
     @FXML
@@ -40,23 +39,22 @@ public class ProductsManagementController implements Initializable {
     TableColumn<Product, Double> scoreColumn;
     @FXML
     TableColumn<Product, Status> statusColumn;
-
     @FXML
     TableView<DualString> specsTable;
     @FXML
     TableColumn<DualString, String> specsColumn;
     @FXML
     TableColumn<DualString, String> infoColumn;
-
-    @FXML
-    TextField parentField;
-    @FXML
-    TextField specsField;
     @FXML
     TextArea descriptionArea;
+    @FXML
+    Button deleteProductButton;
+    @FXML
+    ImageView imageView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        deleteProductButton.setDisable(true);
         specsColumn.setCellValueFactory(new PropertyValueFactory<>("key"));
         infoColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -83,72 +81,27 @@ public class ProductsManagementController implements Initializable {
     @FXML
     public void deleteProduct(ActionEvent event) throws IOException {
         Product product = productsTable.getSelectionModel().getSelectedItem();
-        if (product == null) {
-            statusLabel.setText("Choose product");
-        } else {
-            Database.getInstance().deleteProduct(product);
-            statusLabel.setText("Deleted successfully");
-            productsTable.getItems().clear();
-            for (Product pro : Database.getInstance().getAllProducts())
-                productsTable.getItems().add(pro);
-        }
-    }
-
-    @FXML
-    public void editSpecs(ActionEvent event) throws IOException {
-        Product product = productsTable.getSelectionModel().getSelectedItem();
-        DualString dualString = specsTable.getSelectionModel().getSelectedItem();
-        String info = specsField.getText();
-        if (dualString == null || info.isBlank()) {
-            statusLabel.setText("Choose spec & enter info");
-        } else {
-            product.getSpecs().replace(dualString.getKey(), dualString.getValue(), info);
-            specsTable.getItems().clear();
-            for (String key : product.getSpecs().keySet())
-                specsTable.getItems().add(new DualString(key, product.getSpecs().get(key)));
-        }
-        Database.getInstance().updateCategories();
-    }
-
-    @FXML
-    public void changeCategory(ActionEvent event) throws IOException {
-        Product product = productsTable.getSelectionModel().getSelectedItem();
-        String parentName = parentField.getText();
-        Category newParent = Database.getInstance().getCategoryByName(parentName);
-        if (product == null) {
-            statusLabel.setText("Choose product");
-        } else if (parentName.isBlank() || newParent == null) {
-            statusLabel.setText("Enter valid category");
-        } else if (!parentName.equals(product.getParentCategoryName())) {
-            Database.getInstance().getCategoryByName(product.getParentCategoryName()).getProducts().remove(product);
-            newParent.getProducts().add(product);
-            HashMap<String, String> hashMap = new HashMap<>();
-            for (String key : Database.getInstance().getAllFeatures(newParent)) {
-                hashMap.put(key, product.getSpecs().getOrDefault(key, ""));
-            }
-            product.setSpecs(hashMap);
-            product.setParentCategoryName(parentName);
-            Database.getInstance().updateCategories();
-            statusLabel.setText("success");
-            deselectProduct();
-            productsTable.getItems().clear();
-            for (Product pro : Database.getInstance().getAllProducts())
-                productsTable.getItems().add(pro);
-        }
+        Database.getInstance().deleteProduct(product);
+        new Alert(Alert.AlertType.INFORMATION, "Product successfully deleted").showAndWait();
+        productsTable.getItems().clear();
+        for (Product pro : Database.getInstance().getAllProducts())
+            productsTable.getItems().add(pro);
     }
 
     private void selectProduct() {
         Product product = productsTable.getSelectionModel().getSelectedItem();
-        parentField.setText(product.getParentCategoryName());
         descriptionArea.setText(product.getDescription());
+        deleteProductButton.setDisable(false);
+        imageView.setImage(new Image(product.getImagePath()));
         specsTable.getItems().clear();
         for (String key : product.getSpecs().keySet())
             specsTable.getItems().add(new DualString(key, product.getSpecs().get(key)));
     }
 
     private void deselectProduct() {
-        parentField.setText("");
         descriptionArea.setText("");
+        deleteProductButton.setDisable(true);
+        imageView.setImage(null);
         specsTable.getItems().clear();
     }
 

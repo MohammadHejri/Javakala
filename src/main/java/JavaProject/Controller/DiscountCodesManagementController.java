@@ -36,8 +36,6 @@ public class DiscountCodesManagementController implements Initializable {
     @FXML
     TextField endDateField;
     @FXML
-    Label statusLabel;
-    @FXML
     TableView<DiscountCode> discountCodeTable;
     @FXML
     TableColumn<DiscountCode, String> codeColumn;
@@ -52,18 +50,22 @@ public class DiscountCodesManagementController implements Initializable {
     @FXML
     TableColumn<DiscountCode, Integer> maxUsageColumn;
     @FXML
-    TableColumn<DiscountCode, HashMap<String, Integer>> buyersColumn;
-
+    Button createButton;
+    @FXML
+    Button editButton;
+    @FXML
+    Button deleteButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
         codeColumn.setCellValueFactory(new PropertyValueFactory<>("code"));
         startDateColumn.setCellValueFactory(new PropertyValueFactory<>("startDate"));
         endDateColumn.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         percentColumn.setCellValueFactory(new PropertyValueFactory<>("discountPercent"));
         maxDiscountColumn.setCellValueFactory(new PropertyValueFactory<>("maxDiscount"));
         maxUsageColumn.setCellValueFactory(new PropertyValueFactory<>("maxUsageNumber"));
-        buyersColumn.setCellValueFactory(new PropertyValueFactory<>("buyers"));
         for (DiscountCode discountCode : Database.getInstance().getAllDiscountCodes())
             discountCodeTable.getItems().add(discountCode);
         userList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -90,23 +92,23 @@ public class DiscountCodesManagementController implements Initializable {
         ObservableList<String> buyersList = userList.getSelectionModel().getSelectedItems();
         String dateTimeRegex = "([12]\\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]) ([0-1]?[0-9]|2[0-3]):[0-5][0-9]";
         if (!code.matches("\\S+")) {
-            statusLabel.setText("Use non-whitespace letters for code");
+            new Alert(Alert.AlertType.ERROR, "Use non-whitespace letters for code").showAndWait();
         } else if (!startDate.matches(dateTimeRegex)) {
-            statusLabel.setText("Use format yyyy-mm-dd hh:mm for start date");
+            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for start date").showAndWait();
         } else if (!endDate.matches(dateTimeRegex)) {
-            statusLabel.setText("Use format yyyy-mm-dd hh:mm for end date");
+            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for end date").showAndWait();
         } else if (startDate.compareTo(endDate) >= 0) {
-            statusLabel.setText("Start date should be before end date");
+            new Alert(Alert.AlertType.ERROR, "Start date should be before end date").showAndWait();
         } else if (!percent.matches("(\\d+)(\\.\\d+)?")) {
-            statusLabel.setText("Percent should be double value");
+            new Alert(Alert.AlertType.ERROR, "Percent should be DOUBLE value").showAndWait();
         } else if (!maxDiscount.matches("(\\d+)(\\.\\d+)?")) {
-            statusLabel.setText("Maximum discount should be double value");
+            new Alert(Alert.AlertType.ERROR, "Maximum discount should be DOUBLE value").showAndWait();
         } else if (!maxUsage.matches("\\d+")) {
-            statusLabel.setText("Maximum usage should be integer value");
+            new Alert(Alert.AlertType.ERROR, "Maximum usage should be integer value").showAndWait();
         } else {
             double discountPercent = Double.parseDouble(percent);
-            if (discountPercent > 100) {
-                statusLabel.setText("Percent should be less than 100");
+            if (discountPercent > 100 || discountPercent <= 0) {
+                new Alert(Alert.AlertType.ERROR, "Percent should be in range (0-100]").showAndWait();
             } else {
                 double maximumDiscount = Double.parseDouble(maxDiscount);
                 int maxUsageNumber = Integer.parseInt(maxUsage);
@@ -114,7 +116,7 @@ public class DiscountCodesManagementController implements Initializable {
                 DiscountCode discountCode = Database.getInstance().getDiscountCodeByCode(code);
                 DiscountCode selected = discountCodeTable.getSelectionModel().getSelectedItem();
                 if (selected == null && discountCode != null) {
-                    statusLabel.setText("Discount code exists");
+                    new Alert(Alert.AlertType.ERROR, "Discount code exists").showAndWait();
                 } else if (selected == null && discountCode == null) {
                     for (String user : buyersList) {
                         Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
@@ -123,8 +125,9 @@ public class DiscountCodesManagementController implements Initializable {
                         Database.getInstance().saveAccount(buyer);
                     }
                     Database.getInstance().saveDiscountCode(new DiscountCode(code, startDate, endDate, discountPercent, maximumDiscount, maxUsageNumber, hashMap));
+                    new Alert(Alert.AlertType.INFORMATION, "Discount code added successfully").showAndWait();
                 } else if (selected != null && discountCode != null && !selected.getCode().equals(code)) {
-                    statusLabel.setText("Discount code exists");
+                    new Alert(Alert.AlertType.ERROR, "Discount code exists").showAndWait();
                 } else {
                     for (String user : selected.getBuyers().keySet()) {
                         Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
@@ -148,6 +151,7 @@ public class DiscountCodesManagementController implements Initializable {
                     selected.setMaxDiscount(maximumDiscount);
                     selected.setBuyers(hashMap);
                     Database.getInstance().saveDiscountCode(selected);
+                    new Alert(Alert.AlertType.INFORMATION, "Discount code edited successfully").showAndWait();
                 }
                 discountCodeTable.getItems().clear();
                 for (DiscountCode DC : Database.getInstance().getAllDiscountCodes())
@@ -157,6 +161,9 @@ public class DiscountCodesManagementController implements Initializable {
     }
 
     private void selectDiscountCode() {
+        createButton.setDisable(true);
+        editButton.setDisable(false);
+        deleteButton.setDisable(false);
         DiscountCode discountCode = discountCodeTable.getSelectionModel().getSelectedItem();
         codeField.setText(discountCode.getCode());
         startDateField.setText(discountCode.getStartDate());
@@ -164,22 +171,34 @@ public class DiscountCodesManagementController implements Initializable {
         percentField.setText(String.valueOf(discountCode.getDiscountPercent()));
         maxDiscountField.setText(String.valueOf(discountCode.getMaxDiscount()));
         maxUsageField.setText(String.valueOf(discountCode.getMaxUsageNumber()));
+        userList.getSelectionModel().clearSelection();
+        for (String buyerUsername : discountCode.getBuyers().keySet()) {
+            for (String username : userList.getItems()) {
+                if (buyerUsername.equals(username)) {
+                    userList.getSelectionModel().select(username);
+                }
+            }
+        }
     }
 
     private void deselectDiscountCode() {
+        createButton.setDisable(false);
+        editButton.setDisable(true);
+        deleteButton.setDisable(true);
         codeField.setText("");
         startDateField.setText("");
         endDateField.setText("");
         percentField.setText("");
         maxDiscountField.setText("");
         maxUsageField.setText("");
+        userList.getSelectionModel().clearSelection();
     }
 
     @FXML
     private void deleteDiscountCode(ActionEvent event) {
         for (DiscountCode discountCode : discountCodeTable.getSelectionModel().getSelectedItems())
             Database.getInstance().deleteDiscountCode(discountCode);
-        statusLabel.setText("Deleted successfully");
+        new Alert(Alert.AlertType.INFORMATION, "Discount code deleted successfully").showAndWait();
         discountCodeTable.getItems().clear();
         for (DiscountCode discountCode : Database.getInstance().getAllDiscountCodes())
             discountCodeTable.getItems().add(discountCode);

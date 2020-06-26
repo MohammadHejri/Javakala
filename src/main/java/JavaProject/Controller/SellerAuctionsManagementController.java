@@ -146,7 +146,7 @@ public class SellerAuctionsManagementController implements Initializable {
             new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
         } else {
             double discountPercent = Double.parseDouble(percentStr);
-            if (discountPercent > 100 || discountPercent == 0) {
+            if (discountPercent > 100 || discountPercent <= 0) {
                 new Alert(Alert.AlertType.ERROR, "Percent should be in range (0-100]").showAndWait();
             } else {
                 Seller seller = (Seller) App.getSignedInAccount();

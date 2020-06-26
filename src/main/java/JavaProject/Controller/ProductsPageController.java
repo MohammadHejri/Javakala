@@ -278,4 +278,6 @@ public class ProductsPageController implements Initializable {
         App.setRoot(prevPane);
     }
 
+    public void openProfile(MouseEvent mouseEvent) {
+    }
 }

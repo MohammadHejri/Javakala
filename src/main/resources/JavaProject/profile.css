@@ -56,6 +56,7 @@ Button:hover {
 .text-area {
     -fx-font-size: 14px;
     -fx-text-fill: #a06056;
+    -fx-prompt-text-fill: #a06056;
     -fx-background-color: #efb7af;
     -fx-border-color: #a06056;
     -fx-border-width: 3px;

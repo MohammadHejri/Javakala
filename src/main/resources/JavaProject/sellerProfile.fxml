@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SellerProfileController">
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SellerProfileController">
     <left>
-        <VBox prefHeight="600.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+        <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="15.0" stylesheets="@profileOptions.css" BorderPane.alignment="CENTER">
             <children>
-                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" text="Your profile" />
-                <Button mnemonicParsing="false" onAction="#openProductsManagementSection" text="Manage products" />
-            <Button mnemonicParsing="false" onAction="#openAuctionsManagementSection" text="Manage auctions" />
-            <Button mnemonicParsing="false" onAction="#openRequestsViewSection" text="View requests" />
-            <Button mnemonicParsing="false" onAction="#openSellerSaleHistorySection" text="View Sale History" />
-            <Button mnemonicParsing="false" onAction="#openCartSection" text="View cart" />
-                <Button mnemonicParsing="false" onAction="#signOut" text="Sign out" />
-                <Button mnemonicParsing="false" onAction="#changeToPrevPane" text="back to main menu" />
+                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" prefHeight="40.0" prefWidth="160.0" text="Your profile" />
+                <Button mnemonicParsing="false" onAction="#openProductsManagementSection" prefHeight="40.0" prefWidth="160.0" text="Manage products" />
+            <Button mnemonicParsing="false" onAction="#openAuctionsManagementSection" prefHeight="40.0" prefWidth="160.0" text="Manage auctions" />
+            <Button mnemonicParsing="false" onAction="#openRequestsViewSection" prefHeight="40.0" prefWidth="160.0" text="View requests" />
+            <Button mnemonicParsing="false" onAction="#openSellerSaleHistorySection" prefHeight="40.0" prefWidth="160.0" text="View Sale History" />
+            <Button mnemonicParsing="false" onAction="#openCartSection" prefHeight="40.0" prefWidth="160.0" text="View cart" />
+                <Button mnemonicParsing="false" onAction="#signOut" prefHeight="40.0" prefWidth="160.0" text="Sign out" />
+                <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />
+            <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to previous page" />
             </children>
         </VBox>
     </left>

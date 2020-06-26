@@ -95,7 +95,7 @@ public class Database {
             new JsonFileWriter().write(buyersPath + "\\" + account.getUsername() + ".json", account);
     }
 
-    // TODO: delete auctions, products, requests for seller
+    // TODO: delete auctions, products, for seller
     public void deleteAccount(Account account) {
         allAccounts.remove(account);
         File accountFile = null;
@@ -449,5 +449,16 @@ public class Database {
                 array.add(value);
         }
         return array;
+    }
+
+    public boolean canChangeParentCategory(Category category, Category desired) {
+        if (category.getName().equals("root")) {
+            if (desired.getName().equals("root"))
+                return true;
+            return false;
+        }
+        if (category.getName().equals(desired.getName()))
+            return true;
+        return canChangeParentCategory(getCategoryByName(category.getParentName()), desired);
     }
 }

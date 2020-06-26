@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<AnchorPane prefHeight="600.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.UsersManagementController">
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.UsersManagementController">
    <children>
-      <TableView fx:id="userTable" layoutX="17.0" layoutY="35.0" prefHeight="450.0" prefWidth="566.0">
+      <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/profileBG.jpg" />
+         </image>
+      </ImageView>
+      <TableView fx:id="userTable" layoutX="50.0" layoutY="50.0" prefHeight="450.0" prefWidth="700.0">
          <columns>
-            <TableColumn fx:id="usernameColumn" prefWidth="93.0" text="Username" />
-            <TableColumn fx:id="firstNameColumn" prefWidth="95.0" text="First name" />
-            <TableColumn fx:id="lastNameColumn" minWidth="0.0" prefWidth="93.0" text="Last name" />
-            <TableColumn fx:id="emailAddressColumn" prefWidth="136.0" text="Email Address" />
-            <TableColumn fx:id="phoneNumberColumn" prefWidth="131.0" text="Phone number" />
+            <TableColumn fx:id="usernameColumn" prefWidth="120.0" resizable="false" text="Username" />
+            <TableColumn fx:id="firstNameColumn" prefWidth="120.0" resizable="false" text="First name" />
+            <TableColumn fx:id="lastNameColumn" minWidth="0.0" prefWidth="120.0" resizable="false" text="Last name" />
+            <TableColumn fx:id="emailAddressColumn" prefWidth="170.0" resizable="false" text="Email Address" />
+            <TableColumn fx:id="phoneNumberColumn" prefWidth="170.0" resizable="false" text="Phone number" />
          </columns>
       </TableView>
-      <Button layoutX="29.0" layoutY="518.0" mnemonicParsing="false" onAction="#deleteUser" text="Delete user" />
-      <Label fx:id="statusLabel" layoutX="156.0" layoutY="513.0" prefHeight="48.0" prefWidth="203.0" text="Label" />
-      <Button layoutX="364.0" layoutY="518.0" mnemonicParsing="false" onAction="#createManager" text="Create manager account" />
+      <Button fx:id="deleteUserButton" layoutX="50.0" layoutY="520.0" mnemonicParsing="false" onAction="#deleteUser" prefHeight="40.0" prefWidth="150.0" text="Delete user" />
+      <Button layoutX="210.0" layoutY="520.0" mnemonicParsing="false" onAction="#createManager" prefHeight="40.0" prefWidth="250.0" text="Create manager account" />
    </children>
 </AnchorPane>

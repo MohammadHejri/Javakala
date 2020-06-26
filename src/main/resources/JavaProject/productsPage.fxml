@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane id="g1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductsPageController">
    <children>
@@ -76,19 +78,19 @@
          </content>
       </ScrollPane>
       <Pagination fx:id="pagination" layoutX="220.0" layoutY="100.0" prefHeight="500.0" prefWidth="580.0" />
-      <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="950.0" layoutY="10.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../Images/back.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="567.0" layoutY="21.0" onMouseClicked="#openCartSection" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="901.0" layoutY="115.0" onMouseClicked="#openCartSection" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../Images/cart.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="436.0" layoutY="21.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="881.0" layoutY="242.0" onMouseClicked="#openProfile" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@../Images/user.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="903.0" layoutY="360.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/back.png" />
          </image>
       </ImageView>
    </children>
