@@ -2,6 +2,7 @@
 
 <!--<?import javafx.scene.media.*?>-->
 
+<?import javafx.scene.media.*?>
 <?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -64,8 +65,8 @@
                <children>
                   <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" onMouseClicked="#chooseImage" pickOnBounds="true" preserveRatio="true" />
                   <Button mnemonicParsing="false" onAction="#resetImageToDefault" prefHeight="40.0" prefWidth="200.0" text="Reset to default" />
-<!--                  <MediaView fitHeight="200.0" fitWidth="200.0" />-->
-                  <Button mnemonicParsing="false" onAction="#resetImageToDefault" prefHeight="40.0" prefWidth="200.0" text="Reset to default" />
+                  <MediaView fx:id="videoPart" fitHeight="200.0" fitWidth="200.0" />
+                  <Button mnemonicParsing="false" onAction="#resetVideoToDefault" prefHeight="40.0" prefWidth="200.0" text="Reset to default" />
                </children>
             </VBox>
          </children>

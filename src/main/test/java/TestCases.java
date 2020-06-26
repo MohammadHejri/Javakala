@@ -1,3 +1,5 @@
+package java;
+
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
 import JavaProject.Model.Account.Seller;

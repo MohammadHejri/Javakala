@@ -322,4 +322,6 @@ public class SellerProductsManagementController implements Initializable {
     }
 
 
+    public void resetVideoToDefault(ActionEvent event) {
+    }
 }
