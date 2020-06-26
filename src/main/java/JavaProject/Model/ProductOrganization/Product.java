@@ -211,6 +211,17 @@ public class Product {
         return string;
     }
 
-
+    public void updateMark() {
+        int size = rates.size();
+        if (size == 0) {
+            averageMark = 0;
+        } else {
+            double sum = 0;
+            for (Rate rate : rates) {
+                sum += rate.getMark();
+            }
+            averageMark = sum / size;
+        }
+    }
 
 }
