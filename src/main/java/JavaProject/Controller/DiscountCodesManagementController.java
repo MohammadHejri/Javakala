@@ -14,10 +14,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 public class DiscountCodesManagementController implements Initializable {
 
@@ -55,6 +57,8 @@ public class DiscountCodesManagementController implements Initializable {
     Button editButton;
     @FXML
     Button deleteButton;
+    @FXML
+    Button generateButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -161,6 +165,7 @@ public class DiscountCodesManagementController implements Initializable {
     }
 
     private void selectDiscountCode() {
+        generateButton.setDisable(true);
         createButton.setDisable(true);
         editButton.setDisable(false);
         deleteButton.setDisable(false);
@@ -182,6 +187,7 @@ public class DiscountCodesManagementController implements Initializable {
     }
 
     private void deselectDiscountCode() {
+        generateButton.setDisable(false);
         createButton.setDisable(false);
         editButton.setDisable(true);
         deleteButton.setDisable(true);
@@ -195,12 +201,34 @@ public class DiscountCodesManagementController implements Initializable {
     }
 
     @FXML
-    private void deleteDiscountCode(ActionEvent event) {
+    private void deleteDiscountCode(ActionEvent event) throws IOException {
         for (DiscountCode discountCode : discountCodeTable.getSelectionModel().getSelectedItems())
             Database.getInstance().deleteDiscountCode(discountCode);
         new Alert(Alert.AlertType.INFORMATION, "Discount code deleted successfully").showAndWait();
         discountCodeTable.getItems().clear();
         for (DiscountCode discountCode : Database.getInstance().getAllDiscountCodes())
             discountCodeTable.getItems().add(discountCode);
+    }
+
+    @FXML
+    private void generateRandomCode(ActionEvent event) throws IOException {
+        Date nowDate = new Date();
+        DiscountCode discountCode;
+        String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(nowDate);
+        long time = 24 * 60 * 60 * 1000 * 7;
+        String endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(nowDate.getTime() + time));
+        HashMap<String, Integer> hashMap = Database.getInstance().getRandomBuyers();
+        discountCode = new DiscountCode("RND" + new SimpleDateFormat("mmssSSS").format(nowDate), startDate, endDate, Math.random() * 100, 100, 1, hashMap);
+        Database.getInstance().saveDiscountCode(discountCode);
+        for (String user : hashMap.keySet()) {
+            Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
+            hashMap.put(user, 0);
+            buyer.getDiscountCodes().add(discountCode.getCode());
+            Database.getInstance().saveAccount(buyer);
+        }
+        discountCodeTable.getItems().clear();
+        for (DiscountCode DC : Database.getInstance().getAllDiscountCodes())
+            discountCodeTable.getItems().add(DC);
+        new Alert(Alert.AlertType.INFORMATION, "Random discount code generated successfully").showAndWait();
     }
 }

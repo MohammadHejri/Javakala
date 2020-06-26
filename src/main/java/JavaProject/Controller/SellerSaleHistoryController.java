@@ -63,6 +63,7 @@ public class SellerSaleHistoryController implements Initializable {
 
     private void selectLog() {
         SellLog sellLog = logsTable.getSelectionModel().getSelectedItem();
+        productsTable.getItems().clear();
         for (ProductOnLog productOnLog : sellLog.getSoldProducts())
             productsTable.getItems().add(productOnLog);
     }

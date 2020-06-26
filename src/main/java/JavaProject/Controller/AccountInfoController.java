@@ -70,12 +70,12 @@ public class AccountInfoController implements Initializable {
         }
         if (account instanceof Seller) {
             accountTypeField.setText("seller");
-            balanceField.setText(String.valueOf(((Seller) account).getBalance()));
+            balanceField.setText("$" + String.valueOf(((Seller) account).getBalance()));
             companyNameField.setText(((Seller) account).getCompanyName());
         }
         if (account instanceof Buyer) {
             accountTypeField.setText("buyer");
-            balanceField.setText(String.valueOf(((Buyer) account).getBalance()));
+            balanceField.setText("$" + String.valueOf(((Buyer) account).getBalance()));
             companyNameField.setText("-");
             companyNameField.setEditable(false);
         }

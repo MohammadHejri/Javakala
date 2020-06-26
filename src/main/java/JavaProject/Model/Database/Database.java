@@ -14,10 +14,19 @@ import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
 import JavaProject.Model.TripleString;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 public class Database {
 
@@ -167,9 +176,16 @@ public class Database {
         new JsonFileWriter().write(discountCodesPath + "\\" + discountCode.getID() + ".json", discountCode);
     }
 
-    public void deleteDiscountCode(DiscountCode discountCode) {
+    public void deleteDiscountCode(DiscountCode discountCode) throws IOException {
         allDiscountCodes.remove(discountCode);
         new File(discountCodesPath + "\\" + discountCode.getID() + ".json").delete();
+        for (String buyerName : discountCode.getBuyers().keySet()) {
+            Buyer buyer = (Buyer) getAccountByUsername(buyerName);
+            if (buyer != null) {
+                buyer.getDiscountCodes().remove(discountCode.getCode());
+                saveAccount(buyer);
+            }
+        }
     }
 
     public void saveSellLog(SellLog sellLog) throws IOException {
@@ -320,15 +336,15 @@ public class Database {
             arrayList.add(new TripleString("brand", p1.getBrand(), ""));
             arrayList.add(new TripleString("seller", p1.getSellerUsername(), ""));
             for (String spec : p1.getSpecs().keySet())
-                arrayList.add(new TripleString(spec , p1.getSpecs().get(spec), ""));
+                arrayList.add(new TripleString(spec, p1.getSpecs().get(spec), ""));
         } else {
             arrayList.add(new TripleString("brand", p1.getBrand(), p2.getBrand()));
             arrayList.add(new TripleString("seller", p1.getSellerUsername(), p2.getSellerUsername()));
             for (String spec : p1.getSpecs().keySet())
-                arrayList.add(new TripleString(spec , p1.getSpecs().get(spec), p2.getSpecs().getOrDefault(spec, "")));
+                arrayList.add(new TripleString(spec, p1.getSpecs().get(spec), p2.getSpecs().getOrDefault(spec, "")));
             for (String spec : p2.getSpecs().keySet()) {
                 if (p1.getSpecs().containsKey(spec)) continue;
-                else arrayList.add(new TripleString(spec , "", p2.getSpecs().get(spec)));
+                else arrayList.add(new TripleString(spec, "", p2.getSpecs().get(spec)));
             }
         }
         return arrayList;
@@ -461,4 +477,31 @@ public class Database {
             return true;
         return canChangeParentCategory(getCategoryByName(category.getParentName()), desired);
     }
+
+    public Auction getCurrentAuction(Product product) {
+        try {
+            Auction auction = getAuctionByID(product.getAuctionID());
+            Date nowDate = new Date();
+            Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(auction.getStartDate());
+            Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(auction.getEndDate());
+            boolean afterStart = nowDate.compareTo(startDate) > 0;
+            boolean beforeEnd = nowDate.compareTo(endDate) < 0;
+            if (afterStart && beforeEnd) {
+                return auction;
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public HashMap<String, Integer> getRandomBuyers() {
+        HashMap<String, Integer> arrayList = new HashMap<>();
+        for (Account buyer : getAllAccounts()) {
+            if (buyer instanceof Buyer && Math.random() < 0.5) {
+                arrayList.put(buyer.getUsername(), 0);
+            }
+        }
+        return arrayList;
+    }
+
 }

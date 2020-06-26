@@ -3,6 +3,7 @@ package JavaProject.Model.ProductOrganization;
 import JavaProject.App;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Discount.Auction;
+import JavaProject.Model.Discount.DiscountCode;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.util.Duration;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 
 public class Cart {
     private HashMap<Product, Integer> products = new HashMap<>();
+    private DiscountCode code;
     private double price;
 
     public HashMap<Product, Integer> getProducts() {
@@ -49,5 +51,13 @@ public class Cart {
             }
         }
         return price;
+    }
+
+    public DiscountCode getCode() {
+        return code;
+    }
+
+    public void setCode(DiscountCode code) {
+        this.code = code;
     }
 }

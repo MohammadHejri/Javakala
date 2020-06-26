@@ -65,6 +65,7 @@ public class BuyerSaleHistoryController implements Initializable {
 
     private void selectLog() {
         BuyLog buyLog = logsTable.getSelectionModel().getSelectedItem();
+        productsTable.getItems().clear();
         for (ProductOnLog productOnLog : buyLog.getBoughtProducts())
             productsTable.getItems().add(productOnLog);
     }

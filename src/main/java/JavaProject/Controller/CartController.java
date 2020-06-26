@@ -25,15 +25,15 @@ public class CartController implements Initializable {
 
     @FXML
     HBox hBox;
-
     @FXML
     Label totalPrice;
-
     @FXML
     Button purchaseButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        if (App.getCart().getProducts().keySet().size() == 0)
+            purchaseButton.setDisable(true);
         if (App.getSignedInAccount() instanceof Buyer)
             purchaseButton.setDisable(false);
         else purchaseButton.setDisable(true);
@@ -53,7 +53,7 @@ public class CartController implements Initializable {
 
     @FXML
     private void openPurchaseSection(ActionEvent event) throws IOException {
-        App.setRoot("purchase");
+        App.setRoot("receiverInfo");
     }
 
     public static void updatePrice() {

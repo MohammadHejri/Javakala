@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" stylesheets="@discountCodeValidationCss.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.PurchasePageDiscountSectionController">
+   <children>
+      <ImageView fitHeight="600.0" fitWidth="1000.0" pickOnBounds="true">
+         <image>
+            <Image url="@../Images/receiverInfo.jpg" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="450.0" fitWidth="322.0" layoutX="177.0" layoutY="76.0" pickOnBounds="true">
+         <image>
+            <Image url="@../Images/Untitled5.jpg" />
+         </image>
+      </ImageView>
+      <VBox alignment="TOP_CENTER" fillWidth="false" layoutX="556.0" layoutY="175.0" prefHeight="229.0" prefWidth="283.0" spacing="30.0">
+         <children>
+            <Label alignment="CENTER" prefHeight="18.0" prefWidth="149.0" text="Discount Code" />
+            <TextField fx:id="codeField" promptText="Code" />
+            <Button mnemonicParsing="false" onAction="#goToPayment" prefHeight="37.0" prefWidth="148.0" text="Submit" />
+            <Button mnemonicParsing="false" onAction="#skipToPayment" prefHeight="37.0" prefWidth="100.0" text="Skip" />
+         </children>
+      </VBox>
+      <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="956.0" layoutY="14.0" onMouseClicked="#goToReceiverInfo" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/back.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

@@ -70,6 +70,9 @@ public class ProductInCartController implements Initializable {
         if (product.getAuctionID() != null) {
             auctionHandling(product);
         }
+        if (quantity >= product.getRemainingItems()) {
+            increaseButton.setVisible(false);
+        }
     }
 
     private void auctionHandling(Product product) {
