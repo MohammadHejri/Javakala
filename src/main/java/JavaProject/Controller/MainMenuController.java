@@ -61,8 +61,8 @@ public class MainMenuController implements Initializable {
     private void goToAccount(MouseEvent mouseEvent) throws IOException {
         Account account = App.getSignedInAccount();
         if (account == null) {
-            App.setRoot("signIn");
-            SignInController.prevPane = App.mainPage;
+            App.setRoot("registerPage");
+            RegisterPanelController.prevPane = App.mainPage;
         } else if (account instanceof Manager) {
             App.setRoot("managerProfile");
             ManagerProfileController.prevPane = App.mainPage;

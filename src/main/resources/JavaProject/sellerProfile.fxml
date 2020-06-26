@@ -15,7 +15,7 @@
             <Button mnemonicParsing="false" onAction="#openSellerSaleHistorySection" prefHeight="40.0" prefWidth="160.0" text="View Sale History" />
             <Button mnemonicParsing="false" onAction="#openCartSection" prefHeight="40.0" prefWidth="160.0" text="View cart" />
                 <Button mnemonicParsing="false" onAction="#signOut" prefHeight="40.0" prefWidth="160.0" text="Sign out" />
-                <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />
+                <Button mnemonicParsing="false" onAction="#changeToMainMenu" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />
             <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to previous page" />
             </children>
         </VBox>

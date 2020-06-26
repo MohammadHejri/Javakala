@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
-<?import com.jfoenix.controls.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.effect.*?>
 <?import javafx.scene.control.*?>
@@ -9,16 +9,16 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="g1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductsPageController">
+<AnchorPane id="g1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1000.0" stylesheets="@productsPage.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductsPageController">
    <children>
       <ImageView fitHeight="600.0" fitWidth="1000.0" pickOnBounds="true">
          <image>
             <Image url="@../Images/productsBG.jpg" />
          </image>
       </ImageView>
-      <ScrollPane layoutY="100.0" pannable="true" prefHeight="500.0" prefWidth="220.0">
+      <ScrollPane hbarPolicy="NEVER" layoutY="100.0" pannable="true" prefHeight="500.0" prefWidth="220.0" vbarPolicy="NEVER">
          <content>
-            <VBox fx:id="filterSection" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="200.0">
+            <VBox fx:id="filterSection" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="220.0">
                <children>
                   <Accordion fx:id="accordion">
                     <panes>
@@ -77,21 +77,42 @@
             </VBox>
          </content>
       </ScrollPane>
-      <Pagination fx:id="pagination" layoutX="220.0" layoutY="100.0" prefHeight="500.0" prefWidth="580.0" />
-      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="901.0" layoutY="115.0" onMouseClicked="#openCartSection" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../Images/cart.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="881.0" layoutY="242.0" onMouseClicked="#openProfile" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../Images/user.png" />
-         </image>
-      </ImageView>
-      <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="903.0" layoutY="360.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
-         <image>
-            <Image url="@../Images/back.png" />
-         </image>
-      </ImageView>
+      <Pagination fx:id="pagination" layoutX="220.0" prefHeight="600.0" prefWidth="580.0" />
+      <AnchorPane prefHeight="100.0" prefWidth="220.0" style="-fx-background-color: #e1e0d7;">
+         <children>
+            <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="20.0" layoutY="13.0" onMouseClicked="#openProfile" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/user.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="80.0" fitWidth="80.0" layoutX="106.0" layoutY="13.0" onMouseClicked="#openCartSection" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/cart.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+      <ScrollPane hbarPolicy="NEVER" layoutX="800.0" layoutY="100.0" prefHeight="500.0" prefWidth="200.0" vbarPolicy="NEVER">
+         <content>
+            <VBox fx:id="AD_vbox" alignment="TOP_CENTER" prefHeight="500.0" prefWidth="200.0" spacing="20.0">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding></VBox>
+         </content>
+      </ScrollPane>
+      <AnchorPane layoutX="800.0" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: #e1e0d7;">
+         <children>
+            <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="146.0" layoutY="30.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/back.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="80.0" fitWidth="100.0" layoutX="34.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/advertisement.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
    </children>
 </AnchorPane>

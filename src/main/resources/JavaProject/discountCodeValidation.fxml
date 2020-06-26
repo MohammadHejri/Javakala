@@ -19,11 +19,6 @@
             <Image url="@../Images/receiverInfo.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="450.0" fitWidth="322.0" layoutX="177.0" layoutY="76.0" pickOnBounds="true">
-         <image>
-            <Image url="@../Images/Untitled5.jpg" />
-         </image>
-      </ImageView>
       <VBox alignment="TOP_CENTER" fillWidth="false" layoutX="556.0" layoutY="175.0" prefHeight="229.0" prefWidth="283.0" spacing="30.0">
          <children>
             <Label alignment="CENTER" prefHeight="18.0" prefWidth="149.0" text="Discount Code" />

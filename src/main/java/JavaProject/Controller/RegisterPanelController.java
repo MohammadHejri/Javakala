@@ -8,14 +8,16 @@ import JavaProject.Model.Account.Seller;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
+import JavaProject.Model.Status.Status;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -23,14 +25,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class SignUpController implements Initializable {
-
-    public static String prevFXML;
+public class RegisterPanelController implements Initializable {
+    public static Parent prevPane;
+    private Animation animation = new Animation();
 
     @FXML
-    TextField usernameField;
+    AnchorPane mainPane;
     @FXML
-    TextField passwordField;
+    TextField signUpUsernameField;
+    @FXML
+    PasswordField signUpPasswordField;
     @FXML
     TextField firstNameField;
     @FXML
@@ -42,7 +46,7 @@ public class SignUpController implements Initializable {
     @FXML
     TextField companyNameField;
     @FXML
-    Label statusLabel;
+    Label signUpStatusLabel;
     @FXML
     RadioButton managerButton;
     @FXML
@@ -51,16 +55,30 @@ public class SignUpController implements Initializable {
     RadioButton buyerButton;
     @FXML
     ImageView imageView;
+    @FXML
+    Button loginButton;
+    @FXML
+    TextField signInUsernameField;
+    @FXML
+    PasswordField signInPasswordField;
+    @FXML
+    Label signInStatusLabel;
+    @FXML
+    Button backButton1;
+    @FXML
+    Button backButton2;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         File file = new File("src/main/resources/Images/account.png");
         imageView.setImage(new Image(file.toURI().toString()));
+        loginButton.setOnAction(e -> animation.playAnimation(mainPane));
         companyNameField.setDisable(true);
         if (!Database.getInstance().managerExists()) {
             managerButton.setSelected(true);
             sellerButton.setDisable(true);
             buyerButton.setDisable(true);
+            disableChange();
         } else if (App.getSignedInAccount() == null) {
             buyerButton.setSelected(true);
             managerButton.setDisable(true);
@@ -68,13 +86,14 @@ public class SignUpController implements Initializable {
             managerButton.setSelected(true);
             sellerButton.setDisable(true);
             buyerButton.setDisable(true);
+            disableChange();
         }
     }
 
     @FXML
     private void signUp(ActionEvent event) throws IOException {
-        String username = usernameField.getText();
-        String password = passwordField.getText();
+        String username = signUpUsernameField.getText();
+        String password = signUpPasswordField.getText();
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String emailAddress = emailAddressField.getText();
@@ -82,21 +101,21 @@ public class SignUpController implements Initializable {
         String companyName = companyNameField.getText();
         Account account = Database.getInstance().getAccountByUsername(username);
         if (!username.matches("\\w+")) {
-            statusLabel.setText("Use word letters for username");
+            signUpStatusLabel.setText("Use word letters for username");
         } else if (!password.matches("\\w+")) {
-            statusLabel.setText("Use word letters for password");
+            signUpStatusLabel.setText("Use word letters for password");
         } else if (!firstName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for first name");
+            signUpStatusLabel.setText("Use word letters for first name");
         } else if (!lastName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for last name");
+            signUpStatusLabel.setText("Use word letters for last name");
         } else if (!emailAddress.matches("(\\S+)@(\\S+)\\.(\\S+)")) {
-            statusLabel.setText("Email format: example@gmail.com");
+            signUpStatusLabel.setText("Email format: example@gmail.com");
         } else if (!phoneNumber.matches("\\d+")) {
-            statusLabel.setText("Use digits for phone number");
+            signUpStatusLabel.setText("Use digits for phone number");
         } else if (!companyNameField.isDisabled() && !companyName.matches("\\w+")) {
-            statusLabel.setText("Use word letters for company name");
+            signUpStatusLabel.setText("Use word letters for company name");
         } else if (account != null) {
-            statusLabel.setText("Username exists");
+            signUpStatusLabel.setText("Username exists");
         } else {
             String imagePath = imageView.getImage().getUrl();
             if (managerButton.isSelected())
@@ -115,6 +134,38 @@ public class SignUpController implements Initializable {
     }
 
     @FXML
+    private void signIn(ActionEvent event) throws IOException {
+        String username = signInUsernameField.getText();
+        String password = signInPasswordField.getText();
+        Account account = Database.getInstance().getAccountByUsername(username);
+        if (!username.matches("\\w+")) {
+            signInStatusLabel.setText("Use word letters for username");
+        } else if (!password.matches("\\w+")) {
+            signInStatusLabel.setText("Use word letters for password");
+        } else if (account == null || !account.getPassword().equals(password)) {
+            signInStatusLabel.setText("Wrong username or password");
+        } else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.PENDING)) {
+            signInStatusLabel.setText("Account to be Confirmed");
+        }  else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.DECLINED)) {
+            signInStatusLabel.setText("Account not allowed");
+        } else {
+            App.setSignedInAccount(account);
+            if (account instanceof Manager) {
+                App.setRoot("managerProfile");
+                ManagerProfileController.prevPane = RegisterPanelController.prevPane;
+            }
+            if (account instanceof Seller) {
+                App.setRoot("sellerProfile");
+                SellerProfileController.prevPane = RegisterPanelController.prevPane;
+            }
+            if (account instanceof Buyer) {
+                App.setRoot("buyerProfile");
+                BuyerProfileController.prevPane = RegisterPanelController.prevPane;
+            }
+        }
+    }
+
+    @FXML
     private void updateAccountProperties(ActionEvent event) {
         if (managerButton.isSelected())
             companyNameField.setDisable(true);
@@ -125,7 +176,7 @@ public class SignUpController implements Initializable {
     }
 
     @FXML
-    private void chooseImage(ActionEvent event) {
+    private void chooseImage(MouseEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fileChooser.showOpenDialog(null);
@@ -141,7 +192,11 @@ public class SignUpController implements Initializable {
 
     @FXML
     private void changeToPrevScene(ActionEvent event) throws IOException {
-        App.setRoot(prevFXML);
+        App.setRoot(prevPane);
     }
 
+    @FXML
+    private void disableChange() {
+        loginButton.setDisable(true);
+    }
 }

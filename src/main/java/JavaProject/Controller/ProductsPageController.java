@@ -1,6 +1,9 @@
 package JavaProject.Controller;
 
 import JavaProject.App;
+import JavaProject.Model.Account.Buyer;
+import JavaProject.Model.Account.Manager;
+import JavaProject.Model.Account.Seller;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Filter.Filter;
@@ -25,7 +28,6 @@ import java.util.ResourceBundle;
 
 public class ProductsPageController implements Initializable {
 
-    public static String prevFXML;
     public static Parent prevPane;
     private static Filter filter = new Filter();
     private VBox sellerFilterVBox = new VBox();
@@ -61,13 +63,45 @@ public class ProductsPageController implements Initializable {
     RadioButton newestButton;
     @FXML
     Pagination pagination;
+    @FXML
+    VBox AD_vbox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initFiltersSection();
+        try {
+            initAdvertisment();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         pagination.setMaxPageIndicatorCount(3);
         pagination.setPageFactory(this::createPage);
 
+    }
+
+    private void initAdvertisment() throws IOException {
+        ArrayList<Product> products = getAcceptedProducts();
+        for (Product product : products) {
+            if (Math.random() < 0.5) {
+                FXMLLoader loader = new FXMLLoader(App.class.getResource("productView.fxml"));
+                AnchorPane anchorPane = loader.load();
+                anchorPane.setOnMouseClicked(e -> {
+                    try {
+                        FXMLLoader productLoader = new FXMLLoader(App.class.getResource("productPage.fxml"));
+                        ScrollPane productPane = productLoader.load();
+                        ProductPageController controller = productLoader.getController();
+                        ProductPageController.prevPane = (AnchorPane) App.getProductsPage();
+                        controller.initPage(product);
+                        App.setRoot(productPane);
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                });
+                AD_vbox.getChildren().add(anchorPane);
+                ProductViewController controller = loader.getController();
+                controller.initProduct(product);
+            }
+        }
     }
 
     private ScrollPane createPage(int pageIndex) {
@@ -78,8 +112,8 @@ public class ProductsPageController implements Initializable {
         gridPane.setPadding(new Insets(20,20,20,20));
         try {
             ArrayList<Product> products = getAcceptedProducts();
-            pagination.setPageCount((int) Math.ceil((double) products.size() / 3));
-            for (int i = pageIndex * 3; i < 3 + pageIndex * 3; i++) {
+            pagination.setPageCount((int) Math.ceil((double) products.size() / 9));
+            for (int i = pageIndex * 9; i < 9 + pageIndex * 9; i++) {
                 if (i >= products.size()) break;
                 Product product = products.get(i);
                 FXMLLoader loader = new FXMLLoader(App.class.getResource("productView.fxml"));
@@ -96,14 +130,13 @@ public class ProductsPageController implements Initializable {
                         ioException.printStackTrace();
                     }
                 });
-                gridPane.add(anchorPane, i % 3, 0);
+                gridPane.add(anchorPane, i % 3, i / 3);
                 ProductViewController controller = loader.getController();
                 controller.initProduct(product);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return new ScrollPane(gridPane);
     }
 
@@ -200,6 +233,11 @@ public class ProductsPageController implements Initializable {
         filter = new Filter();
         filter.setCurrentCategory(current);
         App.initProductsPage();
+        try {
+            initAdvertisment();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         App.setRoot(App.getProductsPage());
     }
 
@@ -270,14 +308,31 @@ public class ProductsPageController implements Initializable {
     @FXML
     private void openCartSection(MouseEvent event) throws IOException {
         App.setRoot("cart");
-        CartController.prevFXML = "productsPage";
+        CartController.prevPane = App.productsPage;
     }
 
     @FXML
-    private void changeToPrevPane(MouseEvent event) throws IOException {
-        App.setRoot(prevPane);
+    private void changeToPrevPane(MouseEvent mouseEvent) throws IOException {
+        App.setRoot(App.mainPage);
     }
 
-    public void openProfile(MouseEvent mouseEvent) {
+    @FXML
+    private void openProfile(MouseEvent mouseEvent) throws IOException {
+        if (App.getSignedInAccount() == null) {
+            App.setRoot("registerPage");
+            RegisterPanelController.prevPane = App.productsPage;
+        }
+        if (App.getSignedInAccount() instanceof Manager) {
+            App.setRoot("managerProfile");
+            ManagerProfileController.prevPane = App.productsPage;
+        }
+        if (App.getSignedInAccount() instanceof Seller) {
+            App.setRoot("sellerProfile");
+            SellerProfileController.prevPane = App.productsPage;
+        }
+        if (App.getSignedInAccount() instanceof Buyer) {
+            App.setRoot("buyerProfile");
+            BuyerProfileController.prevPane = App.productsPage;
+        }
     }
 }

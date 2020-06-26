@@ -26,17 +26,6 @@ public class SellerProfileController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        ArrayList<ProductOnLog> arr = new ArrayList<>();
-//        for (int i = 1; i <= 10; i++) {
-//            arr.add(new ProductOnLog(String.valueOf(i), "", "", 5, 1000, 12));
-//        }
-//        SellLog sellLog = new SellLog("mahsa", 10000, 120, arr);
-//        ((Seller) App.getSignedInAccount()).getSellLogsID().add(sellLog.getID());
-//        try {
-//            Database.getInstance().saveSellLog(sellLog);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         try {
             borderPane.setCenter(App.loadFXML("accountInfo"));
         } catch (IOException e) {
@@ -72,14 +61,13 @@ public class SellerProfileController implements Initializable{
     @FXML
     private void openCartSection(ActionEvent event) throws IOException {
         App.setRoot("cart");
-        CartController.prevFXML = "sellerProfile";
+        CartController.prevPane = App.loadFXML("sellerProflie");
     }
 
     @FXML
     private void signOut(ActionEvent event) throws IOException {
         App.setSignedInAccount(null);
-        // TODO: App.setRoot(main);
-        App.setRoot("signIn");
+        App.setRoot(App.mainPage);
     }
 
     @FXML
@@ -87,5 +75,8 @@ public class SellerProfileController implements Initializable{
         App.setRoot(prevPane);
     }
 
-
+    @FXML
+    private void changeToMainMenu() {
+        App.setRoot(App.mainPage);
+    }
 }

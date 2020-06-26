@@ -25,17 +25,6 @@ public class BuyerProfileController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-//        ArrayList<ProductOnLog> arr = new ArrayList<>();
-//        for (int i = 1; i <= 10; i++) {
-//            arr.add(new ProductOnLog(String.valueOf(i), "", "", "kaka", 5, 1000, 12));
-//        }
-//        BuyLog buyLog = new BuyLog(10000, 120, arr);
-//        ((Buyer) App.getSignedInAccount()).getBuyLogsID().add(buyLog.getID());
-//        try {
-//            Database.getInstance().saveBuyLog(buyLog);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
         try {
             borderPane.setCenter(App.loadFXML("accountInfo"));
         } catch (IOException e) {
@@ -61,19 +50,23 @@ public class BuyerProfileController implements Initializable {
     @FXML
     private void openCartSection(ActionEvent event) throws IOException {
         App.setRoot("cart");
-        CartController.prevFXML = "buyerProfile";
+        CartController.prevPane = App.loadFXML("buyerProfile");
     }
 
     @FXML
     private void signOut(ActionEvent event) throws IOException {
         App.setSignedInAccount(null);
-        // TODO: App.setRoot(main);
-        App.setRoot("signIn");
+        App.setRoot(App.mainPage);
     }
 
     @FXML
     private void changeToPrevPane(ActionEvent event) throws IOException {
         App.setRoot(prevPane);
+    }
+
+    @FXML
+    private void changeToMainMenu() {
+        App.setRoot(App.mainPage);
     }
 
 }

@@ -1,4 +1,4 @@
-package JavaProject.Model;
+package JavaProject.Controller;
 
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -12,7 +12,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 public class Animation {
-    public void playAnimation(AnchorPane anchorPane) {
+    void playAnimation(AnchorPane anchorPane) {
         AnchorPane anchorPane1 = (AnchorPane) anchorPane.getChildren().get(1);
         AnchorPane anchorPane2 = (AnchorPane) anchorPane1.getChildren().get(1);
         StackPane stackPane = (StackPane) anchorPane1.getChildren().get(0);
@@ -27,9 +27,9 @@ public class Animation {
         transition.setDuration(Duration.seconds(1));
         transition2.setDuration(Duration.seconds(0.5));
         transition3.setDuration(Duration.seconds(0.5));
-        transition.setToX(335);
-        transition2.setToX(-140);
-        transition3.setToX(-280);
+        transition.setToX(480);
+        transition2.setToX(-205);
+        transition3.setToX(-410);
         transition.setNode(anchorPane2);
         transition2.setNode(stackPane);
         transition3.setNode(stackPane);
@@ -94,7 +94,7 @@ public class Animation {
         transition2.setDuration(Duration.seconds(0.5));
         transition3.setDuration(Duration.seconds(0.5));
         transition.setToX(0);
-        transition2.setToX(-140);
+        transition2.setToX(-205);
         transition3.setToX(0);
         transition.setNode(anchorPane2);
         transition2.setNode(stackPane);

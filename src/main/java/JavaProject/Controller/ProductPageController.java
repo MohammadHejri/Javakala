@@ -20,6 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import org.w3c.dom.events.MouseEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -164,7 +165,6 @@ public class ProductPageController implements Initializable {
             zoomView.setImage(new Image(product.getImagePath()));
             Rectangle2D viewportRect = new Rectangle2D(x, y, 20, 20);
             zoomView.setViewport(viewportRect);
-            System.out.println(x);
         });
         productImage.setOnMouseExited(e -> {
             mainPane.getChildren().remove(zoomView);
@@ -297,9 +297,12 @@ public class ProductPageController implements Initializable {
         App.getCart().getProducts().put(product, 1);
     }
 
-    public void changeToPrevScene(ActionEvent event) throws IOException {
+    public void changeToPrevScene(javafx.scene.input.MouseEvent mouseEvent) {
         App.setRoot(prevPane);
     }
 
-
+    public void goToCart(javafx.scene.input.MouseEvent mouseEvent) throws IOException {
+        App.setRoot("cart");
+        CartController.prevPane = App.productsPage;
+    }
 }

@@ -19,7 +19,6 @@ public class PurchasePageCardPaymentController {
     public TextField passwordField;
     public static double amount;
 
-    //TODO: REGEX: card number 16 bit | cvv2 3 bit | expire date
     public void pay(ActionEvent event) throws IOException {
         String cardNumber = cardNumberField.getText().trim();
         String cvv2 = cvv2Field.getText().trim();
@@ -33,12 +32,12 @@ public class PurchasePageCardPaymentController {
             new Alert(Alert.AlertType.ERROR, "Enter expire date").showAndWait();
         } else if (password.isBlank()) {
             new Alert(Alert.AlertType.ERROR, "Enter dynamic password").showAndWait();
-        } else if (!cardNumber.matches("\\d+")) {
+        } else if (!cardNumber.matches("\\d{16}")) {
             new Alert(Alert.AlertType.ERROR, "Use 16 digits for card number").showAndWait();
-        } else if (!cvv2.matches("\\d+")) {
+        } else if (!cvv2.matches("\\d{3}")) {
             new Alert(Alert.AlertType.ERROR, "Use 3 digits for card number").showAndWait();
-        } else if (!expireDate.matches("\\d+")) {
-            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for expire date").showAndWait();
+        } else if (!expireDate.matches("\\d{2}/\\d{2}")) {
+            new Alert(Alert.AlertType.ERROR, "Use format yy/MM for expire date").showAndWait();
         } else if (!password.matches("\\d+")) {
             new Alert(Alert.AlertType.ERROR, "Use digits for password").showAndWait();
         } else {

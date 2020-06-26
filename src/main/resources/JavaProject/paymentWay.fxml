@@ -19,11 +19,6 @@
                 <Image url="@../Images/receiverInfo.jpg" />
             </image>
         </ImageView>
-        <ImageView fitHeight="450.0" fitWidth="322.0" layoutX="177.0" layoutY="76.0" pickOnBounds="true">
-            <image>
-                <Image url="@../Images/Untitled5.jpg" />
-            </image>
-        </ImageView>
         <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="956.0" layoutY="14.0" onMouseClicked="#goToDiscountSection" pickOnBounds="true" preserveRatio="true">
             <image>
                 <Image url="@../Images/back.png" />

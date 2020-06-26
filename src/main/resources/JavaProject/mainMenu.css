@@ -1,5 +1,11 @@
+Label {
+    -fx-font-family: "Times New Roman";
+}
+
 Label:hover {
-    -fx-font-weight: bold;
+    -fx-font-scale: 1.1;
     -fx-cursor: hand;
 }
+
+
 

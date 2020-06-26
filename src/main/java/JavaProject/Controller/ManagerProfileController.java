@@ -59,19 +59,23 @@ public class ManagerProfileController implements Initializable{
     @FXML
     private void openCartSection(ActionEvent event) throws IOException {
         App.setRoot("cart");
-        CartController.prevFXML = "managerProfile";
+        CartController.prevPane = App.loadFXML("managerProfile");
     }
 
     @FXML
     private void signOut(ActionEvent event) throws IOException {
         App.setSignedInAccount(null);
-        // TODO: App.setRoot(main);
-        App.setRoot("signIn");
+        App.setRoot(App.mainPage);
     }
 
     @FXML
     private void changeToPrevPane(ActionEvent event) throws IOException {
         App.setRoot(prevPane);
+    }
+
+    @FXML
+    private void changeToMainMenu() {
+        App.setRoot(App.mainPage);
     }
 
 }

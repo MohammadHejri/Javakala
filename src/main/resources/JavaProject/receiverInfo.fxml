@@ -19,12 +19,6 @@
             <Image url="@../Images/receiverInfo2.jpg" />
          </image>
       </ImageView>
-      <ImageView fitHeight="365.0" fitWidth="408.0" layoutX="100.0" layoutY="111.0" pickOnBounds="true">
-         <image>
-            <Image url="@../Images/blue.jpg" />
-         </image>
-      </ImageView>
-      <AnchorPane layoutX="92.0" layoutY="229.0" prefHeight="334.0" prefWidth="293.0" />
       <VBox alignment="CENTER" layoutX="601.0" layoutY="146.0" prefHeight="270.0" prefWidth="214.0" spacing="15.0">
          <children>
             <Label alignment="CENTER" prefHeight="18.0" prefWidth="222.0" text="Receiver Info" />

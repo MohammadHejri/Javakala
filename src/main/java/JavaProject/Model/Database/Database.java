@@ -82,8 +82,10 @@ public class Database {
             allSellLogs.add(new JsonFileReader().read(file, SellLog.class));
         for (File file : new File(discountCodesPath).listFiles())
             allDiscountCodes.add(new JsonFileReader().read(file, DiscountCode.class));
-        if (root == null)
-            new JsonFileWriter().write(rootPath + "\\root.json", new Category("root", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+        if (root == null) {
+            root = new Category("root", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            new JsonFileWriter().write(rootPath + "\\root.json", root);
+        }
     }
 
     public boolean managerExists() {
@@ -112,12 +114,14 @@ public class Database {
             accountFile = new File(managersPath + "\\" + account.getUsername() + ".json");
         if (account instanceof Seller) {
             accountFile = new File(sellersPath + "\\" + account.getUsername() + ".json");
-//            for (String productID : ((Seller) account).getProductsID())
-//                deleteProduct(getProductByID(productID));
-//            for (String auctionID : ((Seller) account).getAuctionsID())
-//                deleteAuction(getAuctionByID(auctionID));
-//            for (String requestID : ((Seller) account).getRequestsID())
-//                deleteRequest(getRequestByID(requestID));
+            for (String productID : ((Seller) account).getProductsID()) {
+                try {
+                    deleteProduct(getProductByID(productID));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
         if (account instanceof Buyer)
             accountFile = new File(buyersPath + "\\" + account.getUsername() + ".json");

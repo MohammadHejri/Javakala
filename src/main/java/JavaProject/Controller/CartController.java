@@ -19,7 +19,6 @@ import java.util.ResourceBundle;
 
 public class CartController implements Initializable {
 
-    public static String prevFXML;
     public static Parent prevPane;
     public static Label price;
 

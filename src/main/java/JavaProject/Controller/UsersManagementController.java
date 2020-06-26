@@ -65,8 +65,8 @@ public class UsersManagementController implements Initializable {
 
     @FXML
     private void createManager(ActionEvent event) throws IOException {
-        App.setRoot("signUp");
-        SignUpController.prevFXML = "managerProfile";
+        App.setRoot("registerPage");
+        RegisterPanelController.prevPane = App.loadFXML("managerProfile");
     }
 
 }

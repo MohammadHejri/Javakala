@@ -2,7 +2,7 @@ module SharifAP {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.google.gson;
-    requires jfoenix;
+    requires javafx.media;
 
     opens JavaProject to javafx.fxml;
     opens JavaProject.Controller to javafx.fxml, javafx.base;

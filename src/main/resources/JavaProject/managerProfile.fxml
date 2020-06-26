@@ -44,7 +44,7 @@
                <font>
                   <Font size="16.0" />
                </font></Button>
-            <Button minHeight="40.0" mnemonicParsing="false" onAction="#changeToPrevPane" prefWidth="160.0" text="Back to main menu">
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#changeToMainMenu" prefWidth="160.0" text="Back to main menu">
                <font>
                   <Font size="16.0" />
                </font></Button>
