@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
 
 public class SellerAuctionsManagementController implements Initializable {
 
@@ -126,55 +127,24 @@ public class SellerAuctionsManagementController implements Initializable {
 
     @FXML
     private void requestAddOrEditAuction(ActionEvent event) throws IOException {
+        String ID = selectedAuction == null ? null : selectedAuction.getID();
         String startDate = startDateField.getText().trim();
         String endDate = endDateField.getText().trim();
         String percentStr = percentField.getText().trim();
-        String dateTimeRegex = "([12]\\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]) ([0-1]?[0-9]|2[0-3]):[0-5][0-9]";
-        if (startDate.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter start date").showAndWait();
-        } else if (endDate.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter end date").showAndWait();
-        } else if (percentStr.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter discount percent").showAndWait();
-        } else if (!startDate.matches(dateTimeRegex)) {
-            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for start date").showAndWait();
-        } else if (!endDate.matches(dateTimeRegex)) {
-            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for end date").showAndWait();
-        } else if (startDate.compareTo(endDate) >= 0) {
-            new Alert(Alert.AlertType.ERROR, "Start date should be before end date").showAndWait();
-        } else if (!percentStr.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
+        String sellerUsername = App.getSignedInAccount().getUsername();
+        ArrayList<String> auctionProductsName = new ArrayList<>(auctionProductsList.getItems());
+
+        String response = App.getResponseFromServer("requestAddOrEditAuction", ID, startDate, endDate, percentStr, sellerUsername, App.objectToString(auctionProductsName));
+        if (response.startsWith("Success")) {
+            new Alert(Alert.AlertType.INFORMATION, "Adding | Editing Auction requested").showAndWait();
         } else {
-            double discountPercent = Double.parseDouble(percentStr);
-            if (discountPercent > 100 || discountPercent <= 0) {
-                new Alert(Alert.AlertType.ERROR, "Percent should be in range (0-100]").showAndWait();
-            } else {
-                Seller seller = (Seller) App.getSignedInAccount();
-                ArrayList<String> productsID = new ArrayList<>();
-                for (String productName : auctionProductsList.getItems())
-                    productsID.add(Database.getInstance().getProductByName(productName).getID());
-                Auction auction = new Auction(seller.getUsername(), startDate, endDate, discountPercent, productsID);
-                Request request = null;
-                if (selectedAuction == null) {
-                    request = new Request(Subject.ADD_AUCTION, auction.toString());
-                    new Alert(Alert.AlertType.INFORMATION, "Adding auction requested").showAndWait();
-                } else {
-                    auction.setID(selectedAuction.getID());
-                    request = new Request(Subject.EDIT_AUCTION, "Edited " + auction.toString() + "\n" + "Current " + selectedAuction.toString());
-                    new Alert(Alert.AlertType.INFORMATION, "Editing auction requested").showAndWait();
-                }
-                request.setAuction(auction);
-                Database.getInstance().saveRequest(request);
-            }
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }
     }
 
     @FXML
     private void requestDeleteAuction(ActionEvent event) throws IOException {
-        Auction auction = Database.getInstance().getAuctionByID(auctionsList.getSelectionModel().getSelectedItem());
-        Request request = new Request(Subject.DELETE_AUCTION, auction.toString());
-        request.setAuction(auction);
-        Database.getInstance().saveRequest(request);
+        App.getResponseFromServer("requestDeleteAuction", auctionsList.getSelectionModel().getSelectedItem());
         new Alert(Alert.AlertType.INFORMATION, "Deleting auction requested").showAndWait();
     }
 }

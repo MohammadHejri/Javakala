@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
+
 public class BuyerSaleHistoryController implements Initializable {
     @FXML
     TableView<BuyLog> logsTable;
@@ -87,38 +89,14 @@ public class BuyerSaleHistoryController implements Initializable {
     private void rate() throws IOException {
         String productName = productNameField.getText().trim();
         String productMark = productMarkField.getText().trim();
-        if (productName.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter product name").showAndWait();
-        } else if (productMark.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter product mark").showAndWait();
-        } else if (Database.getInstance().getProductByName(productName) == null) {
-            new Alert(Alert.AlertType.ERROR, "Product not found").showAndWait();
-        } else if (!productMark.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for mark").showAndWait();
-        } else {
-            Product product = Database.getInstance().getProductByName(productName);
-            double mark = Double.parseDouble(productMark);
-            if (mark > 5 || mark < 0) {
-                new Alert(Alert.AlertType.ERROR, "Mark should be in range [0-5]").showAndWait();
-                return;
-            }
-            if (!product.getBuyers().contains(App.getSignedInAccount().getUsername())) {
-                new Alert(Alert.AlertType.ERROR, "You have not purchased this product to rate it").showAndWait();
-                return;
-            }
-            for (Rate rate : product.getRates()) {
-                if (rate.getBuyerName().equals(App.getSignedInAccount().getUsername())) {
-                    new Alert(Alert.AlertType.ERROR, "You have rated this product before").showAndWait();
-                    return;
-                }
-            }
-            Rate rate = new Rate(App.getSignedInAccount().getUsername(), mark);
-            product.getRates().add(rate);
-            product.updateMark();
+        String username = App.getSignedInAccount().getUsername();
+        String response = App.getResponseFromServer("rateProduct", productName, productMark, username);
+        if (response.startsWith("Success")) {
+            new Alert(Alert.AlertType.INFORMATION, "Thanks for rating this product").showAndWait();
             productMarkField.setText("");
             productNameField.setText("");
-            Database.getInstance().updateCategories();
-            new Alert(Alert.AlertType.INFORMATION, "Thanks for rating this product").showAndWait();
+        } else {
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }
     }
 }

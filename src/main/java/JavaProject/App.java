@@ -69,6 +69,8 @@ public class App extends Application {
     }
 
     public static Account getSignedInAccount() {
+        if (signedInAccount != null)
+            signedInAccount = Database.getInstance().getAccountByUsername(signedInAccount.getUsername());
         return signedInAccount;
     }
 

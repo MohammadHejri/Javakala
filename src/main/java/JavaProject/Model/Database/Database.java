@@ -12,24 +12,48 @@ import JavaProject.Model.Log.SellLog;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Product;
 import JavaProject.Model.Request.Request;
-import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
 import JavaProject.Model.TripleString;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
+
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class Database {
+
+    public Product getProductByName(String name) {
+        String response = App.getResponseFromServer("getProductByName", name);
+        if (response.startsWith("Success")) {
+            String[] responseParts = response.split("###");
+            return App.stringToObject(responseParts[1], Product.class);
+        } else {
+            return null;
+        }
+    }
+
+    public Product getProductByID(String ID) {
+        String response = App.getResponseFromServer("getProductByID", ID);
+        if (response.startsWith("Success")) {
+            String[] responseParts = response.split("###");
+            return App.stringToObject(responseParts[1], Product.class);
+        } else {
+            return null;
+        }
+    }
+
+    public Auction getAuctionByID(String ID) {
+        String response = App.getResponseFromServer("getAuctionByID", ID);
+        if (response.startsWith("Success")) {
+            String[] responseParts = response.split("###");
+            return App.stringToObject(responseParts[1], Auction.class);
+        } else {
+            return null;
+        }
+    }
 
     public ArrayList<Product> getAllProducts() {
         Category root = Database.getInstance().getCategoryByName("root");
@@ -293,7 +317,7 @@ public class Database {
     }
 
     public Account getAccountByUsername(String username) {
-        for (Account account : allAccounts)
+        for (Account account : getAllAccounts())
             if (account.getUsername().equals(username))
                 return account;
         return null;
@@ -303,13 +327,6 @@ public class Database {
         for (Request request : allRequests)
             if (request.getID().equals(ID))
                 return request;
-        return null;
-    }
-
-    public Auction getAuctionByID(String ID) {
-        for (Auction auction : allAuctions)
-            if (auction.getID().equals(ID))
-                return auction;
         return null;
     }
 
@@ -327,32 +344,8 @@ public class Database {
         return null;
     }
 
-    public Product getProductByID(String ID) {
-        for (Product product : getAllProducts())
-            if (product.getID().equals(ID))
-                return product;
-        return null;
-    }
-
-    public Product getProductByName(String name) {
-        return getRecursiveProduct(name, root);
-    }
-
-    private Product getRecursiveProduct(String name, Category current) {
-        for (Product product : current.getProducts())
-            if (product.getName().equals(name))
-                return product;
-        for (Category category : current.getSubCategories()) {
-            Product product = getRecursiveProduct(name, category);
-            if (product != null)
-                return product;
-        }
-        return null;
-
-    }
-
     public DiscountCode getDiscountCodeByCode(String code) {
-        for (DiscountCode discountCode : allDiscountCodes)
+        for (DiscountCode discountCode : getAllDiscountCodes())
             if (discountCode.getCode().equals(code))
                 return discountCode;
         return null;

@@ -55,6 +55,7 @@ public class BuyerProfileController implements Initializable {
 
     @FXML
     private void signOut(ActionEvent event) throws IOException {
+        String response = App.getResponseFromServer("signOut", App.getSignedInAccount().getUsername());
         App.setSignedInAccount(null);
         App.setRoot(App.mainPage);
     }

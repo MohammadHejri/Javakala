@@ -1,8 +1,8 @@
 package JavaProject.Model.Discount;
 
-import JavaProject.Model.Database.Database;
 import JavaProject.Model.Database.IDGenerator;
 import JavaProject.Model.Status.Status;
+import JavaProject.Server.Database;
 
 import java.util.ArrayList;
 

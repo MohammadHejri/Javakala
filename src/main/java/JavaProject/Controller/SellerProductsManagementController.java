@@ -3,6 +3,7 @@ package JavaProject.Controller;
 import JavaProject.App;
 import JavaProject.Model.Account.Seller;
 import JavaProject.Model.Database.Database;
+import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.DualString;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Product;
@@ -24,6 +25,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
+
+// Client-Server : Done
 
 public class SellerProductsManagementController implements Initializable {
 
@@ -154,6 +157,7 @@ public class SellerProductsManagementController implements Initializable {
     }
 
     private boolean isSpecsTableComplete() {
+        System.out.println(specs.keySet());
         for (String key : specs.keySet())
             if(specs.get(key).isBlank())
                 return false;
@@ -215,38 +219,17 @@ public class SellerProductsManagementController implements Initializable {
         String remainingStr = remainingField.getText().trim();
         String description = descriptionArea.getText().trim();
         String imagePath = imageView.getImage().getUrl();
-        Product product = Database.getInstance().getProductByName(name);
-        if (name.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter name").showAndWait();
-        } else if (brand.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter brand").showAndWait();
-        } else if (priceStr.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter price").showAndWait();
-        } else if (remainingStr.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter quantity").showAndWait();
-        } else if (description.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter description").showAndWait();
-        } else if (!isSpecsTableComplete()) {
+        String sellerUsername = App.getSignedInAccount().getUsername();
+
+        if (!isSpecsTableComplete()) {
             new Alert(Alert.AlertType.ERROR, "Complete specs table").showAndWait();
-        } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
-        } else if (!remainingStr.matches("(\\d+)")) {
-            new Alert(Alert.AlertType.ERROR, "Use INTEGER for quantity").showAndWait();
-        } else if (product != null) {
-            new Alert(Alert.AlertType.ERROR, "Product name not available").showAndWait();
         } else {
-            double price = Double.parseDouble(priceStr);
-            int remainingItems = Integer.parseInt(remainingStr);
-            Seller seller = (Seller) App.getSignedInAccount();
-            product = new Product(name, brand, price, seller.getUsername(), remainingItems, selectedCategory.getName(), description, new HashMap<>(specs), imagePath);
-            selectedCategory.getProducts().add(product);
-            seller.getProductsID().add(product.getID());
-            Database.getInstance().updateCategories();
-            Database.getInstance().saveAccount(seller);
-            Request request = new Request(Subject.ADD_PRODUCT, product.toString());
-            request.setProduct(product);
-            Database.getInstance().saveRequest(request);
-            new Alert(Alert.AlertType.INFORMATION, "Adding product requested").showAndWait();
+            String response = App.getResponseFromServer("requestAddProduct", name, brand, priceStr, remainingStr, description, imagePath, sellerUsername, selectedCategory.getName(), App.objectToString(specs));
+            if (response.startsWith("Success")) {
+                new Alert(Alert.AlertType.INFORMATION, "Adding product requested").showAndWait();
+            } else {
+                new Alert(Alert.AlertType.ERROR, response).showAndWait();
+            }
         }
     }
 
@@ -258,51 +241,23 @@ public class SellerProductsManagementController implements Initializable {
         String remainingStr = remainingField.getText().trim();
         String description = descriptionArea.getText().trim();
         String imagePath = imageView.getImage().getUrl();
-        if (name.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter name").showAndWait();
-        } else if (brand.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter brand").showAndWait();
-        } else if (priceStr.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter price").showAndWait();
-        } else if (remainingStr.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter quantity").showAndWait();
-        } else if (description.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter description").showAndWait();
-        } else if (!isSpecsTableComplete()) {
+        String sellerUsername = App.getSignedInAccount().getUsername();
+
+        if (!isSpecsTableComplete()) {
             new Alert(Alert.AlertType.ERROR, "Complete specs table").showAndWait();
-        } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Use DOUBLE for price").showAndWait();
-        } else if (!remainingStr.matches("(\\d+)")) {
-            new Alert(Alert.AlertType.ERROR, "Use INTEGER for quantity").showAndWait();
-        } else if (!selectedProduct.getName().equals(name) && Database.getInstance().getProductByName(name) != null) {
-            new Alert(Alert.AlertType.ERROR, "Product name not available").showAndWait();
         } else {
-            double price = Double.parseDouble(priceStr);
-            int remainingItems = Integer.parseInt(remainingStr);
-            Seller seller = (Seller) App.getSignedInAccount();
-            Product product = new Product(name, brand, price, seller.getUsername(), remainingItems, selectedCategory.getName(), description, new HashMap<>(specs), imagePath);
-            product.setID(selectedProduct.getID());
-            product.setViews(selectedProduct.getViews());
-            product.setDate(selectedProduct.getDate());
-            product.setAverageMark(selectedProduct.getAverageMark());
-            product.setStatus(selectedProduct.getStatus());
-            product.setRates(selectedProduct.getRates());
-            product.setComments(selectedProduct.getComments());
-            if (selectedProduct.getAuctionID() != null)
-                product.setAuctionID(selectedProduct.getAuctionID());
-            Request request = new Request(Subject.EDIT_PRODUCT, "Edited " + product.toString() +  "\n" + "Current" + selectedProduct.toString());
-            request.setProduct(product);
-            Database.getInstance().saveRequest(request);
-            new Alert(Alert.AlertType.INFORMATION, "Editing product requested").showAndWait();
+            String response = App.getResponseFromServer("requestEditProduct", name, brand, priceStr, remainingStr, description, imagePath, sellerUsername, selectedCategory.getName(), App.objectToString(specs), selectedProduct.getName());
+            if (response.startsWith("Success")) {
+                new Alert(Alert.AlertType.INFORMATION, "Editing product requested").showAndWait();
+            } else {
+                new Alert(Alert.AlertType.ERROR, response).showAndWait();
+            }
         }
     }
 
     @FXML
     public void requestDeleteProduct(ActionEvent event) throws IOException {
-        Product product = Database.getInstance().getProductByName(productsList.getSelectionModel().getSelectedItem());
-        Request request = new Request(Subject.DELETE_PRODUCT, product.toString());
-        request.setProduct(product);
-        Database.getInstance().saveRequest(request);
+        App.getResponseFromServer("requestDeleteProduct", productsList.getSelectionModel().getSelectedItem());
         new Alert(Alert.AlertType.INFORMATION, "Deleting product requested").showAndWait();
     }
 

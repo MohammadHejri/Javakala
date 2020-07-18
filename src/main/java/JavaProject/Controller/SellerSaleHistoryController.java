@@ -14,6 +14,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
+
 public class SellerSaleHistoryController implements Initializable {
     @FXML
     TableView<SellLog> logsTable;

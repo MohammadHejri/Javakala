@@ -13,6 +13,7 @@ import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Product;
+import JavaProject.Model.ProductOrganization.Rate;
 import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
@@ -103,11 +104,250 @@ public class ClientHandler extends Thread {
                     respondToClient(getAllProductsFromCategoryAsString(messageParts[1]));
                 } else if (message.startsWith("deleteProduct")) {
                     respondToClient(getDeleteProductResult(messageParts[1]));
+                } else if (message.startsWith("getProductByName")) {
+                    respondToClient(getProductByNameAsString(messageParts[1]));
+                } else if (message.startsWith("getProductByID")) {
+                    respondToClient(getProductByIDAsString(messageParts[1]));
+                } else if (message.startsWith("requestAddProduct")) {
+                    respondToClient(getRequestAddProductResult(message));
+                } else if (message.startsWith("requestEditProduct")) {
+                    respondToClient(getRequestEditProductResult(message));
+                } else if (message.startsWith("requestDeleteProduct")) {
+                    respondToClient(getRequestDeleteProductResult(messageParts[1]));
+                } else if (message.startsWith("requestAddOrEditAuction")) {
+                    respondToClient(getRequestAddOrEditAuctionResult(message));
+                } else if (message.startsWith("requestDeleteAuction")) {
+                    respondToClient(getRequestDeleteAuctionResult(messageParts[1]));
+                } else if (message.startsWith("getAuctionByID")) {
+                    respondToClient(getAuctionByIDAsString(messageParts[1]));
+                } else if (message.startsWith("rateProduct")) {
+                    respondToClient(getRateProductResult(messageParts[1], messageParts[2], messageParts[3]));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getRateProductResult(String productName, String productMark, String username) throws IOException {
+        if (productName.isBlank()) {
+            return  "Enter product name";
+        } else if (productMark.isBlank()) {
+            return "Enter product mark";
+        } else if (Database.getInstance().getProductByName(productName) == null) {
+            return "Product not found";
+        } else if (!productMark.matches("(\\d+)(\\.\\d+)?")) {
+            return "Use DOUBLE for mark";
+        } else {
+            Product product = Database.getInstance().getProductByName(productName);
+            double mark = Double.parseDouble(productMark);
+            if (mark > 5 || mark < 0) {
+                return "Mark should be in range [0-5]";
+            }
+            if (!product.getBuyers().contains(username)) {
+                return "You have not purchased this product to rate it";
+            }
+            for (Rate rate : product.getRates()) {
+                if (rate.getBuyerName().equals(username)) {
+                    return "You have rated this product before";
+                }
+            }
+            Rate rate = new Rate(username, mark);
+            product.getRates().add(rate);
+            product.updateMark();
+            Database.getInstance().updateCategories();
+            return "Success";
+        }
+    }
+
+    private String getAuctionByIDAsString(String ID) {
+        Auction auction = Database.getInstance().getAuctionByID(ID);
+        if (auction == null)
+            return "Not found";
+        return "Success###" + objectToString(auction);
+    }
+
+
+    private String getRequestAddOrEditAuctionResult(String data) throws IOException {
+        String[] dataParts = data.split("###");
+        String ID = dataParts[1].equals("null") ? null : dataParts[1];
+        String startDate = dataParts[2];
+        String endDate = dataParts[3];
+        String percentStr = dataParts[4];
+        String sellerUsername = dataParts[5];
+        ArrayList<String> auctionProductsName = stringToObject(dataParts[6], ArrayList.class);
+        Auction selectedAuction = ID == null ? null : Database.getInstance().getAuctionByID(ID);
+        String dateTimeRegex = "([12]\\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]) ([0-1]?[0-9]|2[0-3]):[0-5][0-9]";
+        if (startDate.isBlank()) {
+            return "Enter start date";
+        } else if (endDate.isBlank()) {
+            return "Enter end date";
+        } else if (percentStr.isBlank()) {
+            return "Enter discount percent";
+        } else if (!startDate.matches(dateTimeRegex)) {
+            return "Use format yyyy-mm-dd hh:mm for start date";
+        } else if (!endDate.matches(dateTimeRegex)) {
+            return "Use format yyyy-mm-dd hh:mm for end date";
+        } else if (startDate.compareTo(endDate) >= 0) {
+            return "Start date should be before end date";
+        } else if (!percentStr.matches("(\\d+)(\\.\\d+)?")) {
+            return "Use DOUBLE for price";
+        } else {
+            double discountPercent = Double.parseDouble(percentStr);
+            if (discountPercent > 100 || discountPercent <= 0) {
+                return "Percent should be in range (0-100]";
+            } else {
+                ArrayList<String> productsID = new ArrayList<>();
+                for (String productName : auctionProductsName)
+                    productsID.add(Database.getInstance().getProductByName(productName).getID());
+                Auction auction = new Auction(sellerUsername, startDate, endDate, discountPercent, productsID);
+                Request request = null;
+                if (selectedAuction == null) {
+                    request = new Request(Subject.ADD_AUCTION, auction.toString());
+                } else {
+                    auction.setID(selectedAuction.getID());
+                    request = new Request(Subject.EDIT_AUCTION, "Edited " + auction.toString() + "\n" + "Current " + selectedAuction.toString());
+                }
+                request.setAuction(auction);
+                request.setRequester(sellerUsername);
+                Database.getInstance().saveRequest(request);
+                return "Success";
+            }
+        }
+    }
+
+    private String getRequestDeleteAuctionResult(String ID) throws IOException {
+        Auction auction = Database.getInstance().getAuctionByID(ID);
+        Request request = new Request(Subject.DELETE_AUCTION, auction.toString());
+        request.setAuction(auction);
+        request.setRequester(auction.getSellerUsername());
+        Database.getInstance().saveRequest(request);
+        return "Success";
+    }
+
+    private String getRequestAddProductResult(String data) throws IOException {
+        String[] dataParts = data.split("###");
+        String name = dataParts[1];
+        String brand = dataParts[2];
+        String priceStr = dataParts[3];
+        String remainingStr = dataParts[4];
+        String description = dataParts[5];
+        String imagePath = dataParts[6];
+        String sellerUsername = dataParts[7];
+        String selectedCategoryName = dataParts[8];
+        HashMap<String, String> specs = stringToObject(dataParts[9], HashMap.class);
+
+        Seller seller = (Seller) Database.getInstance().getAccountByUsername(sellerUsername);
+        Category selectedCategory = Database.getInstance().getCategoryByName(selectedCategoryName);
+        Product product = Database.getInstance().getProductByName(name);
+
+        if (name.isBlank()) {
+            return "Enter name";
+        } else if (brand.isBlank()) {
+            return "Enter brand";
+        } else if (priceStr.isBlank()) {
+            return "Enter price";
+        } else if (remainingStr.isBlank()) {
+            return "Enter quantity";
+        } else if (description.isBlank()) {
+            return "Enter description";
+        } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
+            return "Use DOUBLE for price";
+        } else if (!remainingStr.matches("(\\d+)")) {
+            return "Use INTEGER for quantity";
+        } else if (product != null) {
+            return "Product name not available";
+        } else {
+            double price = Double.parseDouble(priceStr);
+            int remainingItems = Integer.parseInt(remainingStr);
+            product = new Product(name, brand, price, seller.getUsername(), remainingItems, selectedCategory.getName(), description, new HashMap<>(specs), imagePath);
+            selectedCategory.getProducts().add(product);
+            seller.getProductsID().add(product.getID());
+            Database.getInstance().updateCategories();
+            Database.getInstance().saveAccount(seller);
+            Request request = new Request(Subject.ADD_PRODUCT, product.toString());
+            request.setProduct(product);
+            request.setRequester(sellerUsername);
+            Database.getInstance().saveRequest(request);
+            return "Success";
+        }
+    }
+
+    private String getRequestEditProductResult(String data) throws IOException {
+        String[] dataParts = data.split("###");
+        String name = dataParts[1];
+        String brand = dataParts[2];
+        String priceStr = dataParts[3];
+        String remainingStr = dataParts[4];
+        String description = dataParts[5];
+        String imagePath = dataParts[6];
+        String sellerUsername = dataParts[7];
+        String selectedCategoryName = dataParts[8];
+        HashMap<String, String> specs = stringToObject(dataParts[9], HashMap.class);
+        String prevName = dataParts[10];
+
+        Seller seller = (Seller) Database.getInstance().getAccountByUsername(sellerUsername);
+        Category selectedCategory = Database.getInstance().getCategoryByName(selectedCategoryName);
+        Product selectedProduct = Database.getInstance().getProductByName(prevName);
+
+        if (name.isBlank()) {
+            return "Enter name";
+        } else if (brand.isBlank()) {
+            return "Enter brand";
+        } else if (priceStr.isBlank()) {
+            return "Enter price";
+        } else if (remainingStr.isBlank()) {
+            return "Enter quantity";
+        } else if (description.isBlank()) {
+            return "Enter description";
+        } else if (!priceStr.matches("(\\d+)(\\.\\d+)?")) {
+            return "Use DOUBLE for price";
+        } else if (!remainingStr.matches("(\\d+)")) {
+            return "Use INTEGER for quantity";
+        } else if (!selectedProduct.getName().equals(name) && Database.getInstance().getProductByName(name) != null) {
+            return "Product name not available";
+        } else {
+            double price = Double.parseDouble(priceStr);
+            int remainingItems = Integer.parseInt(remainingStr);
+            Product product = new Product(name, brand, price, seller.getUsername(), remainingItems, selectedCategory.getName(), description, new HashMap<>(specs), imagePath);
+            product.setID(selectedProduct.getID());
+            product.setViews(selectedProduct.getViews());
+            product.setDate(selectedProduct.getDate());
+            product.setAverageMark(selectedProduct.getAverageMark());
+            product.setStatus(selectedProduct.getStatus());
+            product.setRates(selectedProduct.getRates());
+            product.setComments(selectedProduct.getComments());
+            if (selectedProduct.getAuctionID() != null)
+                product.setAuctionID(selectedProduct.getAuctionID());
+            Request request = new Request(Subject.EDIT_PRODUCT, "Edited " + product.toString() +  "\n" + "Current" + selectedProduct.toString());
+            request.setProduct(product);
+            request.setRequester(sellerUsername);
+            Database.getInstance().saveRequest(request);
+            return "Success";
+        }
+    }
+
+    private String getRequestDeleteProductResult(String name) throws IOException {
+        Product product = Database.getInstance().getProductByName(name);
+        Request request = new Request(Subject.DELETE_PRODUCT, product.toString());
+        request.setProduct(product);
+        request.setRequester(product.getSellerUsername());
+        Database.getInstance().saveRequest(request);
+        return "Success";
+    }
+
+    private String getProductByNameAsString(String name) {
+        Product product = Database.getInstance().getProductByName(name);
+        if (product == null)
+            return "Not found";
+        return "Success###" + objectToString(product);
+    }
+
+    private String getProductByIDAsString(String ID) {
+        Product product = Database.getInstance().getProductByID(ID);
+        if (product == null)
+            return "Not found";
+        return "Success###" + objectToString(product);
     }
 
     private String getDeleteProductResult(String name) throws IOException {
