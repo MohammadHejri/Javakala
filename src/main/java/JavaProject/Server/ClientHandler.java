@@ -167,7 +167,6 @@ public class ClientHandler extends Thread {
         return "Success###" + objectToString(auction);
     }
 
-
     private String getRequestAddOrEditAuctionResult(String data) throws IOException {
         String[] dataParts = data.split("###");
         String ID = dataParts[1].equals("null") ? null : dataParts[1];

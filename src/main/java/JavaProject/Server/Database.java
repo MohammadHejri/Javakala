@@ -157,6 +157,7 @@ public class Database {
         allAuctions.remove(auction);
         Seller seller = (Seller) getAccountByUsername(auction.getSellerUsername());
         seller.getAuctionsID().remove(auction.getID());
+        saveAccount(seller);
         for (String productID : auction.getProductsID())
             getProductByID(productID).setAuctionID(null);
         updateCategories();

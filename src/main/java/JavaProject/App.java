@@ -110,11 +110,12 @@ public class App extends Application {
     }
 
     private static void connectToServer() throws IOException {
-        socket = new Socket("127.0.0.1", serverPort);
+        socket = new Socket("2.tcp.ngrok.io", 15721);
         dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-
     }
+
+
 
     public static String getResponseFromServer(String ... messageParts) {
         String message = "";
