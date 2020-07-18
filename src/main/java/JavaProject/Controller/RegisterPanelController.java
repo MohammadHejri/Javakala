@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
+
 public class RegisterPanelController implements Initializable {
     public static Parent prevPane;
     private Animation animation = new Animation();
@@ -74,7 +76,8 @@ public class RegisterPanelController implements Initializable {
         imageView.setImage(new Image(file.toURI().toString()));
         loginButton.setOnAction(e -> animation.playAnimation(mainPane));
         companyNameField.setDisable(true);
-        if (!Database.getInstance().managerExists()) {
+        String response = App.getResponseFromServer("managerExists");
+        if (response.equals("false")) {
             managerButton.setSelected(true);
             sellerButton.setDisable(true);
             buyerButton.setDisable(true);
@@ -99,37 +102,26 @@ public class RegisterPanelController implements Initializable {
         String emailAddress = emailAddressField.getText();
         String phoneNumber = phoneNumberField.getText();
         String companyName = companyNameField.getText();
-        Account account = Database.getInstance().getAccountByUsername(username);
-        if (!username.matches("\\w+")) {
-            signUpStatusLabel.setText("Use word letters for username");
-        } else if (!password.matches("\\w+")) {
-            signUpStatusLabel.setText("Use word letters for password");
-        } else if (!firstName.matches("\\w+")) {
-            signUpStatusLabel.setText("Use word letters for first name");
-        } else if (!lastName.matches("\\w+")) {
-            signUpStatusLabel.setText("Use word letters for last name");
-        } else if (!emailAddress.matches("(\\S+)@(\\S+)\\.(\\S+)")) {
-            signUpStatusLabel.setText("Email format: example@gmail.com");
-        } else if (!phoneNumber.matches("\\d+")) {
-            signUpStatusLabel.setText("Use digits for phone number");
-        } else if (!companyNameField.isDisabled() && !companyName.matches("\\w+")) {
-            signUpStatusLabel.setText("Use word letters for company name");
-        } else if (account != null) {
-            signUpStatusLabel.setText("Username exists");
-        } else {
-            String imagePath = imageView.getImage().getUrl();
-            if (managerButton.isSelected())
-                account = new Manager(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
-            if (sellerButton.isSelected()) {
-                account = new Seller(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath, companyName);
-                Request request = new Request(Subject.SELLER_REGISTER, account.toString());
-                request.setSeller((Seller) account);
-                Database.getInstance().saveRequest(request);
-            }
-            if (buyerButton.isSelected())
-                account = new Buyer(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
-            Database.getInstance().saveAccount(account);
+        String imagePath = imageView.getImage().getUrl();
+
+        String response = null;
+        if (managerButton.isSelected()) {
+            Account account = new Manager(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
+            response = App.getResponseFromServer("createManager", App.objectToString(account));
+        }
+        if (sellerButton.isSelected()) {
+            Account account = new Seller(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath, companyName);
+            response = App.getResponseFromServer("createSeller", App.objectToString(account));
+        }
+        if (buyerButton.isSelected()) {
+            Account account = new Buyer(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
+            response = App.getResponseFromServer("createBuyer", App.objectToString(account));
+        }
+
+        if (response.startsWith("Success")) {
             changeToPrevScene(event);
+        } else {
+            signUpStatusLabel.setText(response);
         }
     }
 
@@ -137,31 +129,31 @@ public class RegisterPanelController implements Initializable {
     private void signIn(ActionEvent event) throws IOException {
         String username = signInUsernameField.getText();
         String password = signInPasswordField.getText();
-        Account account = Database.getInstance().getAccountByUsername(username);
-        if (!username.matches("\\w+")) {
-            signInStatusLabel.setText("Use word letters for username");
-        } else if (!password.matches("\\w+")) {
-            signInStatusLabel.setText("Use word letters for password");
-        } else if (account == null || !account.getPassword().equals(password)) {
-            signInStatusLabel.setText("Wrong username or password");
-        } else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.PENDING)) {
-            signInStatusLabel.setText("Account to be Confirmed");
-        }  else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.DECLINED)) {
-            signInStatusLabel.setText("Account not allowed");
-        } else {
-            App.setSignedInAccount(account);
-            if (account instanceof Manager) {
+
+        String response = App.getResponseFromServer("signIn", username, password);
+        if (response.startsWith("Success")) {
+            String[] responseParts = response.split("###");
+            Account account = null;
+            if (responseParts[1].equals("Manager")) {
+                account = App.stringToObject(responseParts[2], Manager.class);
+                App.setSignedInAccount(account);
                 App.setRoot("managerProfile");
                 ManagerProfileController.prevPane = RegisterPanelController.prevPane;
             }
-            if (account instanceof Seller) {
+            if (responseParts[1].equals("Seller")) {
+                account = App.stringToObject(responseParts[2], Seller.class);
+                App.setSignedInAccount(account);
                 App.setRoot("sellerProfile");
                 SellerProfileController.prevPane = RegisterPanelController.prevPane;
             }
-            if (account instanceof Buyer) {
+            if (responseParts[1].equals("Buyer")) {
+                account = App.stringToObject(responseParts[2], Buyer.class);
+                App.setSignedInAccount(account);
                 App.setRoot("buyerProfile");
                 BuyerProfileController.prevPane = RegisterPanelController.prevPane;
             }
+        } else {
+            signInStatusLabel.setText(response);
         }
     }
 

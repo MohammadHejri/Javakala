@@ -1,9 +1,10 @@
 package JavaProject;
 
-import JavaProject.Controller.ProductsPageController;
 import JavaProject.Model.Account.Account;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Cart;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,10 +13,16 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.Socket;
 import java.nio.file.Paths;
 
 public class App extends Application {
+
+    private static final int serverPort = 8080;
+    private static Socket socket;
+    private static DataInputStream dataInputStream;
+    private static DataOutputStream dataOutputStream;
 
     private static Scene scene;
     private static Account signedInAccount;
@@ -24,8 +31,6 @@ public class App extends Application {
     public static Parent productsPage;
     public static Parent cartPage;
 
-
-    private static ProductsPageController productsPageController;
     private static Cart cart = new Cart();
 
     public static void initProductsPage() {
@@ -36,27 +41,26 @@ public class App extends Application {
         }
     }
 
-
     @Override
     public void start(Stage stage) throws Exception {
-        Database.getInstance().loadResources();
-
+        connectToServer();
+        // Database.getInstance().loadResources();
         mainPage = loadFXML("mainMenu");
-        productsPage = loadFXML("productsPage");
+        // productsPage = loadFXML("productsPage");
         scene = new Scene(mainPage);
         stage.setScene(scene);
         stage.show();
-        mediaPlayer.play();
+        //mediaPlayer.play();
     }
 
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
-        changeBgMusic();
+        //changeBgMusic();
     }
 
     public static void setRoot(Parent root) {
         scene.setRoot(root);
-        changeBgMusic();
+        //changeBgMusic();
     }
 
     public static Parent loadFXML(String fxml) throws IOException {
@@ -101,5 +105,38 @@ public class App extends Application {
         mediaPlayer.stop();
         mediaPlayer = new MediaPlayer(new Media(backgroundMusics[(++option)%4]));
         mediaPlayer.play();
+    }
+
+    private static void connectToServer() throws IOException {
+        socket = new Socket("127.0.0.1", serverPort);
+        dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+
+    }
+
+    public static String getResponseFromServer(String ... messageParts) {
+        String message = "";
+        for (String messagePart : messageParts) {
+            message += "###" + messagePart;
+        }
+        message = message.substring(3);
+        try {
+            dataOutputStream.writeUTF(message);
+            dataOutputStream.flush();
+            return dataInputStream.readUTF();
+        } catch (Exception e) {
+            return "Something went wrong";
+        }
+    }
+
+    public static  <T> T stringToObject(String string, Class<T> classOfT) {
+        return new Gson().fromJson(string, classOfT);
+    }
+
+    public static <T> String objectToString(T object) {
+        GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls();
+        Gson gson = builder.create();
+        return gson.toJson(object);
     }
 }

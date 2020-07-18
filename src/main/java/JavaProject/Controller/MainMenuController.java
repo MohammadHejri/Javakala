@@ -18,6 +18,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
+
 public class MainMenuController implements Initializable {
 
     private int letterIndex;

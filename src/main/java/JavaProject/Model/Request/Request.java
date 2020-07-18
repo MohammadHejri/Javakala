@@ -26,7 +26,7 @@ public class Request {
         this.subject = subject;
         this.description = description;
         ID = IDGenerator.getGeneratedID("REQ");
-        requester = App.getSignedInAccount() == null ? "" : App.getSignedInAccount().getUsername();
+        //requester = App.getSignedInAccount() == null ? "" : App.getSignedInAccount().getUsername();
     }
 
     public String getID() {
