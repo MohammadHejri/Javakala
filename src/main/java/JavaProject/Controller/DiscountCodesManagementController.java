@@ -14,12 +14,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
+
+// Client-Server : Done
 
 public class DiscountCodesManagementController implements Initializable {
 
@@ -93,75 +91,20 @@ public class DiscountCodesManagementController implements Initializable {
         String percent = percentField.getText();
         String maxDiscount = maxDiscountField.getText();
         String maxUsage = maxUsageField.getText();
+        DiscountCode selectedDiscountCode = discountCodeTable.getSelectionModel().getSelectedItem();
+        String selectedCode = selectedDiscountCode == null ? null : selectedDiscountCode.getCode();
         ObservableList<String> buyersList = userList.getSelectionModel().getSelectedItems();
-        String dateTimeRegex = "([12]\\d{3})-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]) ([0-1]?[0-9]|2[0-3]):[0-5][0-9]";
-        if (!code.matches("\\S+")) {
-            new Alert(Alert.AlertType.ERROR, "Use non-whitespace letters for code").showAndWait();
-        } else if (!startDate.matches(dateTimeRegex)) {
-            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for start date").showAndWait();
-        } else if (!endDate.matches(dateTimeRegex)) {
-            new Alert(Alert.AlertType.ERROR, "Use format yyyy-mm-dd hh:mm for end date").showAndWait();
-        } else if (startDate.compareTo(endDate) >= 0) {
-            new Alert(Alert.AlertType.ERROR, "Start date should be before end date").showAndWait();
-        } else if (!percent.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Percent should be DOUBLE value").showAndWait();
-        } else if (!maxDiscount.matches("(\\d+)(\\.\\d+)?")) {
-            new Alert(Alert.AlertType.ERROR, "Maximum discount should be DOUBLE value").showAndWait();
-        } else if (!maxUsage.matches("\\d+")) {
-            new Alert(Alert.AlertType.ERROR, "Maximum usage should be integer value").showAndWait();
+        ArrayList<String> buyers = new ArrayList<>(buyersList);
+        String response = App.getResponseFromServer("createOrEditDiscountCode", selectedCode, code, startDate, endDate, percent, maxDiscount, maxUsage, App.objectToString(buyers));
+        if (response.startsWith("Success")) {
+            new Alert(Alert.AlertType.INFORMATION, "Discount code created | edited successfully").showAndWait();
+            discountCodeTable.getItems().clear();
+            for (DiscountCode DC : Database.getInstance().getAllDiscountCodes())
+                discountCodeTable.getItems().add(DC);
         } else {
-            double discountPercent = Double.parseDouble(percent);
-            if (discountPercent > 100 || discountPercent <= 0) {
-                new Alert(Alert.AlertType.ERROR, "Percent should be in range (0-100]").showAndWait();
-            } else {
-                double maximumDiscount = Double.parseDouble(maxDiscount);
-                int maxUsageNumber = Integer.parseInt(maxUsage);
-                HashMap<String, Integer> hashMap = new HashMap<>();
-                DiscountCode discountCode = Database.getInstance().getDiscountCodeByCode(code);
-                DiscountCode selected = discountCodeTable.getSelectionModel().getSelectedItem();
-                if (selected == null && discountCode != null) {
-                    new Alert(Alert.AlertType.ERROR, "Discount code exists").showAndWait();
-                } else if (selected == null && discountCode == null) {
-                    for (String user : buyersList) {
-                        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
-                        hashMap.put(user, 0);
-                        buyer.getDiscountCodes().add(code);
-                        Database.getInstance().saveAccount(buyer);
-                    }
-                    Database.getInstance().saveDiscountCode(new DiscountCode(code, startDate, endDate, discountPercent, maximumDiscount, maxUsageNumber, hashMap));
-                    new Alert(Alert.AlertType.INFORMATION, "Discount code added successfully").showAndWait();
-                } else if (selected != null && discountCode != null && !selected.getCode().equals(code)) {
-                    new Alert(Alert.AlertType.ERROR, "Discount code exists").showAndWait();
-                } else {
-                    for (String user : selected.getBuyers().keySet()) {
-                        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
-                        if (!buyersList.contains(user)) {
-                            buyer.getDiscountCodes().remove(selected.getCode());
-                            Database.getInstance().saveAccount(buyer);
-                        }
-                    }
-                    for (String user : buyersList) {
-                        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
-                        hashMap.put(user, selected.getBuyers().getOrDefault(user, 0));
-                        buyer.getDiscountCodes().remove(selected.getCode());
-                        buyer.getDiscountCodes().add(code);
-                        Database.getInstance().saveAccount(buyer);
-                    }
-                    selected.setCode(code);
-                    selected.setStartDate(startDate);
-                    selected.setEndDate(endDate);
-                    selected.setDiscountPercent(discountPercent);
-                    selected.setMaxUsageNumber(maxUsageNumber);
-                    selected.setMaxDiscount(maximumDiscount);
-                    selected.setBuyers(hashMap);
-                    Database.getInstance().saveDiscountCode(selected);
-                    new Alert(Alert.AlertType.INFORMATION, "Discount code edited successfully").showAndWait();
-                }
-                discountCodeTable.getItems().clear();
-                for (DiscountCode DC : Database.getInstance().getAllDiscountCodes())
-                    discountCodeTable.getItems().add(DC);
-            }
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }
+
     }
 
     private void selectDiscountCode() {
@@ -202,8 +145,9 @@ public class DiscountCodesManagementController implements Initializable {
 
     @FXML
     private void deleteDiscountCode(ActionEvent event) throws IOException {
-        for (DiscountCode discountCode : discountCodeTable.getSelectionModel().getSelectedItems())
-            Database.getInstance().deleteDiscountCode(discountCode);
+        for (DiscountCode discountCode : discountCodeTable.getSelectionModel().getSelectedItems()) {
+            App.getResponseFromServer("deleteDiscountCode", discountCode.getCode());
+        }
         new Alert(Alert.AlertType.INFORMATION, "Discount code deleted successfully").showAndWait();
         discountCodeTable.getItems().clear();
         for (DiscountCode discountCode : Database.getInstance().getAllDiscountCodes())
@@ -212,20 +156,7 @@ public class DiscountCodesManagementController implements Initializable {
 
     @FXML
     private void generateRandomCode(ActionEvent event) throws IOException {
-        Date nowDate = new Date();
-        DiscountCode discountCode;
-        String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(nowDate);
-        long time = 24 * 60 * 60 * 1000 * 7;
-        String endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(nowDate.getTime() + time));
-        HashMap<String, Integer> hashMap = Database.getInstance().getRandomBuyers();
-        discountCode = new DiscountCode("RND" + new SimpleDateFormat("mmssSSS").format(nowDate), startDate, endDate, Math.random() * 100, 100, 1, hashMap);
-        Database.getInstance().saveDiscountCode(discountCode);
-        for (String user : hashMap.keySet()) {
-            Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(user);
-            hashMap.put(user, 0);
-            buyer.getDiscountCodes().add(discountCode.getCode());
-            Database.getInstance().saveAccount(buyer);
-        }
+        String response = App.getResponseFromServer("generateRandomCode");
         discountCodeTable.getItems().clear();
         for (DiscountCode DC : Database.getInstance().getAllDiscountCodes())
             discountCodeTable.getItems().add(DC);

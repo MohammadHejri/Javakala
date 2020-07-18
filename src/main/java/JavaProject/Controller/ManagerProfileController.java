@@ -63,13 +63,14 @@ public class ManagerProfileController implements Initializable{
     }
 
     @FXML
-    private void signOut(ActionEvent event) throws IOException {
+    private void signOut(ActionEvent event) {
+        String response = App.getResponseFromServer("signOut", App.getSignedInAccount().getUsername());
         App.setSignedInAccount(null);
         App.setRoot(App.mainPage);
     }
 
     @FXML
-    private void changeToPrevPane(ActionEvent event) throws IOException {
+    private void changeToPrevPane(ActionEvent event) {
         App.setRoot(prevPane);
     }
 

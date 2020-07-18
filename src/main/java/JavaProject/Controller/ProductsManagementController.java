@@ -1,5 +1,6 @@
 package JavaProject.Controller;
 
+import JavaProject.App;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.DualString;
 import JavaProject.Model.ProductOrganization.Category;
@@ -16,6 +17,8 @@ import javafx.scene.image.ImageView;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+
+// Client-Server : Done
 
 public class ProductsManagementController implements Initializable {
 
@@ -81,11 +84,15 @@ public class ProductsManagementController implements Initializable {
     @FXML
     public void deleteProduct(ActionEvent event) throws IOException {
         Product product = productsTable.getSelectionModel().getSelectedItem();
-        Database.getInstance().deleteProduct(product);
-        new Alert(Alert.AlertType.INFORMATION, "Product successfully deleted").showAndWait();
-        productsTable.getItems().clear();
-        for (Product pro : Database.getInstance().getAllProducts())
-            productsTable.getItems().add(pro);
+        String response = App.getResponseFromServer("deleteProduct", product.getName());
+        if (response.startsWith("Success")) {
+            new Alert(Alert.AlertType.INFORMATION, "Product successfully deleted").showAndWait();
+            productsTable.getItems().clear();
+            for (Product pro : Database.getInstance().getAllProducts())
+                productsTable.getItems().add(pro);
+        } else {
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
+        }
     }
 
     private void selectProduct() {

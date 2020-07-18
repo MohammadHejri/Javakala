@@ -1,5 +1,6 @@
 package JavaProject.Model.Database;
 
+import JavaProject.App;
 import JavaProject.Model.Account.Account;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
@@ -29,6 +30,73 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Database {
+
+    public ArrayList<Product> getAllProducts() {
+        Category root = Database.getInstance().getCategoryByName("root");
+        return getAllProductsRecursively(root);
+    }
+
+    public ArrayList<Product> getAllProductsRecursively(Category category) {
+        String response = App.getResponseFromServer("getAllProductsFromCategory", category.getName());
+        String[] responseParts = response.split("###");
+        ArrayList<Product> products = new ArrayList<>();
+        for (int i = 1; i < responseParts.length; i++)
+            products.add(App.stringToObject(responseParts[i], Product.class));
+        return products;
+    }
+
+    public ArrayList<Product> getAllAcceptedProductsRecursively(Category category) {
+        ArrayList<Product> products = getAllProductsRecursively(category);
+        ArrayList<Product> newProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.getStatus().equals(Status.ACCEPTED))
+                newProducts.add(product);
+        }
+        return newProducts;
+    }
+
+    public Category getCategoryByName(String name) {
+        String response = App.getResponseFromServer("getCategoryByName", name);
+        if (response.startsWith("Success")) {
+            String[] responseParts = response.split("###");
+            return App.stringToObject(responseParts[1], Category.class);
+        } else {
+            return null;
+        }
+    }
+
+    public ArrayList<DiscountCode> getAllDiscountCodes() {
+        String response = App.getResponseFromServer("getAllDiscountCodes");
+        String[] responseParts = response.split("###");
+        ArrayList<DiscountCode> discountCodes = new ArrayList<>();
+        for (int i = 1; i < responseParts.length; i++)
+            discountCodes.add(App.stringToObject(responseParts[i], DiscountCode.class));
+        return discountCodes;
+    }
+
+    public ArrayList<Request> getAllRequests() {
+        String response = App.getResponseFromServer("getAllRequests");
+        String[] responseParts = response.split("###");
+        ArrayList<Request> requests = new ArrayList<>();
+        for (int i = 1; i < responseParts.length; i++)
+            requests.add(App.stringToObject(responseParts[i], Request.class));
+        return requests;
+    }
+
+    public ArrayList<Account> getAllAccounts() {
+        String response = App.getResponseFromServer("getAllAccounts");
+        String[] responseParts = response.split("###");
+        ArrayList<Account> accounts = new ArrayList<>();
+        for (int i = 1; i < responseParts.length; i += 2) {
+            if (responseParts[i].equals("Manager"))
+                accounts.add(App.stringToObject(responseParts[i + 1], Manager.class));
+            if (responseParts[i].equals("Seller"))
+                accounts.add(App.stringToObject(responseParts[i + 1], Seller.class));
+            if (responseParts[i].equals("Buyer"))
+                accounts.add(App.stringToObject(responseParts[i + 1], Buyer.class));
+        }
+        return accounts;
+    }
 
     private static Database instance;
     private Category root;
@@ -266,21 +334,6 @@ public class Database {
         return null;
     }
 
-    public Category getCategoryByName(String name) {
-        return getRecursiveCategory(name, root);
-    }
-
-    private Category getRecursiveCategory(String name, Category current) {
-        if (current.getName().equals(name))
-            return current;
-        for (Category category : current.getSubCategories()) {
-            Category cat = getRecursiveCategory(name, category);
-            if (cat != null)
-                return cat;
-        }
-        return null;
-    }
-
     public Product getProductByName(String name) {
         return getRecursiveProduct(name, root);
     }
@@ -303,35 +356,6 @@ public class Database {
             if (discountCode.getCode().equals(code))
                 return discountCode;
         return null;
-    }
-
-    public ArrayList<Account> getAllAccounts() {
-        return allAccounts;
-    }
-
-    public ArrayList<DiscountCode> getAllDiscountCodes() {
-        return allDiscountCodes;
-    }
-
-    public ArrayList<Product> getAllProducts() {
-        return getAllProductsRecursively(root);
-    }
-
-    public ArrayList<Product> getAllProductsRecursively(Category category) {
-        ArrayList<Product> products = new ArrayList<>(category.getProducts());
-        for (Category subCat : category.getSubCategories())
-            products.addAll(getAllProductsRecursively(subCat));
-        return products;
-    }
-
-    public ArrayList<Product> getAllAcceptedProductsRecursively(Category category) {
-        ArrayList<Product> products = getAllProductsRecursively(category);
-        ArrayList<Product> newProducts = new ArrayList<>();
-        for (Product product : products) {
-            if (product.getStatus().equals(Status.ACCEPTED))
-                newProducts.add(product);
-        }
-        return newProducts;
     }
 
     public ArrayList<TripleString> getComparison(Product p1, Product p2) {
@@ -360,10 +384,6 @@ public class Database {
             allFeatures.addAll(getAllFeatures(getCategoryByName(category.getParentName())));
         allFeatures.addAll(category.getFeatures());
         return allFeatures;
-    }
-
-    public ArrayList<Request> getAllRequests() {
-        return allRequests;
     }
 
     public ArrayList<String> getProductsInNoAuction(Seller seller) {

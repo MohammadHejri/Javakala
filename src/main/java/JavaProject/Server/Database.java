@@ -31,15 +31,15 @@ public class Database {
     private ArrayList<BuyLog> allBuyLogs = new ArrayList<>();
     private ArrayList<SellLog> allSellLogs = new ArrayList<>();
     private ArrayList<DiscountCode> allDiscountCodes = new ArrayList<>();
-    private final String rootPath = "src/main/resources/Data/Root";
+    private final String rootPath = "src/main/server/Root";
     private final String managersPath = "src/main/server/Accounts/Managers";
     private final String sellersPath = "src/main/server/Accounts/Sellers";
     private final String buyersPath = "src/main/server/Accounts/Buyers";
     private final String requestsPath = "src/main/server/Requests";
-    private final String auctionsPath = "src/main/resources/Data/Auctions";
-    private final String buyLogsPath = "src/main/resources/Data/Log/BuyLogs";
-    private final String sellLogsPath = "src/main/resources/Data/Log/SellLogs";
-    private final String discountCodesPath = "src/main/resources/Data/DiscountCodes";
+    private final String auctionsPath = "src/main/server/Auctions";
+    private final String buyLogsPath = "src/main/server/Log/BuyLogs";
+    private final String sellLogsPath = "src/main/server/Log/SellLogs";
+    private final String discountCodesPath = "src/main/server/DiscountCodes";
 
     public static Database getInstance() {
         if (instance == null)
@@ -113,7 +113,6 @@ public class Database {
                     e.printStackTrace();
                 }
             }
-
         }
         if (account instanceof Buyer)
             accountFile = new File(buyersPath + "\\" + account.getUsername() + ".json");
@@ -167,7 +166,7 @@ public class Database {
 
 
     public void saveDiscountCode(DiscountCode discountCode) throws IOException {
-        if (!allDiscountCodes.contains(discountCode))
+        if (getDiscountCodeByCode(discountCode.getCode()) == null)
             allDiscountCodes.add(discountCode);
         new JsonFileWriter().write(discountCodesPath + "\\" + discountCode.getID() + ".json", discountCode);
     }
@@ -291,6 +290,8 @@ public class Database {
     }
 
     public DiscountCode getDiscountCodeByCode(String code) {
+        if (code == null)
+            return null;
         for (DiscountCode discountCode : allDiscountCodes)
             if (discountCode.getCode().equals(code))
                 return discountCode;
@@ -464,6 +465,8 @@ public class Database {
     }
 
     public boolean canChangeParentCategory(Category category, Category desired) {
+        if (category == null)
+            return true;
         if (category.getName().equals("root")) {
             if (desired.getName().equals("root"))
                 return true;

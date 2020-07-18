@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+// Client-Server : Done
+
 public class UsersManagementController implements Initializable {
 
     @FXML
@@ -52,14 +54,14 @@ public class UsersManagementController implements Initializable {
     @FXML
     private void deleteUser(ActionEvent event) {
         Account toBeDeletedAccount = userTable.getSelectionModel().getSelectedItem();
-        if (toBeDeletedAccount == App.getSignedInAccount()) {
-            new Alert(Alert.AlertType.ERROR, "You can not delete yourself").showAndWait();
-        } else if (toBeDeletedAccount != null) {
-            Database.getInstance().deleteAccount(toBeDeletedAccount);
+        String response = App.getResponseFromServer("deleteAccount", App.getSignedInAccount().getUsername(), toBeDeletedAccount.getUsername());
+        if (response.startsWith("Success")) {
             new Alert(Alert.AlertType.INFORMATION, "User successfully deleted").showAndWait();
             userTable.getItems().clear();
             for (Account account : Database.getInstance().getAllAccounts())
                 userTable.getItems().add(account);
+        } else {
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }
     }
 

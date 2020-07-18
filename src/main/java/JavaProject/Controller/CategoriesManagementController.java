@@ -1,5 +1,6 @@
 package JavaProject.Controller;
 
+import JavaProject.App;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.ProductOrganization.Category;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+
+// Client-Server : Done
 
 public class CategoriesManagementController implements Initializable {
 
@@ -135,86 +138,30 @@ public class CategoriesManagementController implements Initializable {
         String prevName = null;
         if (categoriesTable.getSelectionModel().getSelectedItem() != null)
             prevName = categoriesTable.getSelectionModel().getSelectedItem().getValue();
-        if (prevName != null && prevName.equals("root")) {
-            new Alert(Alert.AlertType.ERROR, "No changes for ROOT category").showAndWait();
-            return;
-        }
-        if (name.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter category name").showAndWait();
-        } else if (parent.isBlank()) {
-            new Alert(Alert.AlertType.ERROR, "Enter parent category name").showAndWait();
-        } else if (Database.getInstance().getCategoryByName(parent) == null) {
-            new Alert(Alert.AlertType.ERROR, "No parent found").showAndWait();
-        } else {
-            Category category = Database.getInstance().getCategoryByName(name);
-            Category parentCat = Database.getInstance().getCategoryByName(parent);
-            features.clear();
-            features.addAll(featuresList.getItems());
-            if (prevName == null && category != null) {
-                new Alert(Alert.AlertType.ERROR, "Category name exists").showAndWait();
-                return;
-            } else if (prevName == null && category == null) {
-                ArrayList<String> catFeatures = new ArrayList<>(features);
-                category = new Category(name, parent, new ArrayList<>(), new ArrayList<>(), catFeatures);
-                parentCat.getSubCategories().add(category);
-                new Alert(Alert.AlertType.INFORMATION, "Category added successfully").showAndWait();
-            } else if (prevName != null && category != null) {
-                if (!Database.getInstance().canChangeParentCategory(Database.getInstance().getCategoryByName(prevName), parentCat)) {
-                    new Alert(Alert.AlertType.ERROR, "Can not change parent").showAndWait();
-                    return;
-                }
-                if (prevName.equals(name)) {
-                    category.setFeatures(new ArrayList<>(features));
-                    Category prevParentCat = Database.getInstance().getCategoryByName(category.getParentName());
-                    if (!category.getParentName().equals(parent)) {
-                        prevParentCat.getSubCategories().remove(category);
-                        parentCat.getSubCategories().add(category);
-                        category.setParentName(parent);
-                    }
-                    new Alert(Alert.AlertType.INFORMATION, "Category edited successfully").showAndWait();
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "Category name exists").showAndWait();
-                    return;
-                }
-            } else {
-                if (!Database.getInstance().canChangeParentCategory(Database.getInstance().getCategoryByName(prevName), parentCat)) {
-                    new Alert(Alert.AlertType.ERROR, "Can not change parent").showAndWait();
-                    return;
-                }
-                category = Database.getInstance().getCategoryByName(prevName);
-                category.setName(name);
-                category.setFeatures(new ArrayList<>(features));
-                Category prevParentCat = Database.getInstance().getCategoryByName(category.getParentName());
-                if (!category.getParentName().equals(parent)) {
-                    prevParentCat.getSubCategories().remove(category);
-                    parentCat.getSubCategories().add(category);
-                    category.setParentName(parent);
-                }
-                for (Product product : category.getProducts())
-                    product.setParentCategoryName(name);
-                for (Category child : category.getSubCategories())
-                    child.setParentName(name);
-                new Alert(Alert.AlertType.INFORMATION, "Category edited successfully").showAndWait();
-            }
+        features.clear();
+        features.addAll(featuresList.getItems());
+
+        String response = App.getResponseFromServer("createOrEditCategory", name, parent, prevName, App.objectToString(features));
+        if (response.startsWith("Success")) {
             Category root = Database.getInstance().getCategoryByName("root");
             categoriesTable.setRoot(getTreeItemByCategory(root));
             deselectCategory();
-            Database.getInstance().updateCategories();
+            new Alert(Alert.AlertType.INFORMATION, "Category created | edited successfully").showAndWait();
+        } else {
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }
     }
 
     @FXML
     private void deleteCategory(ActionEvent event) throws IOException {
         for (TreeItem<String> item : categoriesTable.getSelectionModel().getSelectedItems()) {
-            Category selected = Database.getInstance().getCategoryByName(item.getValue());
-            if (!selected.getName().equals("root")) {
-                Database.getInstance().deleteCategory(selected);
+            String response = App.getResponseFromServer("deleteCategory", item.getValue());
+            if (response.startsWith("Success")) {
+                new Alert(Alert.AlertType.INFORMATION, "Category deleted successfully").showAndWait();
             } else {
-                new Alert(Alert.AlertType.ERROR, "You can not delete ROOT category").showAndWait();
-                return;
+                new Alert(Alert.AlertType.ERROR, response).showAndWait();
             }
         }
-        new Alert(Alert.AlertType.INFORMATION, "Category deleted successfully").showAndWait();
         Category root = Database.getInstance().getCategoryByName("root");
         categoriesTable.setRoot(getTreeItemByCategory(root));
     }

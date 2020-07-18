@@ -5,24 +5,20 @@ import JavaProject.Model.Account.Account;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
 import JavaProject.Model.Account.Seller;
-import JavaProject.Model.Database.Database;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-// Completed
+// Client-Server : Done
 
 public class AccountInfoController implements Initializable {
 
@@ -69,19 +65,19 @@ public class AccountInfoController implements Initializable {
         }
         if (account instanceof Seller) {
             accountTypeField.setText("seller");
-            balanceField.setText("$" + String.valueOf(((Seller) account).getBalance()));
+            balanceField.setText("$" + ((Seller) account).getBalance());
             companyNameField.setText(((Seller) account).getCompanyName());
         }
         if (account instanceof Buyer) {
             accountTypeField.setText("buyer");
-            balanceField.setText("$" + String.valueOf(((Buyer) account).getBalance()));
+            balanceField.setText("$" + ((Buyer) account).getBalance());
             companyNameField.setText("-");
             companyNameField.setEditable(false);
         }
     }
 
     @FXML
-    private void update(ActionEvent event) throws IOException {
+    private void update(ActionEvent event) {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String emailAddress = emailAddressField.getText();
@@ -89,35 +85,26 @@ public class AccountInfoController implements Initializable {
         String companyName = companyNameField.getText();
         String currentPassword = currentPasswordField.getText();
         String newPassword = newPasswordField.getText();
+
         Account account = App.getSignedInAccount();
-        if (!account.getPassword().equals(currentPassword)) {
-            new Alert(Alert.AlertType.ERROR, "Enter current password correctly").showAndWait();
-        } else if (!newPassword.isBlank() && !newPassword.matches("\\w+")) {
-            new Alert(Alert.AlertType.ERROR, "Use word letters for new password").showAndWait();
-        } else if (!firstName.matches("\\w+")) {
-            new Alert(Alert.AlertType.ERROR, "Use word letters for first name").showAndWait();
-        } else if (!lastName.matches("\\w+")) {
-            new Alert(Alert.AlertType.ERROR, "Use word letters for last name").showAndWait();
-        } else if (!emailAddress.matches("(\\S+)@(\\S+)\\.(\\S+)")) {
-            new Alert(Alert.AlertType.ERROR, "Email format: example@gmail.com").showAndWait();
-        } else if (!phoneNumber.matches("\\d+")) {
-            new Alert(Alert.AlertType.ERROR, "Use digits for phone number").showAndWait();
-        } else if (App.getSignedInAccount() instanceof Seller && !companyName.matches("\\w+")) {
-            new Alert(Alert.AlertType.ERROR, "Use word letters for company name").showAndWait();
-        } else {
-            new Alert(Alert.AlertType.INFORMATION, "Profile updated").showAndWait();
-            String imagePath = imageView.getImage().getUrl();
-            account.setFirstName(firstName);
-            account.setLastName(lastName);
-            account.setEmailAddress(emailAddress);
-            account.setPhoneNumber(phoneNumber);
-            account.setImagePath(imagePath);
-            if (account instanceof Seller)
-                ((Seller) account).setCompanyName(companyName);
-            if (!newPassword.isBlank())
-                account.setPassword(newPassword);
-            Database.getInstance().saveAccount(account);
+        Account changedAccount = null;
+        String response = null;
+        if (account instanceof Manager) {
+            changedAccount = new Manager(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath());
+            response = App.getResponseFromServer("updateManagerInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
         }
+        if (account instanceof Seller) {
+            changedAccount = new Seller(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath(), companyName);
+            response = App.getResponseFromServer("updateSellerInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
+        }
+        if (account instanceof Buyer) {
+            changedAccount = new Buyer(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath());
+            response = App.getResponseFromServer("updateBuyerInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
+        }
+        if (response.startsWith("Success"))
+            new Alert(Alert.AlertType.INFORMATION, "Profile updated").showAndWait();
+        else
+            new Alert(Alert.AlertType.ERROR, response).showAndWait();
         currentPasswordField.setText("");
         newPasswordField.setText("");
     }
