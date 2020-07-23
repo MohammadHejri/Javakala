@@ -64,8 +64,11 @@ public class UsersManagementController implements Initializable {
         if (response.startsWith("Success")) {
             new Alert(Alert.AlertType.INFORMATION, "User successfully deleted").showAndWait();
             userTable.getItems().clear();
-            for (Account account : Database.getInstance().getAllAccounts())
+            for (Account account : Database.getInstance().getAllAccounts()) {
+                String resp = App.getResponseFromServer("isOnlineUser", account.getUsername());
+                account.setNetwork(resp.equals("True") ? "online" : "offline");
                 userTable.getItems().add(account);
+            }
         } else {
             new Alert(Alert.AlertType.ERROR, response).showAndWait();
         }

@@ -1,10 +1,7 @@
 package JavaProject.Model.Database;
 
 import JavaProject.App;
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.Log.BuyLog;
@@ -118,6 +115,8 @@ public class Database {
                 accounts.add(App.stringToObject(responseParts[i + 1], Seller.class));
             if (responseParts[i].equals("Buyer"))
                 accounts.add(App.stringToObject(responseParts[i + 1], Buyer.class));
+            if (responseParts[i].equals("Supporter"))
+                accounts.add(App.stringToObject(responseParts[i + 1], Supporter.class));
         }
         return accounts;
     }

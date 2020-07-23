@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.SupporterProfileController">
+    <left>
+        <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="15.0" stylesheets="@profileOptions.css" BorderPane.alignment="CENTER">
+            <children>
+                <Button mnemonicParsing="false" onAction="#openAccountInfoSection" prefHeight="40.0" prefWidth="160.0" text="Your profile" />
+                <Button mnemonicParsing="false" onAction="#openChatSection" prefHeight="40.0" prefWidth="160.0" text="Chat with customers" />
+                <Button mnemonicParsing="false" onAction="#signOut" prefHeight="40.0" prefWidth="160.0" text="Sign out" />
+                <Button mnemonicParsing="false" onAction="#changeToMainMenu" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />
+                <Button mnemonicParsing="false" onAction="#changeToPrevPane" prefHeight="40.0" prefWidth="160.0" text="Back to previous page" />
+            </children>
+        </VBox>
+    </left>
+</BorderPane>

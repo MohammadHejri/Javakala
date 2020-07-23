@@ -29,7 +29,8 @@ public class SellerProfileController implements Initializable{
         try {
             borderPane.setCenter(App.loadFXML("accountInfo"));
         } catch (IOException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
+            System.out.println("aaa");
         }
     }
 
@@ -61,7 +62,7 @@ public class SellerProfileController implements Initializable{
     @FXML
     private void openCartSection(ActionEvent event) throws IOException {
         App.setRoot("cart");
-        CartController.prevPane = App.loadFXML("sellerProflie");
+        CartController.prevPane = null;
     }
 
     @FXML

@@ -2,6 +2,9 @@ package JavaProject.Controller;
 
 import JavaProject.App;
 import JavaProject.Model.Account.Buyer;
+import JavaProject.Model.Account.Manager;
+import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.Supporter;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Product;
 import javafx.event.ActionEvent;
@@ -92,7 +95,18 @@ public class CartController implements Initializable {
 
     @FXML
     private void changeToPrevPane(ActionEvent event) throws IOException {
-        App.setRoot(prevPane);
+        if (prevPane == null) {
+            if (App.getSignedInAccount() instanceof Manager)
+                App.setRoot("managerProfile");
+            if (App.getSignedInAccount() instanceof Seller)
+                App.setRoot("sellerProfile");
+            if (App.getSignedInAccount() instanceof Buyer)
+                App.setRoot("buyerProfile");
+            if (App.getSignedInAccount() instanceof Supporter)
+                App.setRoot("supporterProfile");
+        } else {
+            App.setRoot(prevPane);
+        }
     }
 
 }

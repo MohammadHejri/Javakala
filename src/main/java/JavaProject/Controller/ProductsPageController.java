@@ -4,6 +4,7 @@ import JavaProject.App;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
 import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.Supporter;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Category;
 import JavaProject.Model.ProductOrganization.Filter.Filter;
@@ -337,6 +338,10 @@ public class ProductsPageController implements Initializable {
         if (App.getSignedInAccount() instanceof Buyer) {
             App.setRoot("buyerProfile");
             BuyerProfileController.prevPane = App.productsPage;
+        }
+        if (App.getSignedInAccount() instanceof Supporter) {
+            App.setRoot("supporterProfile");
+            SupporterProfileController.prevPane = App.mainPage;
         }
     }
 

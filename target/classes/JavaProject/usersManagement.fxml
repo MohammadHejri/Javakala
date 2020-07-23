@@ -27,6 +27,6 @@
          </columns>
       </TableView>
       <Button fx:id="deleteUserButton" layoutX="50.0" layoutY="520.0" mnemonicParsing="false" onAction="#deleteUser" prefHeight="40.0" prefWidth="150.0" text="Delete user" />
-      <Button layoutX="210.0" layoutY="520.0" mnemonicParsing="false" onAction="#createManager" prefHeight="40.0" prefWidth="250.0" text="Create manager account" />
+      <Button layoutX="210.0" layoutY="520.0" mnemonicParsing="false" onAction="#createManager" prefHeight="40.0" prefWidth="300.0" text="Create manager | supporter account" />
    </children>
 </AnchorPane>

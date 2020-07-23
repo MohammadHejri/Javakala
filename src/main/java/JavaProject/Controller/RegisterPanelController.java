@@ -1,10 +1,7 @@
 package JavaProject.Controller;
 
 import JavaProject.App;
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
@@ -57,6 +54,8 @@ public class RegisterPanelController implements Initializable {
     @FXML
     RadioButton buyerButton;
     @FXML
+    RadioButton supporterButton;
+    @FXML
     ImageView imageView;
     @FXML
     Button loginButton;
@@ -82,12 +81,15 @@ public class RegisterPanelController implements Initializable {
             managerButton.setSelected(true);
             sellerButton.setDisable(true);
             buyerButton.setDisable(true);
+            supporterButton.setDisable(true);
             disableChange();
         } else if (App.getSignedInAccount() == null) {
             buyerButton.setSelected(true);
             managerButton.setDisable(true);
+            supporterButton.setDisable(true);
         } else {
             managerButton.setSelected(true);
+            supporterButton.setDisable(false);
             sellerButton.setDisable(true);
             buyerButton.setDisable(true);
             disableChange();
@@ -117,6 +119,10 @@ public class RegisterPanelController implements Initializable {
         if (buyerButton.isSelected()) {
             Account account = new Buyer(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
             response = App.getResponseFromServer("createBuyer", App.objectToString(account));
+        }
+        if (supporterButton.isSelected()) {
+            Account account = new Supporter(username, password, firstName, lastName, emailAddress, phoneNumber, imagePath);
+            response = App.getResponseFromServer("createSupporter", App.objectToString(account));
         }
 
         if (response.startsWith("Success")) {
@@ -154,6 +160,12 @@ public class RegisterPanelController implements Initializable {
                 App.setRoot("buyerProfile");
                 BuyerProfileController.prevPane = RegisterPanelController.prevPane;
             }
+            if (responseParts[1].equals("Supporter")) {
+                account = App.stringToObject(responseParts[2], Supporter.class);
+                App.setSignedInAccount(account);
+                App.setRoot("supporterProfile");
+                SupporterProfileController.prevPane = RegisterPanelController.prevPane;
+            }
         } else {
             signInStatusLabel.setText(response);
         }
@@ -166,6 +178,8 @@ public class RegisterPanelController implements Initializable {
         if (sellerButton.isSelected())
             companyNameField.setDisable(false);
         if (buyerButton.isSelected())
+            companyNameField.setDisable(true);
+        if (supporterButton.isSelected())
             companyNameField.setDisable(true);
     }
 

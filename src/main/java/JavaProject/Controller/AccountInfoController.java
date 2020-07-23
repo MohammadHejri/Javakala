@@ -1,10 +1,7 @@
 package JavaProject.Controller;
 
 import JavaProject.App;
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -78,6 +75,12 @@ public class AccountInfoController implements Initializable {
             companyNameField.setText("-");
             companyNameField.setEditable(false);
         }
+        if (account instanceof Supporter) {
+            accountTypeField.setText("supporter");
+            balanceField.setText("-");
+            companyNameField.setText("-");
+            companyNameField.setEditable(false);
+        }
     }
 
     @FXML
@@ -104,6 +107,10 @@ public class AccountInfoController implements Initializable {
         if (account instanceof Buyer) {
             changedAccount = new Buyer(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath());
             response = App.getResponseFromServer("updateBuyerInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
+        }
+        if (account instanceof Supporter) {
+            changedAccount = new Supporter(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath());
+            response = App.getResponseFromServer("updateSupporterInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
         }
         if (response.startsWith("Success")) {
             new Alert(Alert.AlertType.INFORMATION, "Profile updated").showAndWait();

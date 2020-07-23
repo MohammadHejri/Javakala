@@ -12,5 +12,6 @@ module SharifAP {
     opens JavaProject.Model.Request to com.google.gson, javafx.base;
     opens JavaProject.Model.ProductOrganization to com.google.gson, javafx.base;
     opens JavaProject.Model.Log to com.google.gson, javafx.base;
+    opens JavaProject.Model.Chat to com.google.gson;
     exports JavaProject;
 }

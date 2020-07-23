@@ -12,7 +12,8 @@
             <children>
                 <Button mnemonicParsing="false" onAction="#openAccountInfoSection" prefHeight="40.0" prefWidth="160.0" text="Your profile" />
                 <Button mnemonicParsing="false" onAction="#openBuyerSaleHistorySection" prefHeight="40.0" prefWidth="160.0" text="View Sale History" />
-            <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" prefHeight="40.0" prefWidth="160.0" text="View discount codes" />
+                <Button mnemonicParsing="false" onAction="#openDiscountCodeViewSection" prefHeight="40.0" prefWidth="160.0" text="View discount codes" />
+                <Button mnemonicParsing="false" onAction="#openChatSection" prefHeight="40.0" prefWidth="160.0" text="Chat with supporters" />
                 <Button mnemonicParsing="false" onAction="#openCartSection" prefHeight="40.0" prefWidth="160.0" text="View cart" />
                 <Button mnemonicParsing="false" onAction="#signOut" prefHeight="40.0" prefWidth="160.0" text="Sign out" />
                 <Button mnemonicParsing="false" onAction="#changeToMainMenu" prefHeight="40.0" prefWidth="160.0" text="Back to main menu" />

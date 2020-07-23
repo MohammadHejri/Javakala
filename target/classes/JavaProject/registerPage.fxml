@@ -56,9 +56,9 @@
                            </graphic></Button>
                             </children>
                         </AnchorPane>
-                        <AnchorPane prefHeight="478.0" prefWidth="354.0" style="-fx-background-color: white;">
+                        <AnchorPane prefHeight="540.0" prefWidth="478.0" style="-fx-background-color: white;">
                             <children>
-                                <VBox alignment="CENTER" fillWidth="false" layoutX="114.0" layoutY="10.0" prefHeight="498.0" prefWidth="252.0" spacing="10.0">
+                                <VBox alignment="CENTER" fillWidth="false" layoutX="-1.0" layoutY="10.0" prefHeight="616.0" prefWidth="478.0" spacing="10.0">
                                     <children>
                                         <ImageView id="imageView" fx:id="imageView" fitHeight="92.0" fitWidth="132.0" onMouseClicked="#chooseImage" pickOnBounds="true" preserveRatio="true">
                                             <image>
@@ -66,7 +66,7 @@
                                             </image>
                                         </ImageView>
                                         <Label text="Register" />
-                                        <HBox alignment="CENTER" prefHeight="18.0" prefWidth="254.0" spacing="15.0">
+                                        <HBox alignment="CENTER" prefHeight="27.0" prefWidth="365.0" spacing="15.0">
                                             <children>
                                                 <RadioButton id="buyerButton" fx:id="buyerButton" mnemonicParsing="false" onAction="#updateAccountProperties" text="Customer">
                                                     <toggleGroup>
@@ -74,33 +74,31 @@
                                                     </toggleGroup>
                                                 </RadioButton>
                                                 <RadioButton id="sellerButton" fx:id="sellerButton" mnemonicParsing="false" onAction="#updateAccountProperties" text="Seller" toggleGroup="$registerPageToggleGroup" />
-                                                <RadioButton id="managerButton" fx:id="managerButton" layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Manager">
-                                                    <toggleGroup>
-                                                        <ToggleGroup fx:id="registerPageToggleGroup1" />
-                                                    </toggleGroup>
-                                                </RadioButton>
+                                                <RadioButton id="managerButton" fx:id="managerButton" layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Manager" toggleGroup="$registerPageToggleGroup" />
+                                    <RadioButton id="managerButton" fx:id="supporterButton" mnemonicParsing="false" onAction="#updateAccountProperties" text="Supporter" toggleGroup="$registerPageToggleGroup" />
                                             </children>
                                         </HBox>
-                                        <TextField id="signUpUsernameField" fx:id="signUpUsernameField" promptText="username" />
-                                        <PasswordField id="signUpPasswordField" fx:id="signUpPasswordField" prefHeight="26.0" prefWidth="150.0" promptText="password" />
-                                        <TextField id="firstNameField" fx:id="firstNameField" promptText="first name" />
-                                        <TextField id="lastNameField" fx:id="lastNameField" promptText="last name" />
-                                        <TextField id="emailAddressField" fx:id="emailAddressField" promptText="email address" />
-                                        <TextField id="phoneNumberField" fx:id="phoneNumberField" promptText="phone number" />
-                                        <TextField id="companyNameField" fx:id="companyNameField" layoutX="28.0" layoutY="348.0" promptText="company name" />
+                                        <TextField id="signUpUsernameField" fx:id="signUpUsernameField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="username" />
+                                        <PasswordField id="signUpPasswordField" fx:id="signUpPasswordField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="password" />
+                                        <TextField id="firstNameField" fx:id="firstNameField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="first name" />
+                                        <TextField id="lastNameField" fx:id="lastNameField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="last name" />
+                                        <TextField id="emailAddressField" fx:id="emailAddressField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="email address" />
+                                        <TextField id="phoneNumberField" fx:id="phoneNumberField" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="phone number" />
+                                        <TextField id="companyNameField" fx:id="companyNameField" layoutX="28.0" layoutY="348.0" maxHeight="20.0" prefHeight="20.0" prefWidth="200.0" promptText="company name" />
                                         <Button mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="90.0" text="Submit" />
                                         <Button layoutX="76.0" layoutY="420.0" mnemonicParsing="false" onAction="#resetImageToDefault" text="Reset Picture" />
                                         <Label id="signUpStatusLabel" fx:id="signUpStatusLabel" alignment="CENTER" prefHeight="18.0" prefWidth="253.0" />
                                     </children>
                                 </VBox>
-                                <Button id="backButton2" fx:id="backButton2" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#changeToPrevScene" prefHeight="26.0" prefWidth="56.0" style="-fx-border-color: white; -fx-background-color: white;">
+                                <Button id="backButton2" fx:id="backButton2" mnemonicParsing="false" onAction="#changeToPrevScene" prefHeight="26.0" prefWidth="56.0" style="-fx-border-color: white; -fx-background-color: white;">
                            <graphic>
                                       <ImageView id="backImage" fx:id="backImage" fitHeight="42.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
                                           <image>
                                               <Image url="@../Images/back.png" />
                                           </image>
                                       </ImageView>
-                           </graphic></Button>
+                           </graphic>
+                        </Button>
                             </children>
                         </AnchorPane>
                     </children>

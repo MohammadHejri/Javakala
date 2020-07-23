@@ -1,10 +1,7 @@
 package JavaProject.Controller;
 
 import JavaProject.App;
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
@@ -74,6 +71,9 @@ public class MainMenuController implements Initializable {
         } else if (account instanceof Buyer) {
             App.setRoot("buyerProfile");
             BuyerProfileController.prevPane = App.mainPage;
+        } else if (account instanceof Supporter) {
+            App.setRoot("supporterProfile");
+            SupporterProfileController.prevPane = App.mainPage;
         }
     }
 

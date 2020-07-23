@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ChatController">
+    <children>
+        <ImageView fitHeight="600.0" fitWidth="1000.0" opacity="0.6" pickOnBounds="true">
+            <image>
+                <Image url="@../Images/profileBG.jpg" />
+            </image>
+        </ImageView>
+        <TableView fx:id="userTable" layoutX="50.0" layoutY="50.0" prefHeight="500.0" prefWidth="300.0" stylesheets="@profile.css">
+            <columns>
+                <TableColumn fx:id="usernameColumn" prefWidth="150.0" resizable="false" text="Username" />
+                <TableColumn fx:id="networkColumn" prefWidth="150.0" resizable="false" text="Network" />
+            </columns>
+        </TableView>
+      <ScrollPane fx:id="chatPane" hbarPolicy="NEVER" layoutX="400.0" layoutY="50.0" prefHeight="450.0" prefWidth="550.0" vbarPolicy="ALWAYS">
+         <content>
+            <VBox fx:id="chatVBox" alignment="BOTTOM_CENTER" prefHeight="450.0" prefWidth="550.0" spacing="5.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+         </content>
+      </ScrollPane>
+      <Button fx:id="sendButton" layoutX="800.0" layoutY="500.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="50.0" prefWidth="150.0" text="Send message" />
+      <TextArea fx:id="messageArea" layoutX="400.0" layoutY="500.0" prefHeight="50.0" prefWidth="400.0" promptText="Type your message here" wrapText="true" />
+      <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="960.0" layoutY="10.0" onMouseClicked="#changeToPrevPane" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/back.png" />
+         </image>
+      </ImageView>
+    </children>
+</AnchorPane>

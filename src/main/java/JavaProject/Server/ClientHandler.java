@@ -1,9 +1,8 @@
 package JavaProject.Server;
 
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
+import JavaProject.Model.Chat.Conversation;
+import JavaProject.Model.Chat.Message;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.ProductOrganization.Category;
@@ -71,6 +70,9 @@ public class ClientHandler extends Thread {
                 } else if (message.startsWith("createBuyer")) {
                     Account account = stringToObject(messageParts[1], Buyer.class);
                     respondToClient(getSignUpResult(account));
+                } else if (message.startsWith("createSupporter")) {
+                    Account account = stringToObject(messageParts[1], Supporter.class);
+                    respondToClient(getSignUpResult(account));
                 } else if (message.startsWith("signIn")) {
                     respondToClient(getSignInResult(messageParts[1], messageParts[2]));
                 } else if (message.startsWith("signOut")) {
@@ -83,6 +85,9 @@ public class ClientHandler extends Thread {
                     respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
                 } else if (message.startsWith("updateBuyerInfo")) {
                     Account changedAccount = stringToObject(messageParts[3], Buyer.class);
+                    respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
+                } else if (message.startsWith("updateSupporterInfo")) {
+                    Account changedAccount = stringToObject(messageParts[3], Supporter.class);
                     respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
                 } else if (message.startsWith("getAllAccounts")) {
                     respondToClient(getAllAccountsAsString());
@@ -140,6 +145,12 @@ public class ClientHandler extends Thread {
                     respondToClient(getLeaveCommentResult(messageParts[1], messageParts[2]));
                 } else if (message.startsWith("isOnlineUser")) {
                     respondToClient(getOnlineUserCheckResult(messageParts[1]));
+                } else if (message.startsWith("saveMessageAndNotify")) {
+                    respondToClient(getSaveMessageAndNotifyResult(messageParts[1]));
+                } else if (message.startsWith("getConversation")) {
+                    respondToClient(getConversationAsString(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("hadConversation")) {
+                    respondToClient(getHadConversationResult(messageParts[1], messageParts[2]));
                 } else {
                     respondToClient(message);
                 }
@@ -151,6 +162,32 @@ public class ClientHandler extends Thread {
                 e.printStackTrace();
             }
         }
+    }
+
+    private String getHadConversationResult(String firstSide, String secondSide) {
+        Conversation conversation = Database.getInstance().getConversationByBothSides(firstSide, secondSide);
+        if (conversation == null)
+            return "False";
+        return "True";
+    }
+
+    private String getConversationAsString(String firstSide, String secondSide) throws IOException {
+        Conversation conversation = Database.getInstance().getConversationByBothSides(firstSide, secondSide);
+        if (conversation == null) {
+            conversation = new Conversation(firstSide, secondSide);
+            Database.getInstance().saveConversation(conversation);
+        }
+        return objectToString(conversation);
+    }
+
+    private String getSaveMessageAndNotifyResult(String messageAsString) throws IOException {
+        Message message = stringToObject(messageAsString, Message.class);
+        Conversation conversation = Database.getInstance().getConversationByBothSides(message.getSenderUsername(), message.getRecieverUsername());
+        if (conversation == null)
+            conversation = new Conversation(message.getSenderUsername(), message.getRecieverUsername());
+        conversation.getMesaages().add(message);
+        Database.getInstance().saveConversation(conversation);
+        return "Success";
     }
 
     private String getOnlineUserCheckResult(String username) {
@@ -764,6 +801,9 @@ public class ClientHandler extends Thread {
                 result += "###Seller###";
             if (account instanceof Buyer)
                 result += "###Buyer###";
+            if (account instanceof Supporter)
+                result += "###Supporter###";
+
             result += objectToString(account);
         }
         return result;
@@ -835,6 +875,8 @@ public class ClientHandler extends Thread {
                 return "Success###Seller###" + objectToString(account);
             if (account instanceof Buyer)
                 return "Success###Buyer###" + objectToString(account);
+            if (account instanceof Supporter)
+                return "Success###Supporter###" + objectToString(account);
         }
         return null;
     }

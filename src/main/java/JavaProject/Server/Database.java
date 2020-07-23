@@ -1,9 +1,7 @@
 package JavaProject.Server;
 
-import JavaProject.Model.Account.Account;
-import JavaProject.Model.Account.Buyer;
-import JavaProject.Model.Account.Manager;
-import JavaProject.Model.Account.Seller;
+import JavaProject.Model.Account.*;
+import JavaProject.Model.Chat.Conversation;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.Log.BuyLog;
@@ -31,15 +29,18 @@ public class Database {
     private ArrayList<BuyLog> allBuyLogs = new ArrayList<>();
     private ArrayList<SellLog> allSellLogs = new ArrayList<>();
     private ArrayList<DiscountCode> allDiscountCodes = new ArrayList<>();
+    private ArrayList<Conversation> allConversations = new ArrayList<>();
     private final String rootPath = "src/main/server/Root";
     private final String managersPath = "src/main/server/Accounts/Managers";
     private final String sellersPath = "src/main/server/Accounts/Sellers";
     private final String buyersPath = "src/main/server/Accounts/Buyers";
+    private final String supportersPath = "src/main/server/Accounts/Supporters";
     private final String requestsPath = "src/main/server/Requests";
     private final String auctionsPath = "src/main/server/Auctions";
     private final String buyLogsPath = "src/main/server/Log/BuyLogs";
     private final String sellLogsPath = "src/main/server/Log/SellLogs";
     private final String discountCodesPath = "src/main/server/DiscountCodes";
+    private final String conversationsPath = "src/main/server/Conversations";
 
     public static Database getInstance() {
         if (instance == null)
@@ -52,11 +53,13 @@ public class Database {
         new File(managersPath).mkdirs();
         new File(sellersPath).mkdirs();
         new File(buyersPath).mkdirs();
+        new File(supportersPath).mkdirs();
         new File(requestsPath).mkdirs();
         new File(auctionsPath).mkdirs();
         new File(buyLogsPath).mkdirs();
         new File(sellLogsPath).mkdirs();
         new File(discountCodesPath).mkdirs();
+        new File(conversationsPath).mkdirs();
         for (File file : new File(rootPath).listFiles())
             root = new JsonFileReader().read(file, Category.class);
         for (File file : new File(managersPath).listFiles())
@@ -65,6 +68,8 @@ public class Database {
             allAccounts.add(new JsonFileReader().read(file, Seller.class));
         for (File file : new File(buyersPath).listFiles())
             allAccounts.add(new JsonFileReader().read(file, Buyer.class));
+        for (File file : new File(supportersPath).listFiles())
+            allAccounts.add(new JsonFileReader().read(file, Supporter.class));
         for (File file : new File(requestsPath).listFiles())
             allRequests.add(new JsonFileReader().read(file, Request.class));
         for (File file : new File(auctionsPath).listFiles())
@@ -75,6 +80,8 @@ public class Database {
             allSellLogs.add(new JsonFileReader().read(file, SellLog.class));
         for (File file : new File(discountCodesPath).listFiles())
             allDiscountCodes.add(new JsonFileReader().read(file, DiscountCode.class));
+        for (File file : new File(conversationsPath).listFiles())
+            allConversations.add(new JsonFileReader().read(file, Conversation.class));
         if (root == null) {
             root = new Category("root", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             new JsonFileWriter().write(rootPath + "\\root.json", root);
@@ -97,6 +104,8 @@ public class Database {
             new JsonFileWriter().write(sellersPath + "\\" + account.getUsername() + ".json", account);
         if (account instanceof Buyer)
             new JsonFileWriter().write(buyersPath + "\\" + account.getUsername() + ".json", account);
+        if (account instanceof Supporter)
+            new JsonFileWriter().write(supportersPath + "\\" + account.getUsername() + ".json", account);
     }
 
     public void deleteAccount(Account account) {
@@ -116,6 +125,8 @@ public class Database {
         }
         if (account instanceof Buyer)
             accountFile = new File(buyersPath + "\\" + account.getUsername() + ".json");
+        if (account instanceof Supporter)
+            accountFile = new File(supportersPath + "\\" + account.getUsername() + ".json");
         accountFile.delete();
     }
 
@@ -504,4 +515,25 @@ public class Database {
         return arrayList;
     }
 
+    public void saveConversation(Conversation conversation) throws IOException {
+        if (getConversationByBothSides(conversation.getFirstSide(), conversation.getSecondSide()) == null)
+            allConversations.add(conversation);
+        new JsonFileWriter().write(conversationsPath + "\\" + conversation.getID() + ".json", conversation);
+    }
+
+    public void deleteConversation(Conversation conversation) throws IOException {
+        allConversations.remove(conversation);
+        new File(conversationsPath + "\\" + conversation.getID() + ".json").delete();
+    }
+
+    public Conversation getConversationByBothSides(String senderUsername, String recieverUsername) {
+        for (Conversation conversation : allConversations) {
+            String firstSide = conversation.getFirstSide();
+            String secondSide = conversation.getSecondSide();
+            boolean b1 = firstSide.equals(senderUsername) && secondSide.equals(recieverUsername);
+            boolean b2 = firstSide.equals(recieverUsername) && secondSide.equals(senderUsername);
+            if (b1 || b2) return conversation;
+        }
+        return null;
+    }
 }
