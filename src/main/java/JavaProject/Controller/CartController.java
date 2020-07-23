@@ -2,6 +2,7 @@ package JavaProject.Controller;
 
 import JavaProject.App;
 import JavaProject.Model.Account.Buyer;
+import JavaProject.Model.Database.Database;
 import JavaProject.Model.ProductOrganization.Product;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +16,7 @@ import javafx.scene.layout.HBox;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class CartController implements Initializable {
@@ -37,6 +39,13 @@ public class CartController implements Initializable {
             purchaseButton.setDisable(false);
         else purchaseButton.setDisable(true);
         price = totalPrice;
+        HashMap<Product, Integer> newCart = new HashMap<>();
+        for (Product product : App.getCart().getProducts().keySet()) {
+            int quantity = App.getCart().getProducts().get(product);
+            if (quantity > 0)
+                newCart.put(Database.getInstance().getProductByName(product.getName()), quantity);
+        }
+        App.getCart().setProducts(newCart);
         for (Product product : App.getCart().getProducts().keySet()) {
             try {
                 FXMLLoader loader = new FXMLLoader(App.class.getResource("productInCart.fxml"));
@@ -48,10 +57,32 @@ public class CartController implements Initializable {
                 e.printStackTrace();
             }
         }
+        updatePrice();
     }
 
     @FXML
     private void openPurchaseSection(ActionEvent event) throws IOException {
+        if (App.getCart().getProducts().size() == 0) {
+            purchaseButton.setDisable(true);
+            return;
+        }
+        HashMap<Product, Integer> newCart = new HashMap<>();
+        for (Product product : App.getCart().getProducts().keySet()) {
+            int quantity = App.getCart().getProducts().get(product);
+            if (quantity > 0)
+                newCart.put(Database.getInstance().getProductByName(product.getName()), quantity);
+        }
+        App.getCart().setProducts(newCart);
+        for (Product product : App.getCart().getProducts().keySet()) {
+            int quantity = App.getCart().getProducts().get(product);
+            if (quantity > product.getRemainingItems()) {
+                App.getCart().getProducts().replace(product, product.getRemainingItems());
+                App.setRoot("cart");
+                return;
+            }
+        }
+        if (App.getCart().getProducts().size() == 0)
+            App.setRoot("cart");
         App.setRoot("receiverInfo");
     }
 

@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
@@ -21,6 +22,8 @@ import java.util.*;
 // Client-Server : Done
 
 public class ProductsManagementController implements Initializable {
+
+    File imageFile;
 
     @FXML
     TableView<Product> productsTable;
@@ -99,7 +102,8 @@ public class ProductsManagementController implements Initializable {
         Product product = productsTable.getSelectionModel().getSelectedItem();
         descriptionArea.setText(product.getDescription());
         deleteProductButton.setDisable(false);
-        imageView.setImage(new Image(product.getImagePath()));
+        imageFile = new File(App.getFileData(product.getName(), "productPhoto"));
+        imageView.setImage(new Image(imageFile.toURI().toString()));
         specsTable.getItems().clear();
         for (String key : product.getSpecs().keySet())
             specsTable.getItems().add(new DualString(key, product.getSpecs().get(key)));
@@ -108,7 +112,9 @@ public class ProductsManagementController implements Initializable {
     private void deselectProduct() {
         descriptionArea.setText("");
         deleteProductButton.setDisable(true);
+
         imageView.setImage(null);
+
         specsTable.getItems().clear();
     }
 

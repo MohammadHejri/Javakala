@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.DiscountCodeViewController">
+   <children>
+      <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/profileBG.jpg" />
+         </image>
+      </ImageView>
+      <ListView fx:id="discountCodesList" layoutX="50.0" layoutY="100.0" prefHeight="450.0" prefWidth="200.0" />
+      <VBox alignment="CENTER" layoutX="300.0" layoutY="50.0" prefHeight="500.0" prefWidth="450.0" spacing="25.0">
+         <children>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="Code :  " />
+                  <TextField fx:id="codeField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="Start date :  " />
+                  <TextField fx:id="startField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="End date :  " />
+                  <TextField fx:id="endField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="Percent :  " />
+                  <TextField fx:id="percentField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="Maximum discount :  " />
+                  <TextField fx:id="maxDiscountField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="40.0" prefWidth="463.0" spacing="20.0">
+               <children>
+                  <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="159.0" text="Remaining usages :  " />
+                  <TextField fx:id="remainingField" prefHeight="40.0" prefWidth="200.0" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Label alignment="CENTER" layoutX="50.0" layoutY="50.0" prefHeight="40.0" prefWidth="200.0" text="Discount codes" />
+   </children>
+</AnchorPane>

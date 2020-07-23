@@ -9,6 +9,7 @@ public class Account {
     protected String emailAddress;
     protected String phoneNumber;
     protected String imagePath;
+    protected String network;
 
     public Account(String username, String password, String firstName, String lastName, String emailAddress, String phoneNumber, String imagePath) {
         this.username = username;
@@ -74,6 +75,14 @@ public class Account {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    public void setNetwork(String network) {
+        this.network = network;
+    }
+
+    public String getNetwork() {
+        return network;
     }
 
     @Override

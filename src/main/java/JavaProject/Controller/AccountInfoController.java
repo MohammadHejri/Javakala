@@ -15,12 +15,15 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 // Client-Server : Done
 
 public class AccountInfoController implements Initializable {
+
+    File imageFile;
 
     @FXML
     TextField usernameField;
@@ -48,7 +51,8 @@ public class AccountInfoController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Account account = App.getSignedInAccount();
-        imageView.setImage(new Image(account.getImagePath()));
+        imageFile = new File(App.getFileData(account.getUsername(), "accountPhoto"));
+        imageView.setImage(new Image(imageFile.toURI().toString()));
         usernameField.setEditable(false);
         accountTypeField.setEditable(false);
         balanceField.setEditable(false);
@@ -77,7 +81,7 @@ public class AccountInfoController implements Initializable {
     }
 
     @FXML
-    private void update(ActionEvent event) {
+    private void update(ActionEvent event) throws IOException {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String emailAddress = emailAddressField.getText();
@@ -101,10 +105,12 @@ public class AccountInfoController implements Initializable {
             changedAccount = new Buyer(account.getUsername(), newPassword, firstName, lastName, emailAddress, phoneNumber, account.getImagePath());
             response = App.getResponseFromServer("updateBuyerInfo", account.getUsername(), currentPassword, App.objectToString(changedAccount));
         }
-        if (response.startsWith("Success"))
+        if (response.startsWith("Success")) {
             new Alert(Alert.AlertType.INFORMATION, "Profile updated").showAndWait();
-        else
+            App.uploadFilesToServer(App.getSignedInAccount().getUsername() + imageFile.getPath().substring(imageFile.getPath().lastIndexOf(".")) + "", imageFile, "accountPhoto");
+        } else {
             new Alert(Alert.AlertType.ERROR, response).showAndWait();
+        }
         currentPasswordField.setText("");
         newPasswordField.setText("");
     }
@@ -114,14 +120,16 @@ public class AccountInfoController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fileChooser.showOpenDialog(null);
-        if (file != null)
-            imageView.setImage(new Image(file.toURI().toString()));
+        if (file != null) {
+            imageFile = file;
+            imageView.setImage(new Image(imageFile.toURI().toString()));
+        }
     }
 
     @FXML
     private void resetImageToDefault(ActionEvent event) {
-        File file = new File("src/main/resources/Images/account.png");
-        imageView.setImage(new Image(file.toURI().toString()));
+        imageFile = new File("src/main/resources/Images/account.png");
+        imageView.setImage(new Image(imageFile.toURI().toString()));
     }
 
 }

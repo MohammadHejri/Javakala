@@ -76,10 +76,10 @@ public class ProductsPageController implements Initializable {
         }
         pagination.setMaxPageIndicatorCount(3);
         pagination.setPageFactory(this::createPage);
-
     }
 
     private void initAdvertisment() throws IOException {
+        AD_vbox.getChildren().clear();
         ArrayList<Product> products = getAcceptedProducts();
         for (Product product : products) {
             if (Math.random() < 0.5) {
@@ -141,6 +141,10 @@ public class ProductsPageController implements Initializable {
     }
 
     private void initFiltersSection() {
+        mostViewedButton.setSelected(true);
+        int count = accordion.getPanes().size();
+        while (count-- > 4)
+            accordion.getPanes().remove(count);
         // category section
         categoryPane.setText("Category (" + current.getName() + ")");
         categoriesTree.setRoot(getTreeItemByCategory(Database.getInstance().getCategoryByName("root")));
@@ -334,5 +338,26 @@ public class ProductsPageController implements Initializable {
             App.setRoot("buyerProfile");
             BuyerProfileController.prevPane = App.productsPage;
         }
+    }
+
+    @FXML
+    private void refreshPage() {
+        filter = new Filter();
+        sellerFilterVBox = new VBox();
+        brandFilterVBox = new VBox();
+        availabilityFilterVBox = new VBox();
+        promotionFilterVBox = new VBox();
+        specsFilterVBoxes = new HashMap<>();
+        current = filter.getCurrentCategory();
+        searchedName = null;
+        filteredPrice = false;
+        initFiltersSection();
+        try {
+            initAdvertisment();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        pagination.setMaxPageIndicatorCount(3);
+        pagination.setPageFactory(this::createPage);
     }
 }

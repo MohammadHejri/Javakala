@@ -1,0 +1,27 @@
+.optionButton{
+    -fx-line-height: 1.222;
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-text-alignment: center;
+    -fx-background-color: ghostwhite;
+
+}
+.optionButton:hover{
+    -fx-background-color: rgb(207, 225, 243);
+    -fx-cursor: hand;
+}
+.selectButton{
+
+    -fx-border-color: black;
+    -fx-border-width: 1px;
+    -fx-text-alignment: center;
+    -fx-background-color: ghostwhite;
+
+}
+.selectButton:hover{
+    -fx-background-color: rgb(207, 225, 243);
+    -fx-cursor: hand;
+}
+.backButton:hover{
+    -fx-cursor: hand;
+}

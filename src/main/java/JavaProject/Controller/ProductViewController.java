@@ -1,5 +1,6 @@
 package JavaProject.Controller;
 
+import JavaProject.App;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.ProductOrganization.Product;
@@ -25,6 +26,7 @@ public class ProductViewController implements Initializable {
 
     File starFull = new File("src/main/resources/Images/star-full.png");
     File starHalf = new File("src/main/resources/Images/star-half.png");
+    File imageFile;
 
     @FXML
     AnchorPane anchorPane;
@@ -67,7 +69,8 @@ public class ProductViewController implements Initializable {
     public void initProduct(Product product) {
         productName.setText(product.getName());
         price.setText("$ " + product.getPrice());
-        productImage.setImage(new Image(product.getImagePath()));
+        imageFile = new File(App.getFileData(product.getName(), "productPhoto"));
+        productImage.setImage(new Image(imageFile.toURI().toString()));
         if (product.getRemainingItems() == 0)
             soldImage.setVisible(true);
         if (product.getAuctionID() != null) {

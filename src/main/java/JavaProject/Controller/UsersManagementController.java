@@ -30,6 +30,8 @@ public class UsersManagementController implements Initializable {
     @FXML
     TableColumn<Account, String> phoneNumberColumn;
     @FXML
+    TableColumn<Account, String> networkColumn;
+    @FXML
     Button deleteUserButton;
 
     @Override
@@ -40,8 +42,12 @@ public class UsersManagementController implements Initializable {
         lastNameColumn.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         emailAddressColumn.setCellValueFactory(new PropertyValueFactory<>("emailAddress"));
         phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
-        for (Account account : Database.getInstance().getAllAccounts())
+        networkColumn.setCellValueFactory(new PropertyValueFactory<>("network"));
+        for (Account account : Database.getInstance().getAllAccounts()) {
+            String response = App.getResponseFromServer("isOnlineUser", account.getUsername());
+            account.setNetwork(response.equals("True") ? "online" : "offline");
             userTable.getItems().add(account);
+        }
         userTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 deleteUserButton.setDisable(false);

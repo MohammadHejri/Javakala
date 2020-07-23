@@ -36,6 +36,7 @@ public class ProductPageController implements Initializable {
     File starHalf = new File("src/main/resources/Images/star-half.png");
     Product product;
     String searchedName;
+    File imageFile;
 
     @FXML AnchorPane mainPane;
     @FXML ImageView productImage;
@@ -77,8 +78,7 @@ public class ProductPageController implements Initializable {
 
     public void initPage(Product product) throws IOException {
         this.product = product;
-        product.setViews(product.getViews() + 1);
-        Database.getInstance().updateCategories();
+        App.getResponseFromServer("increaseView", product.getName());
         initInformation();
         initZoom();
         initSimilarProducts();
@@ -87,6 +87,7 @@ public class ProductPageController implements Initializable {
     }
 
     private void initInformation() {
+        product = Database.getInstance().getProductByName(product.getName());
         auctionImage.setVisible(false);
         soldImage.setVisible(false);
         percent.setVisible(false);
@@ -98,7 +99,8 @@ public class ProductPageController implements Initializable {
         sellerLabel.setText("Seller : " + product.getSellerUsername());
         descriptionArea.setText(product.getDescription());
         price.setText("$ " + product.getPrice());
-        productImage.setImage(new Image(product.getImagePath()));
+        imageFile = new File(App.getFileData(product.getName(), "productPhoto"));
+        productImage.setImage(new Image(imageFile.toURI().toString()));
         if (product.getRemainingItems() == 0) {
             soldImage.setVisible(true);
             buyButton.setDisable(true);
@@ -152,6 +154,7 @@ public class ProductPageController implements Initializable {
     }
 
     private void initZoom() {
+        product = Database.getInstance().getProductByName(product.getName());
         productImage.setOnMouseEntered(e -> {
             mainPane.getChildren().add(zoomView);
         });
@@ -172,6 +175,7 @@ public class ProductPageController implements Initializable {
     }
 
     private void initSimilarProducts() {
+        product = Database.getInstance().getProductByName(product.getName());
         Category category = Database.getInstance().getCategoryByName(product.getParentCategoryName());
         ArrayList<Product> products = Database.getInstance().getAllAcceptedProductsRecursively(category);
         HashMap<Product, Integer> randomProducts = new HashMap<>();
@@ -209,6 +213,7 @@ public class ProductPageController implements Initializable {
     }
 
     private void initComments() {
+        product = Database.getInstance().getProductByName(product.getName());
         commentTable.getItems().clear();
         userColumn.setCellValueFactory(new PropertyValueFactory<>("commenterName"));
         titleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
@@ -218,6 +223,7 @@ public class ProductPageController implements Initializable {
     }
 
     private void initCompareTable(Product other) {
+        product = Database.getInstance().getProductByName(product.getName());
         fieldColumn.setCellValueFactory(new PropertyValueFactory<>("string1"));
         product1Column.setCellValueFactory(new PropertyValueFactory<>("string2"));
         product2Column.setCellValueFactory(new PropertyValueFactory<>("string3"));
@@ -256,6 +262,7 @@ public class ProductPageController implements Initializable {
 
 
     private void auctionHandling() {
+        product = Database.getInstance().getProductByName(product.getName());
         try {
             Auction auction = Database.getInstance().getAuctionByID(product.getAuctionID());
             Date nowDate = new Date();
@@ -279,6 +286,7 @@ public class ProductPageController implements Initializable {
 
     @FXML
     private void leaveComment(ActionEvent event) throws IOException {
+        product = Database.getInstance().getProductByName(product.getName());
         String title = titleField.getText().trim();
         String content = commentArea.getText().trim();
         if (title.isBlank()) {
@@ -286,15 +294,16 @@ public class ProductPageController implements Initializable {
         } else if (content.isBlank()) {
             commentArea.setText("!!! Enter comment !!!");
         } else {
-            product.getComments().add(new Comment(App.getSignedInAccount().getUsername(), title, content));
-            Database.getInstance().updateCategories();
+            App.getResponseFromServer("leaveComment", product.getName(), App.objectToString(new Comment(App.getSignedInAccount() == null ? "Unknown" : App.getSignedInAccount().getUsername(), title, content)));
             initComments();
         }
     }
 
     @FXML
     private void addToCart(ActionEvent event) {
-        App.getCart().getProducts().put(product, 1);
+        product = Database.getInstance().getProductByName(product.getName());
+        if (product.getRemainingItems() > 0)
+            App.getCart().getProducts().put(product, 1);
     }
 
     public void changeToPrevScene(javafx.scene.input.MouseEvent mouseEvent) {

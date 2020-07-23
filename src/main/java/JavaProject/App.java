@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class App extends Application {
@@ -110,12 +111,11 @@ public class App extends Application {
     }
 
     private static void connectToServer() throws IOException {
-        socket = new Socket("2.tcp.ngrok.io", 15721);
+        // socket = new Socket("2.tcp.ngrok.io", 15721);
+        socket = new Socket("127.0.0.1", 8080);
         dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
     }
-
-
 
     public static String getResponseFromServer(String ... messageParts) {
         String message = "";
@@ -124,12 +124,76 @@ public class App extends Application {
         }
         message = message.substring(3);
         try {
-            dataOutputStream.writeUTF(message);
+            int index = 0;
+            int length = message.length();
+            while (length > 32 * 1024) {
+                dataOutputStream.writeUTF(message.substring(index, 32 * 1024 + index));
+                dataOutputStream.flush();
+                dataInputStream.readUTF();
+                index += 32 * 1024;
+                length -= 32 * 1024;
+            }
+            if (length > 0) {
+                dataOutputStream.writeUTF(message.substring(index));
+                dataOutputStream.flush();
+                dataInputStream.readUTF();
+            }
+            dataOutputStream.writeUTF("END_OF_MESSAGE");
             dataOutputStream.flush();
             return dataInputStream.readUTF();
         } catch (Exception e) {
+            e.printStackTrace();
             return "Something went wrong";
         }
+    }
+
+    public static String uploadFilesToServer(String name, File file, String type) throws IOException {
+        dataOutputStream.writeUTF("uploadFile###" + type + "\\" + name);
+        dataOutputStream.flush();
+        dataInputStream.readUTF();
+        dataOutputStream.writeUTF("END_OF_MESSAGE");
+        dataOutputStream.flush();
+        byte[] array = Files.readAllBytes(Paths.get(file.getPath()));
+        dataOutputStream.writeInt(array.length);
+        FileInputStream fileInputStream = new FileInputStream(file);
+        byte[] buffer = new byte[32 * 1024 * 1024];
+        int len;
+        while ((len = fileInputStream.read(buffer)) > 0)
+            dataOutputStream.write(buffer, 0, len);
+        dataOutputStream.flush();
+        fileInputStream.close();
+        return dataInputStream.readUTF();
+    }
+
+    public static String getFileData(String name, String type) {
+        new File("src/main/resources/Data/accountPhoto").mkdirs();
+        new File("src/main/resources/Data/productPhoto").mkdirs();
+        new File("src/main/resources/Data/productFile").mkdirs();
+        try {
+            String message = "getFileData###" + name + "###" + type;
+            dataOutputStream.writeUTF(message);
+            dataOutputStream.flush();
+            dataInputStream.readUTF();
+            dataOutputStream.writeUTF("END_OF_MESSAGE");
+            dataOutputStream.flush();
+            String fullName = dataInputStream.readUTF();
+            if (fullName.startsWith("File not found"))
+                throw new Exception("File not found");
+            int numberOfBytes = dataInputStream.readInt();
+            FileOutputStream fileOutputStream = new FileOutputStream("src/main/resources/Data/" + type + "\\" + fullName);
+            byte[] buffer = new byte[32 * 1024 * 1024];
+            int len;
+            while (numberOfBytes > 0 && (len = dataInputStream.read(buffer)) > 0) {
+                fileOutputStream.write(buffer, 0, len);
+                numberOfBytes -= len;
+            }
+            fileOutputStream.close();
+            return "src/main/resources/Data/" + type + "\\" + fullName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Something went wrong";
+        }
+
     }
 
     public static  <T> T stringToObject(String string, Class<T> classOfT) {
@@ -142,4 +206,5 @@ public class App extends Application {
         Gson gson = builder.create();
         return gson.toJson(object);
     }
+
 }

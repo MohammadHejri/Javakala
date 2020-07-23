@@ -1,0 +1,20 @@
+Button {
+    -fx-background-color: linear-gradient(to left, #ededed 5%, #dfdfdf 100%);
+    -fx-border-radius: 0px;
+    -fx-background-radius: 0px;
+    -fx-border-color: #000000;
+    -fx-font-size: 12px;
+    -fx-cursor: pointer;
+    -fx-font-family: Arial;
+    -fx-pref-height: 25;
+}
+
+Button:hover {
+    -fx-background-color: linear-gradient(to bottom, #818181 5%, #afafaf 100%);
+    -fx-cursor: hand;
+}
+
+Button:pressed {
+    -fx-background-color: linear-gradient(to bottom, rgba(94, 102, 224, 0.51) 10%, #5259c7 100%);
+    -fx-font-weight: bolder;
+}

@@ -15,6 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.ParseException;
@@ -25,6 +26,7 @@ import java.util.ResourceBundle;
 public class ProductInCartController implements Initializable {
 
     Product product;
+    File imageFile;
 
     @FXML
     AnchorPane anchorPane;
@@ -64,9 +66,15 @@ public class ProductInCartController implements Initializable {
         productName.setText(product.getName());
         price.setText("$ " + product.getPrice());
         int quantity = App.getCart().getProducts().get(product);
+        if (quantity > product.getRemainingItems()) {
+            App.getCart().getProducts().replace(product, product.getRemainingItems());
+            quantity = product.getRemainingItems();
+            increaseButton.setVisible(false);
+        }
         totalPrice.setText("Total: $ " + String.format("%.2f", product.getPrice() * quantity));
         numberOfProducts.setText("" + quantity);
-        productImage.setImage(new Image(product.getImagePath()));
+        imageFile = new File(App.getFileData(product.getName(), "productPhoto"));
+        productImage.setImage(new Image(imageFile.toURI().toString()));
         if (product.getAuctionID() != null) {
             auctionHandling(product);
         }

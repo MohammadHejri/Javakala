@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductsManagementController">
+   <children>
+       <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+           <image>
+               <Image url="@../Images/profileBG.jpg" />
+           </image>
+       </ImageView>
+      <TableView fx:id="productsTable" layoutX="25.0" layoutY="25.0" prefHeight="300.0" prefWidth="750.0">
+        <columns>
+          <TableColumn fx:id="nameColumn" prefWidth="120.0" resizable="false" text="Name" />
+            <TableColumn fx:id="categoryColumn" prefWidth="90.0" resizable="false" text="Category" />
+            <TableColumn fx:id="brandColumn" prefWidth="75.0" resizable="false" text="Brand" />
+            <TableColumn fx:id="sellerColumn" prefWidth="75.0" resizable="false" text="Seller" />
+            <TableColumn fx:id="dateColumn" prefWidth="150.0" resizable="false" text="Date" />
+            <TableColumn fx:id="priceColumn" prefWidth="75.0" resizable="false" text="Price" />
+          <TableColumn fx:id="viewsColumn" prefWidth="45.0" resizable="false" text="Views" />
+            <TableColumn fx:id="scoreColumn" prefWidth="45.0" resizable="false" text="Score" />
+            <TableColumn fx:id="statusColumn" prefWidth="75.0" resizable="false" text="Status" />
+        </columns>
+      </TableView>
+      <TextArea fx:id="descriptionArea" layoutX="25.0" layoutY="415.0" prefHeight="160.0" prefWidth="225.0" promptText="Description" />
+      <TableView fx:id="specsTable" editable="true" layoutX="275.0" layoutY="350.0" prefHeight="225.0" prefWidth="250.0">
+        <columns>
+          <TableColumn fx:id="specsColumn" editable="false" prefWidth="125.0" resizable="false" text="Specs" />
+          <TableColumn fx:id="infoColumn" prefWidth="125.0" resizable="false" text="Info" />
+        </columns>
+      </TableView>
+      <Button fx:id="deleteProductButton" layoutX="25.0" layoutY="350.0" mnemonicParsing="false" onAction="#deleteProduct" prefHeight="40.0" prefWidth="225.0" text="Delete product" />
+      <ImageView fx:id="imageView" fitHeight="225.0" fitWidth="225.0" layoutX="550.0" layoutY="350.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>

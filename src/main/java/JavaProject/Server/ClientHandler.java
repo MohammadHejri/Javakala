@@ -1,10 +1,5 @@
 package JavaProject.Server;
 
-import JavaProject.App;
-import JavaProject.Controller.BuyerProfileController;
-import JavaProject.Controller.ManagerProfileController;
-import JavaProject.Controller.RegisterPanelController;
-import JavaProject.Controller.SellerProfileController;
 import JavaProject.Model.Account.Account;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Account.Manager;
@@ -12,6 +7,7 @@ import JavaProject.Model.Account.Seller;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
 import JavaProject.Model.ProductOrganization.Category;
+import JavaProject.Model.ProductOrganization.Comment;
 import JavaProject.Model.ProductOrganization.Product;
 import JavaProject.Model.ProductOrganization.Rate;
 import JavaProject.Model.Request.Request;
@@ -19,35 +15,47 @@ import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
+import javafx.fxml.FXML;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 
 public class ClientHandler extends Thread {
 
+    public static HashMap<ClientHandler, String> allConnectedClients = new HashMap<>();
+    private static final String uploadedFilesPath = "src/main/server/Files";
     private Socket clientSocket;
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
+    private String username;
 
     public ClientHandler(Socket clientSocket, DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
         this.clientSocket = clientSocket;
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
+        allConnectedClients.put(this, null);
     }
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                String message = dataInputStream.readUTF();
+        while (true) {
+            try {
+                String message = "";
+                while (true) {
+                    String messagePart = dataInputStream.readUTF();
+                    if (messagePart.equals("END_OF_MESSAGE"))
+                        break;
+                    message += messagePart;
+                    respondToClient("Got it");
+                }
                 System.out.println("==================================================");
                 System.out.println(message);
                 System.out.println("==================================================");
@@ -72,10 +80,10 @@ public class ClientHandler extends Thread {
                     respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
                 } else if (message.startsWith("updateSellerInfo")) {
                     Account changedAccount = stringToObject(messageParts[3], Seller.class);
-                    respondToClient(getUpdateAccountInfoResult(messageParts[1],  messageParts[2], changedAccount));
+                    respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
                 } else if (message.startsWith("updateBuyerInfo")) {
                     Account changedAccount = stringToObject(messageParts[3], Buyer.class);
-                    respondToClient(getUpdateAccountInfoResult(messageParts[1],  messageParts[2], changedAccount));
+                    respondToClient(getUpdateAccountInfoResult(messageParts[1], messageParts[2], changedAccount));
                 } else if (message.startsWith("getAllAccounts")) {
                     respondToClient(getAllAccountsAsString());
                 } else if (message.startsWith("deleteAccount")) {
@@ -122,11 +130,87 @@ public class ClientHandler extends Thread {
                     respondToClient(getAuctionByIDAsString(messageParts[1]));
                 } else if (message.startsWith("rateProduct")) {
                     respondToClient(getRateProductResult(messageParts[1], messageParts[2], messageParts[3]));
+                } else if (message.startsWith("uploadFile")) {
+                    respondToClient(getUploadFileResult(messageParts[1]));
+                } else if (message.startsWith("getFileData")) {
+                    getFileData(messageParts[1], messageParts[2]);
+                } else if (message.startsWith("increaseView")) {
+                    respondToClient(getIncreaseViewResult(messageParts[1]));
+                } else if (message.startsWith("leaveComment")) {
+                    respondToClient(getLeaveCommentResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("isOnlineUser")) {
+                    respondToClient(getOnlineUserCheckResult(messageParts[1]));
+                } else {
+                    respondToClient(message);
                 }
+            } catch (SocketException se) {
+                allConnectedClients.remove(this);
+                System.out.println("socket disconnected");
+                break;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+    }
+
+    private String getOnlineUserCheckResult(String username) {
+        if (allConnectedClients.containsValue(username))
+            return "True";
+        return "False";
+    }
+
+    private String getLeaveCommentResult(String productName, String commentAsString) throws IOException {
+        Product product = Database.getInstance().getProductByName(productName);
+        product.getComments().add(stringToObject(commentAsString, Comment.class));
+        Database.getInstance().updateCategories();
+        System.out.println("dvsdvsdvsdvsdvsv");
+        return "Success";
+    }
+
+    private String getIncreaseViewResult(String productName) throws IOException {
+        Product product = Database.getInstance().getProductByName(productName);
+        product.setViews(product.getViews() + 1);
+        Database.getInstance().updateCategories();
+        return "Success";
+    }
+
+    private void getFileData(String name, String type) throws IOException {
+        File file = null;
+        for (File fileInFolder : new File(uploadedFilesPath + "\\" + type).listFiles()) {
+            if (fileInFolder.getName().startsWith(name))
+                file = fileInFolder;
+        }
+        System.out.println(file == null ? "File not found" : file.getName());
+        dataOutputStream.writeUTF(file == null ? "File not found" : file.getName());
+        dataOutputStream.flush();
+        if (file != null) {
+            byte[] array = Files.readAllBytes(Paths.get(file.getPath()));
+            dataOutputStream.writeInt(array.length);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] buffer = new byte[32 * 1024 * 1024];
+            int len;
+            while ((len = fileInputStream.read(buffer)) > 0)
+                dataOutputStream.write(buffer, 0, len);
+            dataOutputStream.flush();
+            fileInputStream.close();
+        }
+    }
+
+    private String getUploadFileResult(String name) throws IOException {
+        new File(uploadedFilesPath).mkdirs();
+        new File(uploadedFilesPath + "\\accountPhoto").mkdirs();
+        new File(uploadedFilesPath + "\\productPhoto").mkdirs();
+        new File(uploadedFilesPath + "\\productFile").mkdirs();
+        int numberOfBytes = dataInputStream.readInt();
+        FileOutputStream fileOutputStream = new FileOutputStream(uploadedFilesPath + "\\" + name);
+        byte[] buffer = new byte[32 * 1024 * 1024];
+        int len;
+        while (numberOfBytes > 0 && (len = dataInputStream.read(buffer)) > 0) {
+            fileOutputStream.write(buffer, 0, len);
+            numberOfBytes -= len;
+        }
+        fileOutputStream.close();
+        return "Success";
     }
 
     private String getRateProductResult(String productName, String productMark, String username) throws IOException {
@@ -724,7 +808,8 @@ public class ClientHandler extends Thread {
     }
 
     private String getSignOutResult(String username) {
-        // TODO: handle online users
+        if (allConnectedClients.keySet().contains(this))
+            allConnectedClients.replace(this, null);
         return "Success";
     }
 
@@ -741,6 +826,9 @@ public class ClientHandler extends Thread {
         }  else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.DECLINED)) {
             return "Account not allowed";
         } else {
+            if (allConnectedClients.keySet().contains(this))
+                allConnectedClients.replace(this, username);
+            else allConnectedClients.put(this, username);
             if (account instanceof Manager)
                 return "Success###Manager###" + objectToString(account);
             if (account instanceof Seller)
@@ -793,6 +881,12 @@ public class ClientHandler extends Thread {
     private void respondToClient(String response) throws IOException {
         dataOutputStream.writeUTF(response);
         dataOutputStream.flush();
+    }
+
+    private void printOnlineUsers() {
+        for (ClientHandler clientHandler : allConnectedClients.keySet()) {
+            System.out.println(allConnectedClients.get(clientHandler));
+        }
     }
 
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.DiscountCodesManagementController">
+   <children>
+       <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+           <image>
+               <Image url="@../Images/profileBG.jpg" />
+           </image>
+       </ImageView>
+      <ListView fx:id="userList" layoutX="25.0" layoutY="350.0" prefHeight="225.0" prefWidth="200.0" />
+      <Button fx:id="createButton" layoutX="650.0" layoutY="442.0" mnemonicParsing="false" onAction="#createOrEditDiscountCode" prefHeight="40.0" prefWidth="125.0" text="Create code" />
+      <TableView fx:id="discountCodeTable" layoutX="25.0" layoutY="25.0" prefHeight="250.0" prefWidth="750.0">
+        <columns>
+          <TableColumn fx:id="codeColumn" prefWidth="120.0" text="Code" />
+          <TableColumn fx:id="startDateColumn" prefWidth="150.0" text="Start date" />
+            <TableColumn fx:id="endDateColumn" prefWidth="150.0" text="End date" />
+            <TableColumn fx:id="percentColumn" prefWidth="110.0" text="Percent" />
+            <TableColumn fx:id="maxDiscountColumn" prefWidth="110.0" text="Max Discount" />
+            <TableColumn fx:id="maxUsageColumn" prefWidth="110.0" resizable="false" text="Max usage" />
+        </columns>
+      </TableView>
+      <Button fx:id="deleteButton" layoutX="650.0" layoutY="535.0" mnemonicParsing="false" onAction="#deleteDiscountCode" prefHeight="40.0" prefWidth="125.0" text="Delete" />
+      <Button fx:id="editButton" layoutX="650.0" layoutY="489.0" mnemonicParsing="false" onAction="#createOrEditDiscountCode" prefHeight="40.0" prefWidth="125.0" text="Edit code" />
+      <Label alignment="CENTER" layoutX="25.0" layoutY="300.0" prefHeight="40.0" prefWidth="200.0" text="All Customers" />
+      <VBox alignment="CENTER" layoutX="250.0" layoutY="300.0" prefHeight="275.0" prefWidth="150.0" spacing="7.0">
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="Code :  " />
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="Start date :  " />
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="End date :  " />
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="Percent :  " />
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="Max discount :  " />
+            <Label alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="150.0" text="Max usage :  " />
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" layoutX="425.0" layoutY="300.0" prefHeight="275.0" prefWidth="200.0" spacing="7.0">
+         <children>
+            <TextField fx:id="codeField" prefHeight="40.0" prefWidth="150.0" />
+            <TextField fx:id="startDateField" prefHeight="40.0" prefWidth="150.0" />
+            <TextField fx:id="endDateField" prefHeight="40.0" prefWidth="150.0" />
+            <TextField fx:id="percentField" prefHeight="40.0" prefWidth="150.0" />
+            <TextField fx:id="maxDiscountField" prefHeight="40.0" prefWidth="150.0" />
+            <TextField fx:id="maxUsageField" prefHeight="40.0" prefWidth="150.0" />
+         </children>
+      </VBox>
+      <Button fx:id="generateButton" layoutX="650.0" layoutY="395.0" mnemonicParsing="false" onAction="#generateRandomCode" prefHeight="40.0" prefWidth="125.0" text="Random code" />
+   </children>
+</AnchorPane>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.BuyerSaleHistoryController">
+    <children>
+        <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@../Images/profileBG.jpg" />
+            </image>
+        </ImageView>
+        <TableView fx:id="logsTable" layoutX="25.0" layoutY="25.0" prefHeight="275.0" prefWidth="600.0">
+            <columns>
+                <TableColumn fx:id="logIDColumn" prefWidth="200.0" resizable="false" text="LogID" />
+                <TableColumn fx:id="dateColumn" prefWidth="150.0" resizable="false" text="Date" />
+                <TableColumn fx:id="moneyColumn" prefWidth="125.0" resizable="false" text="Money" />
+                <TableColumn fx:id="discountColumn" prefWidth="125.0" resizable="false" text="Discount" />
+            </columns>
+        </TableView>
+        <TableView fx:id="productsTable" layoutX="25.0" layoutY="325.0" prefHeight="250.0" prefWidth="750.0">
+            <columns>
+                <TableColumn fx:id="productColumn" prefWidth="150.0" resizable="false" text="Product" />
+                <TableColumn fx:id="quantityColumn" prefWidth="100.0" resizable="false" text="Quantity" />
+            <TableColumn fx:id="sellerColumn" prefWidth="100.0" resizable="false" text="Seller" />
+                <TableColumn fx:id="productMoneyColumn" prefWidth="100.0" resizable="false" text="Money" />
+                <TableColumn fx:id="productDiscountColumn" prefWidth="100.0" resizable="false" text="Discount" />
+                <TableColumn fx:id="auctionIDColumn" prefWidth="200.0" resizable="false" text="AuctionID" />
+            </columns>
+        </TableView>
+      <VBox alignment="CENTER" layoutX="650.0" layoutY="25.0" prefHeight="275.0" prefWidth="125.0" spacing="15.0">
+         <children>
+            <TextField fx:id="productNameField" alignment="CENTER" prefHeight="40.0" prefWidth="125.0" promptText="Enter product" />
+            <TextField fx:id="productMarkField" alignment="CENTER" prefHeight="40.0" prefWidth="125.0" promptText="Enter 0 to 5" />
+            <Button mnemonicParsing="false" onAction="#rate" prefHeight="40.0" prefWidth="125.0" text="Rate" />
+         </children>
+      </VBox>
+    </children>
+</AnchorPane>

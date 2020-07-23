@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="borderPane" prefHeight="600.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ManagerProfileController">
+   <left>
+      <VBox alignment="CENTER" prefHeight="600.0" prefWidth="200.0" spacing="15.0" stylesheets="@profileOptions.css" BorderPane.alignment="CENTER">
+         <children>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openAccountInfoSection" prefWidth="160.0" text="Your profile">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openUsersManagementSection" prefWidth="160.0" text="Manage users">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openRequestsManagementSection" prefWidth="160.0" text="Manage requests">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openProductsManagementSection" prefWidth="160.0" text="Manage products">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openCategoriesManagementSection" prefWidth="160.0" text="Manage categories">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openDiscountCodesManagementSection" prefWidth="160.0" text="Manage discount codes">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openCartSection" prefWidth="160.0" text="View Cart">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#signOut" prefWidth="160.0" text="Sign out">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#changeToMainMenu" prefWidth="160.0" text="Back to main menu">
+               <font>
+                  <Font size="16.0" />
+               </font></Button>
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#changeToPrevPane" prefWidth="160.0" text="Back to previous page">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
+         </children>
+      </VBox>
+   </left>
+</BorderPane>

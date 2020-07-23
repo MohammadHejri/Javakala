@@ -21,8 +21,14 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
@@ -35,6 +41,11 @@ public class SellerProductsManagementController implements Initializable {
     HashMap<String, String> specs = new HashMap<>();
     String defaultProductImagePath = "src/main/resources/Images/product.png";
     Category root = Database.getInstance().getCategoryByName("root");
+    String fileName = null;
+    String fileContent = null;
+    File productFile;
+    File imageFile = new File("src/main/resources/Images/product.png");
+
 
     @FXML
     TreeView<String> categoriesTree;
@@ -157,7 +168,6 @@ public class SellerProductsManagementController implements Initializable {
     }
 
     private boolean isSpecsTableComplete() {
-        System.out.println(specs.keySet());
         for (String key : specs.keySet())
             if(specs.get(key).isBlank())
                 return false;
@@ -190,7 +200,8 @@ public class SellerProductsManagementController implements Initializable {
         priceField.setText(String.valueOf(selectedProduct.getPrice()));
         remainingField.setText(String.valueOf(selectedProduct.getRemainingItems()));
         descriptionArea.setText(selectedProduct.getDescription());
-        imageView.setImage(new Image(selectedProduct.getImagePath()));
+        imageFile = new File(App.getFileData(selectedProduct.getName(), "productPhoto"));
+        imageView.setImage(new Image(imageFile.toURI().toString()));
         buyersList.getItems().clear();
         for (String buyer : selectedProduct.getBuyers())
             buyersList.getItems().add(buyer);
@@ -208,6 +219,7 @@ public class SellerProductsManagementController implements Initializable {
         remainingField.setText("");
         descriptionArea.setText("");
         resetImageToDefault(null);
+        resetFileToDefault(null);
         buyersList.getItems().clear();
     }
 
@@ -227,6 +239,9 @@ public class SellerProductsManagementController implements Initializable {
             String response = App.getResponseFromServer("requestAddProduct", name, brand, priceStr, remainingStr, description, imagePath, sellerUsername, selectedCategory.getName(), App.objectToString(specs));
             if (response.startsWith("Success")) {
                 new Alert(Alert.AlertType.INFORMATION, "Adding product requested").showAndWait();
+                App.uploadFilesToServer(name + imageFile.getPath().substring(imageFile.getPath().lastIndexOf(".")) + "", imageFile, "productPhoto");
+                if (productFile != null)
+                    App.uploadFilesToServer(name + productFile.getPath().substring(productFile.getPath().lastIndexOf(".")) + "", productFile, "productFile");
             } else {
                 new Alert(Alert.AlertType.ERROR, response).showAndWait();
             }
@@ -249,6 +264,9 @@ public class SellerProductsManagementController implements Initializable {
             String response = App.getResponseFromServer("requestEditProduct", name, brand, priceStr, remainingStr, description, imagePath, sellerUsername, selectedCategory.getName(), App.objectToString(specs), selectedProduct.getName());
             if (response.startsWith("Success")) {
                 new Alert(Alert.AlertType.INFORMATION, "Editing product requested").showAndWait();
+                App.uploadFilesToServer(name + imageFile.getPath().substring(imageFile.getPath().lastIndexOf(".")) + "", imageFile, "productPhoto");
+                if (productFile != null)
+                    App.uploadFilesToServer(name + productFile.getPath().substring(productFile.getPath().lastIndexOf(".")) + "", productFile, "productFile");
             } else {
                 new Alert(Alert.AlertType.ERROR, response).showAndWait();
             }
@@ -266,17 +284,32 @@ public class SellerProductsManagementController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fileChooser.showOpenDialog(null);
-        if (file != null)
-            imageView.setImage(new Image(file.toURI().toString()));
+        if (file != null) {
+            imageFile = file;
+            imageView.setImage(new Image(imageFile.toURI().toString()));
+        }
+    }
+
+    @FXML
+    public void chooseFile() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File file = fileChooser.showOpenDialog(null);
+        if (file != null) {
+            productFile = file;
+        }
     }
 
     @FXML
     public void resetImageToDefault(ActionEvent event) {
-        File file = new File(defaultProductImagePath);
-        imageView.setImage(new Image(file.toURI().toString()));
+        imageFile = new File(defaultProductImagePath);
+        imageView.setImage(new Image(imageFile.toURI().toString()));
     }
 
 
-    public void resetVideoToDefault(ActionEvent event) {
+    public void resetFileToDefault(ActionEvent event) {
+        fileName = null;
+        fileContent = null;
+        productFile = null;
     }
 }

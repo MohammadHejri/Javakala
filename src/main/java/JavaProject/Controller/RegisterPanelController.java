@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 public class RegisterPanelController implements Initializable {
     public static Parent prevPane;
     private Animation animation = new Animation();
+    File imageFile = new File("src/main/resources/Images/account.png");
 
     @FXML
     AnchorPane mainPane;
@@ -120,6 +121,7 @@ public class RegisterPanelController implements Initializable {
 
         if (response.startsWith("Success")) {
             changeToPrevScene(event);
+            App.uploadFilesToServer(username + imageFile.getPath().substring(imageFile.getPath().lastIndexOf(".")) + "", imageFile, "accountPhoto");
         } else {
             signUpStatusLabel.setText(response);
         }
@@ -133,7 +135,7 @@ public class RegisterPanelController implements Initializable {
         String response = App.getResponseFromServer("signIn", username, password);
         if (response.startsWith("Success")) {
             String[] responseParts = response.split("###");
-            Account account = null;
+            Account account;
             if (responseParts[1].equals("Manager")) {
                 account = App.stringToObject(responseParts[2], Manager.class);
                 App.setSignedInAccount(account);
@@ -172,14 +174,16 @@ public class RegisterPanelController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fileChooser.showOpenDialog(null);
-        if (file != null)
-            imageView.setImage(new Image(file.toURI().toString()));
+        if (file != null) {
+            imageFile = file;
+            imageView.setImage(new Image(imageFile.toURI().toString()));
+        }
     }
 
     @FXML
     private void resetImageToDefault(ActionEvent event) {
-        File file = new File("src/main/resources/Images/account.png");
-        imageView.setImage(new Image(file.toURI().toString()));
+        imageFile = new File("src/main/resources/Images/account.png");
+        imageView.setImage(new Image(imageFile.toURI().toString()));
     }
 
     @FXML

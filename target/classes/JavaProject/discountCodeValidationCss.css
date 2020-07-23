@@ -1,0 +1,26 @@
+Button {
+    -fx-background-color: #0460cd;
+    -fx-font-size: 14px;
+    -fx-font-weight: bolder;
+    -fx-text-fill: white;
+    -fx-cursor: pointer;
+    -fx-font-family: Arial;
+    -fx-pref-height: 35;
+}
+
+Button:hover {
+    -fx-background-color: #68c4ff;
+    -fx-cursor: hand;
+}
+
+Label{
+    -fx-font-size: 20;
+    -fx-font-weight: bolder;
+    -fx-text-fill: #459ced;
+}
+
+TextField{
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-color: #459ced;
+}

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<ScrollPane hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="1700.0" prefWidth="1000.0" stylesheets="@ProductPage.css" vbarPolicy="NEVER" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductPageController">
+  <content>
+      <AnchorPane fx:id="mainPane" minHeight="0.0" minWidth="0.0" prefHeight="1700.0" prefWidth="1000.0">
+      <children>
+          <ImageView fx:id="productImage" fitHeight="200.0" fitWidth="200.0" layoutX="100.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                  <Image url="@../Images/product.png" />
+              </image>
+          </ImageView>
+          <ImageView fx:id="soldImage" fitHeight="60.0" fitWidth="60.0" layoutX="240.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                  <Image url="@../Images/sold.png" />
+              </image>
+          </ImageView>
+          <HBox layoutX="150.0" layoutY="250.0" prefHeight="20.0" prefWidth="100.0">
+              <children>
+                  <ImageView fx:id="star1" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../Images/star-empty.png" />
+                      </image>
+                  </ImageView>
+                  <ImageView fx:id="star2" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../Images/star-empty.png" />
+                      </image>
+                  </ImageView>
+                  <ImageView fx:id="star3" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../Images/star-empty.png" />
+                      </image>
+                  </ImageView>
+                  <ImageView fx:id="star4" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../Images/star-empty.png" />
+                      </image>
+                  </ImageView>
+                  <ImageView fx:id="star5" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                      <image>
+                          <Image url="@../Images/star-empty.png" />
+                      </image>
+                  </ImageView>
+              </children>
+          </HBox>
+          <ImageView fx:id="auctionImage" fitHeight="60.0" fitWidth="60.0" layoutX="100.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true">
+              <image>
+                  <Image url="@../Images/sale.png" />
+              </image>
+          </ImageView>
+          <Label fx:id="price" alignment="CENTER" layoutX="700.0" layoutY="180.0" prefHeight="40.0" prefWidth="200.0" text="Price">
+              <font>
+                  <Font name="System Bold" size="18.0" />
+              </font>
+          </Label>
+          <Label fx:id="percent" alignment="CENTER" layoutX="775.0" layoutY="110.0" prefHeight="30.0" prefWidth="50.0" style="-fx-background-color: de4c3c; -fx-background-radius: 10px;" text="100%" textFill="WHITE">
+              <font>
+                  <Font name="System Bold" size="13.0" />
+              </font>
+          </Label>
+          <Label fx:id="previousPrice" alignment="CENTER" layoutX="700.0" layoutY="150.0" prefHeight="30.0" prefWidth="200.0" text="Previous price">
+              <font>
+                  <Font size="14.0" />
+              </font>
+          </Label>
+            <ScrollPane hbarPolicy="NEVER" layoutX="100.0" layoutY="320.0" prefHeight="280.0" prefWidth="800.0" vbarPolicy="NEVER">
+               <content>
+                  <HBox fx:id="similarProducts" prefHeight="280.0" prefWidth="800.0" spacing="20.0">
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding></HBox>
+               </content>
+            </ScrollPane>
+            <Label alignment="CENTER" layoutX="390.0" layoutY="280.0" prefHeight="40.0" prefWidth="200.0" text="Similar Products" />
+            <Button fx:id="buyButton" layoutX="700.0" layoutY="230.0" mnemonicParsing="false" onAction="#addToCart" prefHeight="40.0" prefWidth="200.0" stylesheets="@ProductPage.css" text="Add to Cart" textFill="WHITE" />
+            <VBox layoutX="350.0" layoutY="75.0" prefHeight="140.0" prefWidth="200.0">
+               <children>
+                <Label fx:id="productName" prefHeight="40.0" prefWidth="200.0" text="Name :">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                  </Label>
+                  <Label fx:id="brandLabel" prefHeight="40.0" prefWidth="200.0" text="Brand :">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="sellerLabel" prefHeight="40.0" prefWidth="200.0" text="Seller :">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+            <TextArea fx:id="descriptionArea" editable="false" layoutX="560.0" layoutY="640.0" prefHeight="300.0" prefWidth="300.0" promptText="Description" />
+            <TableView fx:id="commentTable" layoutX="100.0" layoutY="980.0" prefHeight="300.0" prefWidth="800.0">
+              <columns>
+                <TableColumn fx:id="userColumn" prefWidth="150.0" text="User" />
+                <TableColumn fx:id="titleColumn" prefWidth="150.0" text="Title" />
+                  <TableColumn fx:id="commentColumn" prefWidth="500.0" text="Comment" />
+              </columns>
+            </TableView>
+            <TableView fx:id="specsTable" layoutX="140.0" layoutY="640.0" prefHeight="300.0" prefWidth="300.0">
+              <columns>
+                <TableColumn fx:id="specsColumn" editable="false" prefWidth="150.0" resizable="false" text="Specs" />
+                <TableColumn fx:id="infoColumn" editable="false" prefWidth="149.0" resizable="false" text="Info" />
+              </columns>
+            </TableView>
+            <TextField fx:id="titleField" layoutX="140.0" layoutY="1320.0" prefHeight="40.0" prefWidth="300.0" promptText="Title" />
+            <TextArea fx:id="commentArea" layoutX="140.0" layoutY="1370.0" prefHeight="200.0" prefWidth="300.0" promptText="Comment" />
+            <Button layoutX="190.0" layoutY="1580.0" mnemonicParsing="false" onAction="#leaveComment" prefHeight="40.0" prefWidth="200.0" text="Leave a comment" />
+            <TableView fx:id="compareTable" layoutX="560.0" layoutY="1310.0" prefHeight="260.0" prefWidth="300.0">
+              <columns>
+                <TableColumn fx:id="fieldColumn" prefWidth="100.0" text="Compare" />
+                <TableColumn fx:id="product1Column" prefWidth="100.0" text="Product 1" />
+                  <TableColumn fx:id="product2Column" prefWidth="100.0" text="Product 2" />
+              </columns>
+            </TableView>
+            <Button layoutX="610.0" layoutY="1620.0" mnemonicParsing="false" onAction="#searchProduct" prefHeight="40.0" prefWidth="100.0" text="Search" />
+            <Button layoutX="710.0" layoutY="1620.0" mnemonicParsing="false" onAction="#resetProduct" prefHeight="40.0" prefWidth="100.0" text="Reset" />
+            <TextField fx:id="otherProductField" layoutX="610.0" layoutY="1580.0" prefHeight="40.0" prefWidth="200.0" promptText="Product to compare" />
+            <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="946.0" layoutY="14.0" onMouseClicked="#changeToPrevScene" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/back.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="14.0" layoutY="14.0" onMouseClicked="#goToCart" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/cart.png" />
+               </image>
+            </ImageView>
+      </children>
+      </AnchorPane>
+  </content>
+</ScrollPane>

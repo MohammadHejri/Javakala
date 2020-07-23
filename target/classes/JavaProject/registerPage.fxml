@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="mainPane" prefHeight="600.0" prefWidth="1000.0" stylesheets="@registerPageCss.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RegisterPanelController">
+    <children>
+        <ImageView fitHeight="600.0" fitWidth="1000.0" pickOnBounds="true">
+            <image>
+                <Image url="@../Images/Untitled.jpg" />
+            </image>
+        </ImageView>
+        <AnchorPane layoutX="54.0" layoutY="38.0" prefHeight="522.0" prefWidth="889.0">
+            <children>
+                <StackPane layoutX="412.0" prefHeight="522.0" prefWidth="478.0">
+                    <children>
+                        <AnchorPane fx:id="" opacity="0.0" prefHeight="291.0" prefWidth="232.0" style="-fx-background-color: white;">
+                            <children>
+                                <VBox alignment="CENTER" fillWidth="false" layoutX="114.0" layoutY="73.0" prefHeight="379.0" prefWidth="252.0" spacing="15.0">
+                                    <children>
+                                        <ImageView fitHeight="107.0" fitWidth="116.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../Images/account.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Label text="Login" />
+                                        <TextField id="signInUsernameField" fx:id="signInUsernameField" prefHeight="29.0" prefWidth="110.0" promptText="username" />
+                                        <PasswordField id="signInPasswordField" fx:id="signInPasswordField" layoutX="48.0" layoutY="95.0" prefHeight="29.0" prefWidth="110.0" promptText="password" />
+                                        <Button mnemonicParsing="false" onAction="#signIn" text="Submit" />
+                                        <Label id="signInStatusLabel" fx:id="signInStatusLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="121.0" layoutY="187.0" prefHeight="18.0" prefWidth="262.0" />
+                                    </children>
+                                </VBox>
+                                <Button id="backButton1" fx:id="backButton1" layoutX="7.0" layoutY="469.0" mnemonicParsing="false" onAction="#changeToPrevScene" prefHeight="26.0" prefWidth="73.0" style="-fx-border-color: white; -fx-background-color: white;">
+                           <graphic>
+                                      <ImageView id="signInBackImage" fx:id="signInBackImage" fitHeight="37.0" fitWidth="43.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                              <Image url="@../Images/back.png" />
+                                          </image>
+                                      </ImageView>
+                           </graphic></Button>
+                            </children>
+                        </AnchorPane>
+                        <AnchorPane prefHeight="478.0" prefWidth="354.0" style="-fx-background-color: white;">
+                            <children>
+                                <VBox alignment="CENTER" fillWidth="false" layoutX="114.0" layoutY="10.0" prefHeight="498.0" prefWidth="252.0" spacing="10.0">
+                                    <children>
+                                        <ImageView id="imageView" fx:id="imageView" fitHeight="92.0" fitWidth="132.0" onMouseClicked="#chooseImage" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+                                                <Image url="@../Images/account.png" />
+                                            </image>
+                                        </ImageView>
+                                        <Label text="Register" />
+                                        <HBox alignment="CENTER" prefHeight="18.0" prefWidth="254.0" spacing="15.0">
+                                            <children>
+                                                <RadioButton id="buyerButton" fx:id="buyerButton" mnemonicParsing="false" onAction="#updateAccountProperties" text="Customer">
+                                                    <toggleGroup>
+                                                        <ToggleGroup fx:id="registerPageToggleGroup" />
+                                                    </toggleGroup>
+                                                </RadioButton>
+                                                <RadioButton id="sellerButton" fx:id="sellerButton" mnemonicParsing="false" onAction="#updateAccountProperties" text="Seller" toggleGroup="$registerPageToggleGroup" />
+                                                <RadioButton id="managerButton" fx:id="managerButton" layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#updateAccountProperties" text="Manager">
+                                                    <toggleGroup>
+                                                        <ToggleGroup fx:id="registerPageToggleGroup1" />
+                                                    </toggleGroup>
+                                                </RadioButton>
+                                            </children>
+                                        </HBox>
+                                        <TextField id="signUpUsernameField" fx:id="signUpUsernameField" promptText="username" />
+                                        <PasswordField id="signUpPasswordField" fx:id="signUpPasswordField" prefHeight="26.0" prefWidth="150.0" promptText="password" />
+                                        <TextField id="firstNameField" fx:id="firstNameField" promptText="first name" />
+                                        <TextField id="lastNameField" fx:id="lastNameField" promptText="last name" />
+                                        <TextField id="emailAddressField" fx:id="emailAddressField" promptText="email address" />
+                                        <TextField id="phoneNumberField" fx:id="phoneNumberField" promptText="phone number" />
+                                        <TextField id="companyNameField" fx:id="companyNameField" layoutX="28.0" layoutY="348.0" promptText="company name" />
+                                        <Button mnemonicParsing="false" onAction="#signUp" prefHeight="26.0" prefWidth="90.0" text="Submit" />
+                                        <Button layoutX="76.0" layoutY="420.0" mnemonicParsing="false" onAction="#resetImageToDefault" text="Reset Picture" />
+                                        <Label id="signUpStatusLabel" fx:id="signUpStatusLabel" alignment="CENTER" prefHeight="18.0" prefWidth="253.0" />
+                                    </children>
+                                </VBox>
+                                <Button id="backButton2" fx:id="backButton2" layoutX="14.0" layoutY="472.0" mnemonicParsing="false" onAction="#changeToPrevScene" prefHeight="26.0" prefWidth="56.0" style="-fx-border-color: white; -fx-background-color: white;">
+                           <graphic>
+                                      <ImageView id="backImage" fx:id="backImage" fitHeight="42.0" fitWidth="37.0" pickOnBounds="true" preserveRatio="true">
+                                          <image>
+                                              <Image url="@../Images/back.png" />
+                                          </image>
+                                      </ImageView>
+                           </graphic></Button>
+                            </children>
+                        </AnchorPane>
+                    </children>
+                </StackPane>
+                <AnchorPane prefHeight="494.0" prefWidth="411.0">
+                    <children>
+                        <ImageView fitHeight="523.0" fitWidth="411.0" pickOnBounds="true">
+                            <image>
+                                <Image url="@../Images/Untitled3.jpg" />
+                            </image>
+                        </ImageView>
+                        <VBox alignment="CENTER" layoutX="114.0" layoutY="125.0" prefHeight="274.0" prefWidth="189.0" spacing="10.0">
+                            <children>
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="hello dear friend" />
+                                <Text layoutX="20.0" layoutY="104.0" strokeType="OUTSIDE" strokeWidth="0.0" text="welcome to our market" />
+                                <Button id="loginButton" fx:id="loginButton" mnemonicParsing="false" text="Login" />
+                            </children>
+                        </VBox>
+                    </children>
+                </AnchorPane>
+            </children>
+        </AnchorPane>
+    </children>
+</AnchorPane>

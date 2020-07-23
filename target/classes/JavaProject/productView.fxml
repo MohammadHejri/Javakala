@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="240.0" prefWidth="160.0" style="-fx-border-color: a9a9a9;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ProductViewController">
+   <children>
+      <ImageView fx:id="productImage" fitHeight="120.0" fitWidth="120.0" layoutX="20.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/product.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="soldImage" fitHeight="40.0" fitWidth="40.0" layoutX="100.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/sold.png" />
+         </image>
+      </ImageView>
+      <HBox layoutX="50.0" layoutY="140.0" prefHeight="12.0" prefWidth="60.0">
+         <children>
+            <ImageView fx:id="star1" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/star-empty.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="star2" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/star-empty.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="star3" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/star-empty.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="star4" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/star-empty.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="star5" fitHeight="12.0" fitWidth="12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../Images/star-empty.png" />
+               </image>
+            </ImageView>
+         </children>
+      </HBox>
+      <Label fx:id="productName" alignment="CENTER" layoutY="155.0" prefHeight="20.0" prefWidth="160.0" text="Product name">
+         <font>
+            <Font size="12.0" />
+         </font></Label>
+      <ImageView fx:id="auctionImage" fitHeight="40.0" fitWidth="40.0" layoutX="20.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../Images/sale.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="price" layoutX="20.0" layoutY="175.0" prefHeight="20.0" prefWidth="140.0" text="Price">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="percent" alignment="CENTER" layoutX="20.0" layoutY="195.0" prefHeight="20.0" prefWidth="30.0" style="-fx-background-color: de4c3c; -fx-background-radius: 10px;" text="100%" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="9.0" />
+         </font>
+      </Label>
+      <Label fx:id="previousPrice" layoutX="55.0" layoutY="195.0" prefHeight="20.0" prefWidth="105.0" text="Previous price">
+         <font>
+            <Font size="9.0" />
+         </font>
+      </Label>
+      <Label fx:id="dateLabel" layoutX="20.0" layoutY="220.0">
+         <font>
+            <Font name="System Bold" size="9.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

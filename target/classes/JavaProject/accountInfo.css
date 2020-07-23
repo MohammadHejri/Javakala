@@ -1,0 +1,24 @@
+Label, Button{
+    -fx-font-size: 14px;
+    -fx-background-color: #a06056;
+    -fx-text-fill: #efb7af;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
+Button:hover {
+    -fx-font-size: 16px;
+    -fx-background-color: #824241;
+}
+
+TextField, PasswordField{
+    -fx-font-size: 14px;
+    -fx-background-color: #efb7af;
+    -fx-prompt-text-fill: #a06056;
+    -fx-text-fill: #a06056;
+    -fx-border-color: #a06056;
+    -fx-border-width: 3px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+}
+
