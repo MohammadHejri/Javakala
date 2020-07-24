@@ -182,7 +182,11 @@ public class App extends Application {
             dataOutputStream.write(buffer, 0, len);
         dataOutputStream.flush();
         fileInputStream.close();
-        return dataInputStream.readUTF();
+        String response = dataInputStream.readUTF();
+        session = response.substring(response.lastIndexOf("###") + 3);
+        System.out.println(session);
+        System.out.println(response.substring(0, response.lastIndexOf("###")));
+        return response.substring(0, response.lastIndexOf("###"));
     }
 
     public static String getFileData(String name, String type) {
