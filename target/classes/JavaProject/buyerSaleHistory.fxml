@@ -20,8 +20,10 @@
             <columns>
                 <TableColumn fx:id="logIDColumn" prefWidth="200.0" resizable="false" text="LogID" />
                 <TableColumn fx:id="dateColumn" prefWidth="150.0" resizable="false" text="Date" />
-                <TableColumn fx:id="moneyColumn" prefWidth="125.0" resizable="false" text="Money" />
-                <TableColumn fx:id="discountColumn" prefWidth="125.0" resizable="false" text="Discount" />
+                <TableColumn fx:id="moneyColumn" prefWidth="75.0" resizable="false" text="Money" />
+                <TableColumn fx:id="discountColumn" prefWidth="75.0" resizable="false" text="Discount" />
+                <TableColumn fx:id="statusColumn" prefWidth="125.0" resizable="false" text="Status" />
+                <TableColumn fx:id="addressColumn" prefWidth="125.0" resizable="false" text="Address" />
             </columns>
         </TableView>
         <TableView fx:id="productsTable" layoutX="25.0" layoutY="325.0" prefHeight="250.0" prefWidth="750.0">

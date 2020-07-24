@@ -13,6 +13,8 @@ public class BuyLog {
     private double paidAmount;
     private double decreasedAmount;
     private ArrayList<ProductOnLog> boughtProducts;
+    private String address;
+    private String status = "To be delivered";
 
     public BuyLog(double paidAmount, double decreasedAmount, ArrayList<ProductOnLog> boughtProducts) {
         this.paidAmount = paidAmount;
@@ -61,4 +63,22 @@ public class BuyLog {
     public void setBoughtProducts(ArrayList<ProductOnLog> boughtProducts) {
         this.boughtProducts = boughtProducts;
     }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
 }

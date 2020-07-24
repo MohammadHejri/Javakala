@@ -4,8 +4,10 @@ import JavaProject.App;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Database.Database;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 
@@ -32,19 +34,22 @@ public class PurchasePageCardPaymentController {
             new Alert(Alert.AlertType.ERROR, "Enter expire date").showAndWait();
         } else if (password.isBlank()) {
             new Alert(Alert.AlertType.ERROR, "Enter dynamic password").showAndWait();
-        } else if (!cardNumber.matches("\\d{16}")) {
-            new Alert(Alert.AlertType.ERROR, "Use 16 digits for card number").showAndWait();
-        } else if (!cvv2.matches("\\d{3}")) {
-            new Alert(Alert.AlertType.ERROR, "Use 3 digits for card number").showAndWait();
+        } else if (!cardNumber.matches("\\d+")) {
+            new Alert(Alert.AlertType.ERROR, "Use digits for card number").showAndWait();
+        } else if (!cvv2.matches("\\d+")) {
+            new Alert(Alert.AlertType.ERROR, "Use digits for card number").showAndWait();
         } else if (!expireDate.matches("\\d{2}/\\d{2}")) {
             new Alert(Alert.AlertType.ERROR, "Use format yy/MM for expire date").showAndWait();
         } else if (!password.matches("\\d+")) {
             new Alert(Alert.AlertType.ERROR, "Use digits for password").showAndWait();
         } else {
-            new Alert(Alert.AlertType.INFORMATION, "Balance increased").showAndWait();
-            ((Buyer) App.getSignedInAccount()).setBalance(((Buyer) App.getSignedInAccount()).getBalance() + amount);
-            App.setRoot("paymentWay");
-            Database.getInstance().saveAccount(App.getSignedInAccount());
+            // new Alert(Alert.AlertType.INFORMATION, "Balance increased").showAndWait();
+            App.getResponseFromServer("updateWallet", App.getSignedInAccount().getUsername(), String.valueOf(amount));
+            // App.setRoot("paymentWay");
+            FXMLLoader loader = new FXMLLoader(App.class.getResource("paymentWay.fxml"));
+            Parent pane = loader.load();
+            PurchasePagePaymentWayController controller = loader.getController();
+            controller.payWithBalance(null);
         }
     }
 

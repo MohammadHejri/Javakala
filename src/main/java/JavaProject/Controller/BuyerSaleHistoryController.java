@@ -26,6 +26,10 @@ import java.util.ResourceBundle;
 
 public class BuyerSaleHistoryController implements Initializable {
     @FXML
+    TableColumn addressColumn;
+    @FXML
+    TableColumn statusColumn;
+    @FXML
     TableView<BuyLog> logsTable;
     @FXML
     TableColumn<BuyLog, String> logIDColumn;
@@ -60,6 +64,9 @@ public class BuyerSaleHistoryController implements Initializable {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("buyDate"));
         moneyColumn.setCellValueFactory(new PropertyValueFactory<>("paidAmount"));
         discountColumn.setCellValueFactory(new PropertyValueFactory<>("decreasedAmount"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
         productColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         sellerColumn.setCellValueFactory(new PropertyValueFactory<>("sellerUsername"));

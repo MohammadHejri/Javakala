@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.image.Image?>
+
 <AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.RequestsViewController">
     <children>
         <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
@@ -15,7 +16,7 @@
                 <Image url="@../Images/profileBG.jpg" />
             </image>
         </ImageView>
-        <TextArea fx:id="descriptionArea" editable="false" layoutX="525.0" layoutY="25.0" prefHeight="550.0" prefWidth="250.0" />
+        <TextArea fx:id="descriptionArea" editable="false" layoutX="525.0" layoutY="25.0" prefHeight="450.0" prefWidth="250.0" />
         <TableView fx:id="requestsTable" layoutX="25.0" layoutY="25.0" prefHeight="550.0" prefWidth="475.0">
             <columns>
                 <TableColumn fx:id="requestIDColumn" prefWidth="180.0" resizable="false" text="RequestID" />
@@ -23,5 +24,9 @@
             <TableColumn fx:id="statusColumn" prefWidth="142.0" resizable="false" text="Status" />
             </columns>
         </TableView>
+      <Button layoutX="525.0" layoutY="485.0" mnemonicParsing="false" onAction="#chargeWallet" prefHeight="40.0" prefWidth="170.0" text="Charge wallet" />
+      <Button layoutX="525.0" layoutY="535.0" mnemonicParsing="false" onAction="#putMoneyInBank" prefHeight="40.0" prefWidth="170.0" text="Put money in bank" />
+      <TextField fx:id="chargeWalletField" alignment="CENTER" layoutX="705.0" layoutY="485.0" prefHeight="40.0" prefWidth="70.0" promptText="Money" />
+      <TextField fx:id="putMoneyField" alignment="CENTER" layoutX="705.0" layoutY="535.0" prefHeight="40.0" prefWidth="70.0" promptText="Money" />
     </children>
 </AnchorPane>

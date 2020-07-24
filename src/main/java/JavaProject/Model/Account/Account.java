@@ -10,6 +10,7 @@ public class Account {
     protected String phoneNumber;
     protected String imagePath;
     protected String network;
+    protected int bankAccountNumber;
 
     public Account(String username, String password, String firstName, String lastName, String emailAddress, String phoneNumber, String imagePath) {
         this.username = username;
@@ -83,6 +84,14 @@ public class Account {
 
     public String getNetwork() {
         return network;
+    }
+
+    public int getBankAccountNumber() {
+        return bankAccountNumber;
+    }
+
+    public void setBankAccountNumber(int bankAccountNumber) {
+        this.bankAccountNumber = bankAccountNumber;
     }
 
     @Override

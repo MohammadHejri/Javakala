@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane prefHeight="600.0" prefWidth="800.0" stylesheets="@profile.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="JavaProject.Controller.ShopPropertiesController">
+   <children>
+       <ImageView fitHeight="600.0" fitWidth="800.0" opacity="0.6" pickOnBounds="true" preserveRatio="true">
+           <image>
+               <Image url="@../Images/profileBG.jpg" />
+           </image>
+       </ImageView>
+      <Button layoutX="25.0" layoutY="100.0" mnemonicParsing="false" onAction="#updateShopCommission" prefHeight="40.0" prefWidth="250.0" text="Update shop commission" />
+      <Button layoutX="325.0" layoutY="100.0" mnemonicParsing="false" onAction="#updateMinBalance" prefHeight="40.0" prefWidth="300.0" text="Update minimum balance in Wallet" />
+      <TextField fx:id="shopCommissionField" alignment="CENTER" layoutX="25.0" layoutY="50.0" prefHeight="40.0" prefWidth="250.0" />
+      <TextField fx:id="minBalanceField" alignment="CENTER" layoutX="325.0" layoutY="50.0" prefHeight="40.0" prefWidth="300.0" />
+       <TableView fx:id="logsTable" layoutX="25.0" layoutY="175.0" prefHeight="225.0" prefWidth="750.0">
+           <columns>
+               <TableColumn fx:id="logIDColumn" prefWidth="200.0" resizable="false" text="LogID" />
+               <TableColumn fx:id="dateColumn" prefWidth="150.0" resizable="false" text="Date" />
+               <TableColumn fx:id="moneyColumn" prefWidth="75.0" resizable="false" text="Money" />
+               <TableColumn fx:id="discountColumn" prefWidth="75.0" resizable="false" text="Discount" />
+            <TableColumn fx:id="addressColumn" prefWidth="125.0" resizable="false" text="Address" />
+            <TableColumn fx:id="statusColumn" prefWidth="125.0" resizable="false" text="Status" />
+           </columns>
+       </TableView>
+       <TableView fx:id="productsTable" layoutX="25.0" layoutY="425.0" prefHeight="150.0" prefWidth="750.0">
+           <columns>
+               <TableColumn fx:id="productColumn" prefWidth="140.0" resizable="false" text="Product" />
+               <TableColumn fx:id="quantityColumn" prefWidth="90.0" resizable="false" text="Quantity" />
+               <TableColumn fx:id="sellerColumn" prefWidth="100.0" resizable="false" text="Seller" />
+               <TableColumn fx:id="productMoneyColumn" prefWidth="75.0" resizable="false" text="Money" />
+               <TableColumn fx:id="productDiscountColumn" prefWidth="75.0" resizable="false" text="Discount" />
+               <TableColumn fx:id="auctionIDColumn" prefWidth="150.0" resizable="false" text="AuctionID" />
+            <TableColumn fx:id="fileNameColumn" prefWidth="120.0" resizable="false" text="File name" />
+           </columns>
+       </TableView>
+      <Button fx:id="deliveredButton" layoutX="675.0" layoutY="100.0" mnemonicParsing="false" onAction="#changeToDelivered" prefHeight="40.0" prefWidth="100.0" text="Delivered" />
+   </children>
+</AnchorPane>

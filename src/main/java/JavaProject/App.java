@@ -17,6 +17,8 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
+import java.util.Base64;
 
 public class App extends Application {
 
@@ -24,6 +26,7 @@ public class App extends Application {
     private static Socket socket;
     private static DataInputStream dataInputStream;
     private static DataOutputStream dataOutputStream;
+    private static String token;
 
     private static Scene scene;
     private static Account signedInAccount;
@@ -111,10 +114,13 @@ public class App extends Application {
     }
 
     private static void connectToServer() throws IOException {
-        // socket = new Socket("2.tcp.ngrok.io", 15721);
+        // socket = new Socket("0.tcp.ngrok.io", 13767);
         socket = new Socket("127.0.0.1", 8080);
         dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+        dataOutputStream.writeUTF("getToken");
+        dataOutputStream.flush();
+        token = dataInputStream.readUTF();
     }
 
     public static String getResponseFromServer(String ... messageParts) {
@@ -122,6 +128,7 @@ public class App extends Application {
         for (String messagePart : messageParts) {
             message += "###" + messagePart;
         }
+        message += "###" + token;
         message = message.substring(3);
         try {
             int index = 0;
@@ -148,7 +155,7 @@ public class App extends Application {
     }
 
     public static String uploadFilesToServer(String name, File file, String type) throws IOException {
-        dataOutputStream.writeUTF("uploadFile###" + type + "\\" + name);
+        dataOutputStream.writeUTF("uploadFile###" + type + "\\" + name + "###" + token);
         dataOutputStream.flush();
         dataInputStream.readUTF();
         dataOutputStream.writeUTF("END_OF_MESSAGE");
@@ -170,7 +177,7 @@ public class App extends Application {
         new File("src/main/resources/Data/productPhoto").mkdirs();
         new File("src/main/resources/Data/productFile").mkdirs();
         try {
-            String message = "getFileData###" + name + "###" + type;
+            String message = "getFileData###" + name + "###" + type + "###" + token;
             dataOutputStream.writeUTF(message);
             dataOutputStream.flush();
             dataInputStream.readUTF();

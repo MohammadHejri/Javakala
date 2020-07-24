@@ -4,6 +4,7 @@ import JavaProject.Model.Account.*;
 import JavaProject.Model.Chat.Conversation;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
+import JavaProject.Model.DualString;
 import JavaProject.Model.Log.BuyLog;
 import JavaProject.Model.Log.SellLog;
 import JavaProject.Model.ProductOrganization.Category;
@@ -41,6 +42,8 @@ public class Database {
     private final String sellLogsPath = "src/main/server/Log/SellLogs";
     private final String discountCodesPath = "src/main/server/DiscountCodes";
     private final String conversationsPath = "src/main/server/Conversations";
+    protected DualString shopProperties;
+
 
     public static Database getInstance() {
         if (instance == null)
@@ -86,6 +89,14 @@ public class Database {
             root = new Category("root", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
             new JsonFileWriter().write(rootPath + "\\root.json", root);
         }
+
+        try {
+            File shopPropertiesFile = new File("src/main/server/shopProperties.json");
+            shopProperties = new JsonFileReader().read(shopPropertiesFile, DualString.class);
+        } catch (Exception e) {
+            shopProperties = new DualString("5", "50");
+            saveShopProperties();
+        }
     }
 
     public boolean managerExists() {
@@ -93,6 +104,10 @@ public class Database {
             if (account instanceof Manager)
                 return true;
         return false;
+    }
+
+    public void saveShopProperties() throws IOException {
+        new JsonFileWriter().write("src/main/server/shopProperties.json", shopProperties);
     }
 
     public void saveAccount(Account account) throws IOException {
@@ -137,7 +152,7 @@ public class Database {
     }
 
     public void saveAuction(Auction auction) throws IOException {
-        if (!allAuctions.contains(auction))
+        if (getAuctionByID(auction.getID()) == null)
             allAuctions.add(auction);
         new JsonFileWriter().write(auctionsPath + "\\" + auction.getID() + ".json", auction);
     }
@@ -196,13 +211,13 @@ public class Database {
     }
 
     public void saveSellLog(SellLog sellLog) throws IOException {
-        if (!allSellLogs.contains(sellLog))
+        if (getSellLogByID(sellLog.getID()) == null)
             allSellLogs.add(sellLog);
         new JsonFileWriter().write(sellLogsPath + "\\" + sellLog.getID() + ".json", sellLog);
     }
 
     public void saveBuyLog(BuyLog buyLog) throws IOException {
-        if (!allBuyLogs.contains(buyLog))
+        if (getBuyLogByID(buyLog.getID()) == null)
             allBuyLogs.add(buyLog);
         new JsonFileWriter().write(buyLogsPath + "\\" + buyLog.getID() + ".json", buyLog);
     }
@@ -535,5 +550,13 @@ public class Database {
             if (b1 || b2) return conversation;
         }
         return null;
+    }
+
+    public ArrayList<BuyLog> getAllBuyLogs() {
+        return allBuyLogs;
+    }
+
+    public ArrayList<SellLog> getAllSellLogs() {
+        return allSellLogs;
     }
 }

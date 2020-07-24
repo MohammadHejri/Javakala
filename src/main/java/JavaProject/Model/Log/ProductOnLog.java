@@ -8,6 +8,7 @@ public class ProductOnLog {
     private int quantity;
     private double transferredMoney;
     private double decreasedMoney;
+    private String fileName = "-";
 
     public ProductOnLog(String name, String auctionID, String discountCode, String sellerUsername, int quantity, double transferredMoney, double decreasedMoney) {
         this.name = name;
@@ -73,5 +74,13 @@ public class ProductOnLog {
 
     public void setSellerUsername(String sellerUsername) {
         this.sellerUsername = sellerUsername;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

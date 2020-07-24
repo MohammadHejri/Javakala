@@ -56,20 +56,19 @@ public class PurchasePagePaymentWayController implements Initializable {
         balanceLabel.setText("Your balance : $" + ((Buyer)App.getSignedInAccount()).getBalance());
         if (toBePaid > ((Buyer)App.getSignedInAccount()).getBalance()) {
             balanceButton.setDisable(true);
-            increaseButton.setText("Increase balance : $" + (toBePaid - ((Buyer)App.getSignedInAccount()).getBalance()));
-        } else {
-            increaseButton.setDisable(true);
         }
+        increaseButton.setText("Pay with bank account");
     }
 
     public void payWithBalance(ActionEvent event) throws IOException {
         Buyer buyer = (Buyer) App.getSignedInAccount();
-        buyer.setBalance(buyer.getBalance() - toBePaid);
+        // buyer.setBalance(buyer.getBalance() - toBePaid);
         DiscountCode discountCode = App.getCart().getCode();
-        if (discountCode != null) {
-            discountCode.getBuyers().replace(buyer.getUsername(), discountCode.getBuyers().get(buyer.getUsername()) + 1);
-            Database.getInstance().saveDiscountCode(discountCode);
-        }
+//        if (discountCode != null) {
+//            discountCode.getBuyers().replace(buyer.getUsername(), discountCode.getBuyers().get(buyer.getUsername()) + 1);
+//            Database.getInstance().saveDiscountCode(discountCode);
+//        }
+        App.getResponseFromServer("handleBuyerInPurchase", buyer.getUsername(), String.valueOf(toBePaid), discountCode == null ? "NOTHING" : discountCode.getCode());
 
         // buyer part
         double buyerTotalPaidAmount = 0, buyerTotalDecreasedAmount = 0;
@@ -83,11 +82,10 @@ public class PurchasePagePaymentWayController implements Initializable {
             buyerTotalPaidAmount += paidAmount;
             buyerTotalDecreasedAmount += decreasedAmount;
             ProductOnLog productOnLog = new ProductOnLog(product.getName(), auction == null ? null : auction.getID(), null, seller.getUsername(), quantity, paidAmount, decreasedAmount);
+            productOnLog.setFileName(App.getResponseFromServer("getProductFileName", product.getName()));
             buyerProductOnLogs.add(productOnLog);
-            product.setRemainingItems(product.getRemainingItems() - quantity);
-            if (!product.getBuyers().contains(buyer.getUsername()))
-                product.getBuyers().add(buyer.getUsername());
-            Database.getInstance().updateCategories();
+            App.getResponseFromServer("updateProductsInPurchase", product.getName(), String.valueOf(quantity), buyer.getUsername());
+            App.getFileData(product.getName(), "productFile");
         }
         if (discountCode != null) {
             double extraDiscount = Math.min(discountCode.getMaxDiscount(), buyerTotalPaidAmount * discountCode.getDiscountPercent() / 100);
@@ -95,16 +93,15 @@ public class PurchasePagePaymentWayController implements Initializable {
             buyerTotalDecreasedAmount += extraDiscount;
         }
         BuyLog buyLog = new BuyLog(buyerTotalPaidAmount, buyerTotalDecreasedAmount, buyerProductOnLogs);
-        buyer.getBuyLogsID().add(buyLog.getID());
-        Database.getInstance().saveBuyLog(buyLog);
-        Database.getInstance().saveAccount(buyer);
+        buyLog.setAddress(PurchasePageReceiverInfoController.address);
+        App.getResponseFromServer("handleBuyLog", App.objectToString(buyLog), buyer.getUsername());
 
         // seller part
-        ArrayList<Seller> handledSellers = new ArrayList<>();
+        ArrayList<String> handledSellers = new ArrayList<>();
         for (Product pro : App.getCart().getProducts().keySet()) {
             Seller seller = (Seller) Database.getInstance().getAccountByUsername(pro.getSellerUsername());
-            if (handledSellers.contains(seller)) continue;
-            handledSellers.add(seller);
+            if (handledSellers.contains(seller.getUsername())) continue;
+            handledSellers.add(seller.getUsername());
             double totalGainedAmount = 0, totalDecreasedAmount = 0;
             ArrayList<ProductOnLog> productOnLogs = new ArrayList<>();
             for (Product product : App.getCart().getProducts().keySet()) {
@@ -118,11 +115,12 @@ public class PurchasePagePaymentWayController implements Initializable {
                 ProductOnLog productOnLog = new ProductOnLog(product.getName(), auction == null ? null : auction.getID(), null, seller.getUsername(), quantity, gainedAmount, decreasedAmount);
                 productOnLogs.add(productOnLog);
             }
-            seller.setBalance(seller.getBalance() + totalGainedAmount);
+//            seller.setBalance(seller.getBalance() + totalGainedAmount);
             SellLog sellLog = new SellLog(buyer.getUsername(), totalGainedAmount, totalDecreasedAmount, productOnLogs);
-            seller.getSellLogsID().add(sellLog.getID());
-            Database.getInstance().saveSellLog(sellLog);
-            Database.getInstance().saveAccount(seller);
+//            seller.getSellLogsID().add(sellLog.getID());
+//            Database.getInstance().saveSellLog(sellLog);
+//            Database.getInstance().saveAccount(seller);
+            App.getResponseFromServer("handleSellerInPurchase", seller.getUsername(), String.valueOf(totalGainedAmount), App.objectToString(sellLog));
         }
         App.setCart(new Cart());
         if (buyerTotalPaidAmount > 100)
@@ -147,15 +145,14 @@ public class PurchasePagePaymentWayController implements Initializable {
         HashMap<String, Integer> hashMap = new HashMap<>();
         hashMap.put(App.getSignedInAccount().getUsername(), 0);
         discountCode = new DiscountCode(code, startDate, endDate, Math.random() * 100, 100, 1, hashMap);
-        ((Buyer)App.getSignedInAccount()).getDiscountCodes().add(discountCode.getCode());
-        Database.getInstance().saveDiscountCode(discountCode);
-        Database.getInstance().saveAccount(App.getSignedInAccount());
+        App.getResponseFromServer("saveGiftCode", App.objectToString(discountCode), App.getSignedInAccount().getUsername());
         new Alert(Alert.AlertType.INFORMATION, "Gift discount code : " + code).showAndWait();
     }
 
     public void increaseBalance(ActionEvent event) throws IOException {
         App.setRoot("payment");
-        PurchasePageCardPaymentController.amount = toBePaid - ((Buyer)App.getSignedInAccount()).getBalance();
+        // PurchasePageCardPaymentController.amount = toBePaid - ((Buyer)App.getSignedInAccount()).getBalance();
+        PurchasePageCardPaymentController.amount = toBePaid;
     }
 
     public void goToDiscountSection(MouseEvent mouseEvent) throws IOException {

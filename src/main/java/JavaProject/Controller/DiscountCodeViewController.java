@@ -4,8 +4,10 @@ import JavaProject.App;
 import JavaProject.Model.Account.Buyer;
 import JavaProject.Model.Database.Database;
 import JavaProject.Model.Discount.DiscountCode;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
@@ -27,6 +29,8 @@ public class DiscountCodeViewController implements Initializable {
     TextField maxDiscountField;
     @FXML
     TextField remainingField;
+    @FXML
+    TextField chargeWalletField;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -57,5 +61,21 @@ public class DiscountCodeViewController implements Initializable {
         percentField.setText("");
         maxDiscountField.setText("");
         remainingField.setText("");
+    }
+
+    @FXML
+    private void chargeWallet(ActionEvent event) {
+        try {
+            double amount = Double.parseDouble(chargeWalletField.getText().trim());
+            chargeWalletField.setText("");
+            if (amount < 0) {
+                new Alert(Alert.AlertType.ERROR, "Enter positive value").showAndWait();
+                return;
+            }
+            String response = App.getResponseFromServer("updateWallet", App.getSignedInAccount().getUsername(), String.valueOf(amount));
+            new Alert(Alert.AlertType.INFORMATION, response).showAndWait();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, "Enter DOUBLE for charge amount").showAndWait();
+        }
     }
 }

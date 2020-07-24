@@ -57,9 +57,8 @@ public class ManagerProfileController implements Initializable{
     }
 
     @FXML
-    private void openCartSection(ActionEvent event) throws IOException {
-        App.setRoot("cart");
-        CartController.prevPane = null;
+    private void openShopProperties(ActionEvent event) throws IOException {
+        borderPane.setCenter(App.loadFXML("shopProperties"));
     }
 
     @FXML

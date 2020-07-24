@@ -36,7 +36,7 @@
                <font>
                   <Font size="16.0" />
                </font></Button>
-            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openCartSection" prefWidth="160.0" text="View Cart">
+            <Button minHeight="40.0" mnemonicParsing="false" onAction="#openShopProperties" prefWidth="160.0" text="Edit shop properties">
                <font>
                   <Font size="16.0" />
                </font></Button>

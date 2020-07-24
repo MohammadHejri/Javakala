@@ -11,6 +11,8 @@ import java.io.IOException;
 
 public class PurchasePageReceiverInfoController {
 
+    public static String address;
+
     @FXML TextField firstNameField;
     @FXML TextField lastNameField;
     @FXML TextField addressField;
@@ -18,6 +20,7 @@ public class PurchasePageReceiverInfoController {
 
     @FXML
     private void goToDiscountPage(ActionEvent event) throws IOException {
+        address = addressField.getText().trim();
         String firstName = firstNameField.getText().trim();
         String lastName = lastNameField.getText().trim();
         String phoneNumber = phoneNumberField.getText().trim();

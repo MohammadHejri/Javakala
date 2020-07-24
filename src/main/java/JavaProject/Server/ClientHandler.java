@@ -1,20 +1,24 @@
 package JavaProject.Server;
 
+import JavaProject.App;
+import JavaProject.Controller.BuyerProfileController;
 import JavaProject.Model.Account.*;
 import JavaProject.Model.Chat.Conversation;
 import JavaProject.Model.Chat.Message;
 import JavaProject.Model.Discount.Auction;
 import JavaProject.Model.Discount.DiscountCode;
-import JavaProject.Model.ProductOrganization.Category;
-import JavaProject.Model.ProductOrganization.Comment;
-import JavaProject.Model.ProductOrganization.Product;
-import JavaProject.Model.ProductOrganization.Rate;
+import JavaProject.Model.Log.BuyLog;
+import JavaProject.Model.Log.ProductOnLog;
+import JavaProject.Model.Log.SellLog;
+import JavaProject.Model.ProductOrganization.*;
 import JavaProject.Model.Request.Request;
 import JavaProject.Model.Request.Subject;
 import JavaProject.Model.Status.Status;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,16 +34,25 @@ import java.util.HashMap;
 public class ClientHandler extends Thread {
 
     public static HashMap<ClientHandler, String> allConnectedClients = new HashMap<>();
+    public static HashMap<ClientHandler, String> allTokens = new HashMap<>();
     private static final String uploadedFilesPath = "src/main/server/Files";
     private Socket clientSocket;
     private DataOutputStream dataOutputStream;
     private DataInputStream dataInputStream;
-    private String username;
 
-    public ClientHandler(Socket clientSocket, DataOutputStream dataOutputStream, DataInputStream dataInputStream) {
+    public ClientHandler(Socket clientSocket, DataOutputStream dataOutputStream, DataInputStream dataInputStream, String token) {
         this.clientSocket = clientSocket;
         this.dataOutputStream = dataOutputStream;
         this.dataInputStream = dataInputStream;
+        try {
+            System.out.println("Token: " + token);
+            dataInputStream.readUTF();
+            dataOutputStream.writeUTF(token);
+            dataOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        allTokens.put(this, token);
         allConnectedClients.put(this, null);
     }
 
@@ -59,6 +72,10 @@ public class ClientHandler extends Thread {
                 System.out.println(message);
                 System.out.println("==================================================");
                 String[] messageParts = message.split("###");
+                String token = messageParts[messageParts.length - 1];
+                if (!allTokens.get(this).equals(token)) {
+                    respondToClient("Invalid token");
+                }
                 if (message.startsWith("managerExists")) {
                     respondToClient(Database.getInstance().managerExists() ? "true" : "false");
                 } else if (message.startsWith("createManager")) {
@@ -151,6 +168,38 @@ public class ClientHandler extends Thread {
                     respondToClient(getConversationAsString(messageParts[1], messageParts[2]));
                 } else if (message.startsWith("hadConversation")) {
                     respondToClient(getHadConversationResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("updateShopCommission")) {
+                    respondToClient(getUpdateShopCommissionResult(messageParts[1]));
+                } else if (message.startsWith("updateMinBalance")) {
+                    respondToClient(getUpdateMinBalanceResult(messageParts[1]));
+                } else if (message.startsWith("getShopProperties")) {
+                    respondToClient(getShopPropertiesAsString());
+                } else if (message.startsWith("saveGiftCode")) {
+                    respondToClient(getGiftCodeResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("updateWallet")) {
+                    respondToClient(getUpdateWalletResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("chargeWalletSeller")) {
+                    respondToClient(getChargeWalletResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("putInBankSeller")) {
+                    respondToClient(getPutInBankSellerResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("getMinBalance")) {
+                    respondToClient(getMinBalanceAsString());
+                } else if (message.startsWith("updateProductsInPurchase")) {
+                    respondToClient(getUpdateProductsInPurchase(messageParts[1], messageParts[2], messageParts[3]));
+                } else if (message.startsWith("handleBuyLog")) {
+                    respondToClient(getHandleBuyLogResult(messageParts[1], messageParts[2]));
+                } else if (message.startsWith("handleBuyerInPurchase")) {
+                    respondToClient(getHandleBuyerInPurchase(messageParts[1], messageParts[2], messageParts[3]));
+                } else if (message.startsWith("handleSellerInPurchase")) {
+                    respondToClient(getHandleSellerInPurchase(messageParts[1], messageParts[2], messageParts[3]));
+                } else if (message.startsWith("getAllBuyLogs")) {
+                    respondToClient(getAllBuyLogsAsString());
+                } else if (message.startsWith("getAllSellLogs")) {
+                    respondToClient(getAllSellLogsAsString());
+                } else if (message.startsWith("deliverProducts")) {
+                    respondToClient(getDeliverProductsResult(messageParts[1]));
+                } else if (message.startsWith("getProductFileName")) {
+                    respondToClient(getProductFileName(messageParts[1]));
                 } else {
                     respondToClient(message);
                 }
@@ -161,6 +210,168 @@ public class ClientHandler extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private String getProductFileName(String productName) {
+        File file = null;
+        for (File fileInFolder : new File(uploadedFilesPath + "\\productFile").listFiles()) {
+            String name = fileInFolder.getName();
+            if (productName.equals(name.substring(0, name.lastIndexOf("."))))
+                file = fileInFolder;
+        }
+        return file == null ? "-" : file.getName();
+    }
+
+    private String getDeliverProductsResult(String buyLogID) throws IOException {
+        BuyLog buyLog = Database.getInstance().getBuyLogByID(buyLogID);
+        buyLog.setStatus("Delivered");
+        Database.getInstance().saveBuyLog(buyLog);
+        return "Success";
+    }
+
+    private String getAllSellLogsAsString() {
+        ArrayList<SellLog> sellLogs = Database.getInstance().getAllSellLogs();
+        String result = "Success";
+        for (SellLog sellLog : sellLogs) {
+            result += "###" + objectToString(sellLog);
+        }
+        return result;
+    }
+
+    private String getAllBuyLogsAsString() {
+        ArrayList<BuyLog> buyLogs = Database.getInstance().getAllBuyLogs();
+        String result = "Success";
+        for (BuyLog buyLog : buyLogs) {
+            result += "###" + objectToString(buyLog);
+        }
+        return result;
+    }
+
+    private String getHandleSellerInPurchase(String username, String amountStr, String selllogAsString) throws IOException {
+        double moneyForSeller = Double.parseDouble(amountStr) * (100 - Double.parseDouble(Database.getInstance().shopProperties.getKey())) / 100;
+        Seller seller = (Seller) Database.getInstance().getAccountByUsername(username);
+        seller.setBalance(seller.getBalance() + moneyForSeller);
+        SellLog sellLog = stringToObject(selllogAsString, SellLog.class);
+        seller.getSellLogsID().add(sellLog.getID());
+        Database.getInstance().saveSellLog(sellLog);
+        Database.getInstance().saveAccount(seller);
+        return "Success";
+    }
+
+    private String getHandleBuyerInPurchase(String username, String toBePaidStr, String code) throws IOException {
+        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
+        buyer.setBalance(buyer.getBalance() - Double.parseDouble(toBePaidStr));
+        DiscountCode discountCode = Database.getInstance().getDiscountCodeByCode(code);
+        if (discountCode != null) {
+            discountCode.getBuyers().replace(buyer.getUsername(), discountCode.getBuyers().get(buyer.getUsername()) + 1);
+            Database.getInstance().saveDiscountCode(discountCode);
+        }
+        return "Success";
+    }
+
+    private String getHandleBuyLogResult(String buylogAsStr, String username) throws IOException {
+        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
+        BuyLog buyLog = stringToObject(buylogAsStr, BuyLog.class);
+        buyer.getBuyLogsID().add(buyLog.getID());
+        Database.getInstance().saveBuyLog(buyLog);
+        Database.getInstance().saveAccount(buyer);
+        return "Success";
+    }
+
+    private String getUpdateProductsInPurchase(String productName, String quantityStr, String username) throws IOException {
+        Product product = Database.getInstance().getProductByName(productName);
+        int quantity = Integer.parseInt(quantityStr);
+        Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
+        product.setRemainingItems(product.getRemainingItems() - quantity);
+        if (!product.getBuyers().contains(buyer.getUsername()))
+            product.getBuyers().add(buyer.getUsername());
+        Database.getInstance().updateCategories();
+        return "Success";
+    }
+
+    private String getMinBalanceAsString() {
+        return Database.getInstance().shopProperties.getValue();
+    }
+
+    private String getChargeWalletResult(String username, String amountStr) throws IOException {
+        Account account = Database.getInstance().getAccountByUsername(username);
+        double amount = Double.parseDouble(amountStr);
+
+        String token = Server.requestGettingToken(account);
+        String receiptID = Server.requestGettingReceipt(token, "move", String.valueOf((int) amount), String.valueOf(account.getBankAccountNumber()), String.valueOf(Server.shopAccountNumber), "ChargingWallet");
+        String response = Server.requestPayingReceipt(receiptID);
+        if (response.startsWith("done")) {
+            ((Seller) account).setBalance(((Seller) account).getBalance() + amount);
+            Database.getInstance().saveAccount(account);
+        }
+        return response;
+    }
+
+    private String getPutInBankSellerResult(String username, String amountStr) throws IOException {
+        Account account = Database.getInstance().getAccountByUsername(username);
+        double amount = Double.parseDouble(amountStr);
+
+        String token = Server.requestGettingToken(account);
+        String receiptID = Server.requestGettingReceipt(token, "move", String.valueOf((int) amount), String.valueOf(Server.shopAccountNumber), String.valueOf(account.getBankAccountNumber()), "ChargingWallet");
+        String response = Server.requestPayingReceipt(receiptID);
+        if (response.startsWith("done")) {
+            ((Seller) account).setBalance(((Seller) account).getBalance() - amount);
+            Database.getInstance().saveAccount(account);
+        }
+        return response;
+    }
+
+    private String getUpdateWalletResult(String username, String amountStr) throws IOException {
+        Account account = Database.getInstance().getAccountByUsername(username);
+        double amount = Double.parseDouble(amountStr);
+
+        String token = Server.requestGettingToken(account);
+        String receiptID = Server.requestGettingReceipt(token, "deposit", String.valueOf((int) amount), "-1", String.valueOf(Server.shopAccountNumber), "ChargingWallet");
+        String response = Server.requestPayingReceipt(receiptID);
+        if (response.startsWith("done")) {
+            ((Buyer) account).setBalance(((Buyer) account).getBalance() + amount);
+            Database.getInstance().saveAccount(account);
+        }
+        return response;
+    }
+
+    private String getGiftCodeResult(String discountCodeAsString, String username) throws IOException {
+        DiscountCode discountCode = stringToObject(discountCodeAsString, DiscountCode.class);
+        Account account = Database.getInstance().getAccountByUsername(username);
+        ((Buyer)account).getDiscountCodes().add(discountCode.getCode());
+        Database.getInstance().saveDiscountCode(discountCode);
+        Database.getInstance().saveAccount(account);
+        return "Success";
+    }
+
+    private String getShopPropertiesAsString() {
+        return objectToString(Database.getInstance().shopProperties);
+    }
+
+    private String getUpdateShopCommissionResult(String shopCommissionStr) {
+        try {
+            Double shopCommission = Double.parseDouble(shopCommissionStr);
+            if (shopCommission > 100 || shopCommission < 0)
+                return "Enter [0-100]";
+            Database.getInstance().shopProperties.setKey(shopCommissionStr);
+            Database.getInstance().saveShopProperties();
+            return "Success";
+        } catch (Exception e) {
+            return "Enter DOUBLE for shop commission";
+        }
+    }
+
+    private String getUpdateMinBalanceResult(String minBalanceStr) {
+        try {
+            Double minBalance = Double.parseDouble(minBalanceStr);
+            if (minBalance < 0)
+                return "Enter positive value";
+            Database.getInstance().shopProperties.setValue(minBalanceStr);
+            Database.getInstance().saveShopProperties();
+            return "Success";
+        } catch (Exception e) {
+            return "Enter DOUBLE for minimum balance";
         }
     }
 
@@ -214,7 +425,7 @@ public class ClientHandler extends Thread {
     private void getFileData(String name, String type) throws IOException {
         File file = null;
         for (File fileInFolder : new File(uploadedFilesPath + "\\" + type).listFiles()) {
-            if (fileInFolder.getName().startsWith(name))
+            if (fileInFolder.getName().substring(0, fileInFolder.getName().lastIndexOf(".")).equals(name))
                 file = fileInFolder;
         }
         System.out.println(file == null ? "File not found" : file.getName());
@@ -708,6 +919,7 @@ public class ClientHandler extends Thread {
             Seller seller = (Seller) Database.getInstance().getAccountByUsername(sellerUsername);
             seller.setStatus(Status.ACCEPTED);
             request.getSeller().setStatus(Status.ACCEPTED);
+            Server.requestCreatingBankAccountForClients(seller);
             Database.getInstance().saveAccount(seller);
         } else if (request.getSubject().equals(Subject.ADD_PRODUCT)) {
             String productName = request.getProduct().getName();
@@ -903,6 +1115,9 @@ public class ClientHandler extends Thread {
                 Request request = new Request(Subject.SELLER_REGISTER, account.toString());
                 request.setSeller((Seller) account);
                 Database.getInstance().saveRequest(request);
+            }
+            if (account instanceof Buyer) {
+                Server.requestCreatingBankAccountForClients(account);
             }
             Database.getInstance().saveAccount(account);
             return "Success";
