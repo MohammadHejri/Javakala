@@ -560,3 +560,599 @@ public class Database {
         return allSellLogs;
     }
 }
+
+
+
+
+
+
+
+//
+//package JavaProject.Server;
+//
+//import JavaProject.Model.Account.*;
+//import JavaProject.Model.Chat.Conversation;
+//import JavaProject.Model.Discount.Auction;
+//import JavaProject.Model.Discount.DiscountCode;
+//import JavaProject.Model.DualString;
+//import JavaProject.Model.Log.BuyLog;
+//import JavaProject.Model.Log.SellLog;
+//import JavaProject.Model.ProductOrganization.Category;
+//import JavaProject.Model.ProductOrganization.Product;
+//import JavaProject.Model.Request.Request;
+//import JavaProject.Model.Status.Status;
+//import JavaProject.Model.TripleString;
+//import com.google.gson.Gson;
+//
+//import java.io.File;
+//import java.io.IOException;
+//import java.nio.file.Paths;
+//import java.sql.*;
+//import java.text.SimpleDateFormat;
+//import java.util.ArrayList;
+//import java.util.Date;
+//import java.util.HashMap;
+//
+//public class Database {
+//
+//    private static Database instance;
+//    private final String rootPath = "src/main/server/Root";
+//    private final String managersPath = "src/main/server/Accounts/Managers";
+//    private final String sellersPath = "src/main/server/Accounts/Sellers";
+//    private final String buyersPath = "src/main/server/Accounts/Buyers";
+//    private final String supportersPath = "src/main/server/Accounts/Supporters";
+//    private final String requestsPath = "src/main/server/Requests";
+//    private final String auctionsPath = "src/main/server/Auctions";
+//    private final String buyLogsPath = "src/main/server/Log/BuyLogs";
+//    private final String sellLogsPath = "src/main/server/Log/SellLogs";
+//    private final String discountCodesPath = "src/main/server/DiscountCodes";
+//    private final String conversationsPath = "src/main/server/Conversations";
+//
+//    private final String tablePath = "./resources.sqlite";
+//    private final String tableCommand = "CREATE TABLE IF NOT EXISTS mainData(\n" +
+//            "    type TEXT NOT NULL ,\n" +
+//            "primaryKey TEXT PRIMARY KEY NOT NULL," +
+//            "   data TEXT NOT NULL \n" +
+//            ");";
+//    protected DualString shopProperties;
+//    private Category root;
+//    private ArrayList<Account> allAccounts = new ArrayList<>();
+//    private ArrayList<Request> allRequests = new ArrayList<>();
+//    private ArrayList<Auction> allAuctions = new ArrayList<>();
+//    private ArrayList<BuyLog> allBuyLogs = new ArrayList<>();
+//    private ArrayList<SellLog> allSellLogs = new ArrayList<>();
+//    private ArrayList<DiscountCode> allDiscountCodes = new ArrayList<>();
+//    private ArrayList<Conversation> allConversations = new ArrayList<>();
+//    private Connection connection;
+//    private Statement statement;
+//
+//    public static Database getInstance() {
+//        if (instance == null)
+//            instance = new Database();
+//        return instance;
+//    }
+//
+//    public void loadResources() throws Exception {
+//        File file;
+//        file = new File(Paths.get(tablePath).toUri());
+//        if (!file.exists())
+//            file.createNewFile();
+//        connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+//        statement = connection.createStatement();
+//        createData();
+//        if (shopProperties == null) {
+//            shopProperties = new DualString("5", "50");
+//            saveShopProperties();
+//        }
+//        if (root == null) {
+//            root = new Category("root", null, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+//            save(root, root.getName());
+//        }
+//    }
+//
+//    private void createData() throws SQLException {
+//        statement.execute(tableCommand);
+//        ResultSet resultSet = statement.executeQuery("select *from mainData;");
+//        Gson gson = new Gson();
+//        while (resultSet.next()) {
+//            Object var = changeToObject(resultSet, gson);
+//            if (var instanceof Account)
+//                allAccounts.add((Account) var);
+//            if (var instanceof Request)
+//                allRequests.add((Request) var);
+//            if (var instanceof Auction)
+//                allAuctions.add((Auction) var);
+//            if (var instanceof BuyLog)
+//                allBuyLogs.add((BuyLog) var);
+//            if (var instanceof SellLog)
+//                allSellLogs.add((SellLog) var);
+//            if (var instanceof DiscountCode)
+//                allDiscountCodes.add((DiscountCode) var);
+//            if (var instanceof Category)
+//                root = (Category) var;
+//            if (var instanceof Conversation)
+//                allConversations.add((Conversation) var);
+//            if (var instanceof DualString)
+//                shopProperties = (DualString) var;
+//        }
+//    }
+//
+//    private Object changeToObject(ResultSet resultSet, Gson gson) throws SQLException {
+//        return gson.fromJson(resultSet.getString("data"), getClass(resultSet.getString("type")));
+//    }
+//
+//    private Class getClass(String type) {
+//        try {
+//            return Class.forName(type);
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//    public boolean managerExists() {
+//        for (Account account : allAccounts)
+//            if (account instanceof Manager)
+//                return true;
+//        return false;
+//    }
+//
+//    public void saveShopProperties() throws  SQLException {
+//        save(shopProperties,"SHOPPROPERTY");
+//    }
+//
+//    public void saveAccount(Account account) throws SQLException {
+//        if (getAccountByUsername(account.getUsername()) == null)
+//            allAccounts.add(account);
+//        save(account, account.getUsername());
+//    }
+//
+//    private void save(Object object, String primaryAttribute) throws SQLException {
+//        PreparedStatement ps = connection.prepareStatement("insert or replace into mainData(type,data,primaryKey) VALUES (?,?,?);");
+//        ps.setString(1, object.getClass().getName());
+//        ps.setString(2, new Gson().toJson(object));
+//        ps.setString(3, primaryAttribute);
+//        ps.executeUpdate();
+//    }
+//
+//    public void deleteAccount(Account account) {
+//        allAccounts.remove(account);
+//        if (account instanceof Seller)
+//            for (String productID : ((Seller) account).getProductsID()) {
+//                try {
+//                    deleteProduct(getProductByID(productID));
+//                } catch (SQLException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        delete(account);
+//    }
+//
+//    public void saveRequest(Request request) throws SQLException {
+//        if (getRequestByID(request.getID()) == null)
+//            allRequests.add(request);
+//        save(request, request.getID());
+//    }
+//
+//    public void saveAuction(Auction auction) throws SQLException {
+//        if (getAuctionByID(auction.getID()) == null)
+//            allAuctions.add(auction);
+//        save(auction, auction.getID());
+//    }
+//
+//    public void deleteProduct(Product product) throws SQLException {
+//        Category parent = getCategoryByName(product.getParentCategoryName());
+//        parent.getProducts().remove(product);
+//        Seller seller = (Seller) getAccountByUsername(product.getSellerUsername());
+//        if (seller != null) {
+//            seller.getProductsID().remove(product.getID());
+//            saveAccount(seller);
+//        }
+//        Auction auction = getAuctionByID(product.getAuctionID());
+//        if (auction != null) {
+//            auction.getProductsID().remove(product.getID());
+//            saveAuction(auction);
+//        }
+//        for (Request request : allRequests) {
+//            if (request.getStatus().equals(Status.PENDING) && request.getProduct() != null && request.getProduct().getID().equals(product.getID())) {
+//                request.setStatus(Status.DECLINED);
+//                saveRequest(request);
+//            }
+//        }
+//        updateCategories();
+//    }
+//    public void updateCategories() throws  SQLException {
+//        save(root,root.getName());
+//    }
+//    public void deleteAuction(Auction auction) throws IOException, SQLException {
+//        allAuctions.remove(auction);
+//        Seller seller = (Seller) getAccountByUsername(auction.getSellerUsername());
+//        seller.getAuctionsID().remove(auction.getID());
+//        saveAccount(seller);
+//        for (String productID : auction.getProductsID())
+//            getProductByID(productID).setAuctionID(null);
+//        updateCategories();
+//        delete(auction);
+//    }
+//
+//    private void delete(Object account) {
+//        try {
+//            Gson gson = new Gson();
+//            PreparedStatement ps = createPreparedStatment();
+//            ps.setString(1, account.getClass().getName());
+//            ps.setString(2, gson.toJson(account));
+//            ps.executeUpdate();
+//        } catch (SQLException throwables) {
+//            throwables.printStackTrace();
+//        }
+//    }
+//
+//    private PreparedStatement createPreparedStatment() throws SQLException {
+//        return connection.prepareStatement("DELETE FROM mainData where (type = ? AND data = ?)");
+//    }
+//
+//    public void saveDiscountCode(DiscountCode discountCode) throws  SQLException {
+//        if (getDiscountCodeByCode(discountCode.getCode()) == null)
+//            allDiscountCodes.add(discountCode);
+//        save(discountCode,discountCode.getID());
+//    }
+//
+//    public void deleteDiscountCode(DiscountCode discountCode) throws  SQLException {
+//        allDiscountCodes.remove(discountCode);
+//        for (String buyerName : discountCode.getBuyers().keySet()) {
+//            Buyer buyer = (Buyer) getAccountByUsername(buyerName);
+//            if (buyer != null) {
+//                buyer.getDiscountCodes().remove(discountCode.getCode());
+//                saveAccount(buyer);
+//            }
+//        }
+//        delete(discountCode);
+//    }
+//
+//    public void saveSellLog(SellLog sellLog) throws  SQLException {
+//        if (getSellLogByID(sellLog.getID()) == null)
+//            allSellLogs.add(sellLog);
+//        save(sellLog,sellLog.getID());
+//    }
+//
+//    public void saveBuyLog(BuyLog buyLog) throws  SQLException {
+//        if (getBuyLogByID(buyLog.getID()) == null)
+//            allBuyLogs.add(buyLog);
+//        save(buyLog,buyLog.getID());
+//    }
+//
+//
+//    public void deleteCategory(Category category) throws  SQLException {
+//        Category parentCat = getCategoryByName(category.getParentName());
+//        parentCat.getSubCategories().remove(category);
+//        changeDeletedCategoryIncludedProducts(category, parentCat);
+//        updateCategories();
+//    }
+//
+//    private void changeDeletedCategoryIncludedProducts(Category deletedCategory, Category destination) {
+//        for (Product product : deletedCategory.getProducts()) {
+//            product.setParentCategoryName(destination.getName());
+//            destination.getProducts().add(product);
+//        }
+//        for (Category subCat : deletedCategory.getSubCategories())
+//            changeDeletedCategoryIncludedProducts(subCat, destination);
+//    }
+//
+//    public Account getAccountByUsername(String username) {
+//        for (Account account : allAccounts)
+//            if (account.getUsername().equals(username))
+//                return account;
+//        return null;
+//    }
+//
+//    public Request getRequestByID(String ID) {
+//        for (Request request : allRequests)
+//            if (request.getID().equals(ID))
+//                return request;
+//        return null;
+//    }
+//
+//    public Auction getAuctionByID(String ID) {
+//        for (Auction auction : allAuctions)
+//            if (auction.getID().equals(ID))
+//                return auction;
+//        return null;
+//    }
+//
+//    public BuyLog getBuyLogByID(String ID) {
+//        for (BuyLog buyLog : allBuyLogs)
+//            if (buyLog.getID().equals(ID))
+//                return buyLog;
+//        return null;
+//    }
+//
+//    public SellLog getSellLogByID(String ID) {
+//        for (SellLog sellLog : allSellLogs)
+//            if (sellLog.getID().equals(ID))
+//                return sellLog;
+//        return null;
+//    }
+//
+//    public Product getProductByID(String ID) {
+//        for (Product product : getAllProducts())
+//            if (product.getID().equals(ID))
+//                return product;
+//        return null;
+//    }
+//
+//    public Category getCategoryByName(String name) {
+//        return getRecursiveCategory(name, root);
+//    }
+//
+//    private Category getRecursiveCategory(String name, Category current) {
+//        if (current.getName().equals(name))
+//            return current;
+//        for (Category category : current.getSubCategories()) {
+//            Category cat = getRecursiveCategory(name, category);
+//            if (cat != null)
+//                return cat;
+//        }
+//        return null;
+//    }
+//
+//    public Product getProductByName(String name) {
+//        return getRecursiveProduct(name, root);
+//    }
+//
+//    private Product getRecursiveProduct(String name, Category current) {
+//        for (Product product : current.getProducts())
+//            if (product.getName().equals(name))
+//                return product;
+//        for (Category category : current.getSubCategories()) {
+//            Product product = getRecursiveProduct(name, category);
+//            if (product != null)
+//                return product;
+//        }
+//        return null;
+//
+//    }
+//
+//    public DiscountCode getDiscountCodeByCode(String code) {
+//        if (code == null)
+//            return null;
+//        for (DiscountCode discountCode : allDiscountCodes)
+//            if (discountCode.getCode().equals(code))
+//                return discountCode;
+//        return null;
+//    }
+//
+//    public ArrayList<Account> getAllAccounts() {
+//        return allAccounts;
+//    }
+//
+//    public ArrayList<DiscountCode> getAllDiscountCodes() {
+//        return allDiscountCodes;
+//    }
+//
+//    public ArrayList<Product> getAllProducts() {
+//        return getAllProductsRecursively(root);
+//    }
+//
+//    public ArrayList<Product> getAllProductsRecursively(Category category) {
+//        ArrayList<Product> products = new ArrayList<>(category.getProducts());
+//        for (Category subCat : category.getSubCategories())
+//            products.addAll(getAllProductsRecursively(subCat));
+//        return products;
+//    }
+//
+//    public ArrayList<Product> getAllAcceptedProductsRecursively(Category category) {
+//        ArrayList<Product> products = getAllProductsRecursively(category);
+//        ArrayList<Product> newProducts = new ArrayList<>();
+//        for (Product product : products) {
+//            if (product.getStatus().equals(Status.ACCEPTED))
+//                newProducts.add(product);
+//        }
+//        return newProducts;
+//    }
+//
+//    public ArrayList<TripleString> getComparison(Product p1, Product p2) {
+//        ArrayList<TripleString> arrayList = new ArrayList<>();
+//        if (p2 == null) {
+//            arrayList.add(new TripleString("brand", p1.getBrand(), ""));
+//            arrayList.add(new TripleString("seller", p1.getSellerUsername(), ""));
+//            for (String spec : p1.getSpecs().keySet())
+//                arrayList.add(new TripleString(spec, p1.getSpecs().get(spec), ""));
+//        } else {
+//            arrayList.add(new TripleString("brand", p1.getBrand(), p2.getBrand()));
+//            arrayList.add(new TripleString("seller", p1.getSellerUsername(), p2.getSellerUsername()));
+//            for (String spec : p1.getSpecs().keySet())
+//                arrayList.add(new TripleString(spec, p1.getSpecs().get(spec), p2.getSpecs().getOrDefault(spec, "")));
+//            for (String spec : p2.getSpecs().keySet()) {
+//                if (p1.getSpecs().containsKey(spec)) continue;
+//                else arrayList.add(new TripleString(spec, "", p2.getSpecs().get(spec)));
+//            }
+//        }
+//        return arrayList;
+//    }
+//
+//    public ArrayList<String> getAllFeatures(Category category) {
+//        ArrayList<String> allFeatures = new ArrayList<>();
+//        if (category.getParentName() != null)
+//            allFeatures.addAll(getAllFeatures(getCategoryByName(category.getParentName())));
+//        allFeatures.addAll(category.getFeatures());
+//        return allFeatures;
+//    }
+//
+//    public ArrayList<Request> getAllRequests() {
+//        return allRequests;
+//    }
+//
+//    public ArrayList<String> getProductsInNoAuction(Seller seller) {
+//        ArrayList<String> array = new ArrayList<>();
+//        for (String productID : seller.getProductsID()) {
+//            Product product = getProductByID(productID);
+//            if (product.getStatus().equals(Status.ACCEPTED) && product.getAuctionID() == null)
+//                array.add(productID);
+//        }
+//        return array;
+//    }
+//
+//    public ArrayList<String> getSpecsInfoFromCategory(Category category, String feature) {
+//        ArrayList<String> array = new ArrayList<>();
+//        for (Category child : category.getSubCategories()) {
+//            ArrayList<String> childArray = getSpecsInfoFromCategory(child, feature);
+//            for (String childArrayStr : childArray) {
+//                boolean shouldAdd = true;
+//                for (String arrayStr : array) {
+//                    if (childArrayStr.equals(arrayStr)) {
+//                        shouldAdd = false;
+//                        break;
+//                    }
+//                }
+//                if (shouldAdd)
+//                    array.add(childArrayStr);
+//            }
+//        }
+//        for (Product product : category.getProducts()) {
+//            if (product.getSpecs().containsKey(feature)) {
+//                String value = product.getSpecs().get(feature);
+//                boolean shouldAdd = true;
+//                for (String arrayStr : array) {
+//                    if (value.equals(arrayStr)) {
+//                        shouldAdd = false;
+//                        break;
+//                    }
+//                }
+//                if (shouldAdd)
+//                    array.add(value);
+//            }
+//        }
+//        return array;
+//    }
+//
+//    public ArrayList<String> getBrandsFromCategory(Category category) {
+//        ArrayList<String> array = new ArrayList<>();
+//        for (Category child : category.getSubCategories()) {
+//            ArrayList<String> childArray = getBrandsFromCategory(child);
+//            for (String childArrayStr : childArray) {
+//                boolean shouldAdd = true;
+//                for (String arrayStr : array) {
+//                    if (childArrayStr.equals(arrayStr)) {
+//                        shouldAdd = false;
+//                        break;
+//                    }
+//                }
+//                if (shouldAdd)
+//                    array.add(childArrayStr);
+//            }
+//        }
+//        for (Product product : category.getProducts()) {
+//            String value = product.getBrand();
+//            boolean shouldAdd = true;
+//            for (String arrayStr : array) {
+//                if (value.equals(arrayStr)) {
+//                    shouldAdd = false;
+//                    break;
+//                }
+//            }
+//            if (shouldAdd)
+//                array.add(value);
+//        }
+//        return array;
+//    }
+//
+//    public ArrayList<String> getSellersFromCategory(Category category) {
+//        ArrayList<String> array = new ArrayList<>();
+//        for (Category child : category.getSubCategories()) {
+//            ArrayList<String> childArray = getSellersFromCategory(child);
+//            for (String childArrayStr : childArray) {
+//                boolean shouldAdd = true;
+//                for (String arrayStr : array) {
+//                    if (childArrayStr.equals(arrayStr)) {
+//                        shouldAdd = false;
+//                        break;
+//                    }
+//                }
+//                if (shouldAdd)
+//                    array.add(childArrayStr);
+//            }
+//        }
+//        for (Product product : category.getProducts()) {
+//            String value = product.getSellerUsername();
+//            boolean shouldAdd = true;
+//            for (String arrayStr : array) {
+//                if (value.equals(arrayStr)) {
+//                    shouldAdd = false;
+//                    break;
+//                }
+//            }
+//            if (shouldAdd)
+//                array.add(value);
+//        }
+//        return array;
+//    }
+//
+//    public boolean canChangeParentCategory(Category category, Category desired) {
+//        if (category == null)
+//            return true;
+//        if (category.getName().equals("root")) {
+//            if (desired.getName().equals("root"))
+//                return true;
+//            return false;
+//        }
+//        if (category.getName().equals(desired.getName()))
+//            return true;
+//        return canChangeParentCategory(getCategoryByName(category.getParentName()), desired);
+//    }
+//
+//    public Auction getCurrentAuction(Product product) {
+//        try {
+//            Auction auction = getAuctionByID(product.getAuctionID());
+//            Date nowDate = new Date();
+//            Date startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(auction.getStartDate());
+//            Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").parse(auction.getEndDate());
+//            boolean afterStart = nowDate.compareTo(startDate) > 0;
+//            boolean beforeEnd = nowDate.compareTo(endDate) < 0;
+//            if (afterStart && beforeEnd) {
+//                return auction;
+//            }
+//        } catch (Exception e) {
+//        }
+//        return null;
+//    }
+//
+//    public HashMap<String, Integer> getRandomBuyers() {
+//        HashMap<String, Integer> arrayList = new HashMap<>();
+//        for (Account buyer : getAllAccounts()) {
+//            if (buyer instanceof Buyer && Math.random() < 0.5) {
+//                arrayList.put(buyer.getUsername(), 0);
+//            }
+//        }
+//        return arrayList;
+//    }
+//
+//    public void saveConversation(Conversation conversation) throws  SQLException {
+//        if (getConversationByBothSides(conversation.getFirstSide(), conversation.getSecondSide()) == null)
+//            allConversations.add(conversation);
+//        save(conversation,conversation.getID());
+//    }
+//
+//    public void deleteConversation(Conversation conversation)  {
+//        allConversations.remove(conversation);
+//        delete(conversation);
+//    }
+//
+//    public Conversation getConversationByBothSides(String senderUsername, String recieverUsername) {
+//        for (Conversation conversation : allConversations) {
+//            String firstSide = conversation.getFirstSide();
+//            String secondSide = conversation.getSecondSide();
+//            boolean b1 = firstSide.equals(senderUsername) && secondSide.equals(recieverUsername);
+//            boolean b2 = firstSide.equals(recieverUsername) && secondSide.equals(senderUsername);
+//            if (b1 || b2) return conversation;
+//        }
+//        return null;
+//    }
+//
+//    public ArrayList<BuyLog> getAllBuyLogs() {
+//        return allBuyLogs;
+//    }
+//
+//    public ArrayList<SellLog> getAllSellLogs() {
+//        return allSellLogs;
+//    }
+//}

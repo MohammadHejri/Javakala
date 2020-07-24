@@ -14,6 +14,7 @@ import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ResourceBundle;
 
 // Client-Server : Done
@@ -84,13 +85,13 @@ public class AccountInfoController implements Initializable {
     }
 
     @FXML
-    private void update(ActionEvent event) throws IOException {
+    private void update(ActionEvent event) throws IOException, NoSuchAlgorithmException {
         String firstName = firstNameField.getText();
         String lastName = lastNameField.getText();
         String emailAddress = emailAddressField.getText();
         String phoneNumber = phoneNumberField.getText();
         String companyName = companyNameField.getText();
-        String currentPassword = currentPasswordField.getText();
+        String currentPassword = App.encryptPassword(currentPasswordField.getText());
         String newPassword = newPasswordField.getText();
 
         Account account = App.getSignedInAccount();

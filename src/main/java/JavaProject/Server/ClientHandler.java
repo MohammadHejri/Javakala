@@ -21,18 +21,21 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 public class ClientHandler extends Thread {
 
+    private static ArrayList<String> allActiveSessionKeys = new ArrayList<>();
     public static HashMap<ClientHandler, String> allConnectedClients = new HashMap<>();
     public static HashMap<ClientHandler, String> allTokens = new HashMap<>();
     private static final String uploadedFilesPath = "src/main/server/Files";
@@ -47,9 +50,8 @@ public class ClientHandler extends Thread {
         try {
             System.out.println("Token: " + token);
             dataInputStream.readUTF();
-            dataOutputStream.writeUTF(token);
-            dataOutputStream.flush();
-        } catch (IOException e) {
+            respondToClient(token);
+        } catch (IOException | SQLException e) {
             e.printStackTrace();
         }
         allTokens.put(this, token);
@@ -71,10 +73,22 @@ public class ClientHandler extends Thread {
                 System.out.println("==================================================");
                 System.out.println(message);
                 System.out.println("==================================================");
-                String[] messageParts = message.split("###");
+
+                String[] mParts = message.split("###");
+                String[] messageParts = new String[mParts.length - 1];
+                for (int i = 0; i < mParts.length - 1; i++)
+                    messageParts[i] = mParts[i];
+                String session = mParts[mParts.length - 1];
+                if (allActiveSessionKeys.contains(session)) {
+                    allActiveSessionKeys.remove(session);
+                } else {
+                    respondToClient("You have used this session key");
+                    continue;
+                }
                 String token = messageParts[messageParts.length - 1];
                 if (!allTokens.get(this).equals(token)) {
                     respondToClient("Invalid token");
+                    continue;
                 }
                 if (message.startsWith("managerExists")) {
                     respondToClient(Database.getInstance().managerExists() ? "true" : "false");
@@ -207,7 +221,9 @@ public class ClientHandler extends Thread {
                 allConnectedClients.remove(this);
                 System.out.println("socket disconnected");
                 break;
-            } catch (IOException e) {
+            } catch (IOException | SQLException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             }
         }
@@ -223,7 +239,7 @@ public class ClientHandler extends Thread {
         return file == null ? "-" : file.getName();
     }
 
-    private String getDeliverProductsResult(String buyLogID) throws IOException {
+    private String getDeliverProductsResult(String buyLogID) throws IOException, SQLException {
         BuyLog buyLog = Database.getInstance().getBuyLogByID(buyLogID);
         buyLog.setStatus("Delivered");
         Database.getInstance().saveBuyLog(buyLog);
@@ -248,7 +264,7 @@ public class ClientHandler extends Thread {
         return result;
     }
 
-    private String getHandleSellerInPurchase(String username, String amountStr, String selllogAsString) throws IOException {
+    private String getHandleSellerInPurchase(String username, String amountStr, String selllogAsString) throws IOException, SQLException {
         double moneyForSeller = Double.parseDouble(amountStr) * (100 - Double.parseDouble(Database.getInstance().shopProperties.getKey())) / 100;
         Seller seller = (Seller) Database.getInstance().getAccountByUsername(username);
         seller.setBalance(seller.getBalance() + moneyForSeller);
@@ -259,7 +275,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getHandleBuyerInPurchase(String username, String toBePaidStr, String code) throws IOException {
+    private String getHandleBuyerInPurchase(String username, String toBePaidStr, String code) throws IOException, SQLException {
         Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
         buyer.setBalance(buyer.getBalance() - Double.parseDouble(toBePaidStr));
         DiscountCode discountCode = Database.getInstance().getDiscountCodeByCode(code);
@@ -270,7 +286,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getHandleBuyLogResult(String buylogAsStr, String username) throws IOException {
+    private String getHandleBuyLogResult(String buylogAsStr, String username) throws IOException, SQLException {
         Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
         BuyLog buyLog = stringToObject(buylogAsStr, BuyLog.class);
         buyer.getBuyLogsID().add(buyLog.getID());
@@ -279,7 +295,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getUpdateProductsInPurchase(String productName, String quantityStr, String username) throws IOException {
+    private String getUpdateProductsInPurchase(String productName, String quantityStr, String username) throws IOException, SQLException {
         Product product = Database.getInstance().getProductByName(productName);
         int quantity = Integer.parseInt(quantityStr);
         Buyer buyer = (Buyer) Database.getInstance().getAccountByUsername(username);
@@ -294,7 +310,7 @@ public class ClientHandler extends Thread {
         return Database.getInstance().shopProperties.getValue();
     }
 
-    private String getChargeWalletResult(String username, String amountStr) throws IOException {
+    private String getChargeWalletResult(String username, String amountStr) throws IOException, SQLException {
         Account account = Database.getInstance().getAccountByUsername(username);
         double amount = Double.parseDouble(amountStr);
 
@@ -308,7 +324,7 @@ public class ClientHandler extends Thread {
         return response;
     }
 
-    private String getPutInBankSellerResult(String username, String amountStr) throws IOException {
+    private String getPutInBankSellerResult(String username, String amountStr) throws IOException, SQLException {
         Account account = Database.getInstance().getAccountByUsername(username);
         double amount = Double.parseDouble(amountStr);
 
@@ -322,7 +338,7 @@ public class ClientHandler extends Thread {
         return response;
     }
 
-    private String getUpdateWalletResult(String username, String amountStr) throws IOException {
+    private String getUpdateWalletResult(String username, String amountStr) throws IOException, SQLException {
         Account account = Database.getInstance().getAccountByUsername(username);
         double amount = Double.parseDouble(amountStr);
 
@@ -336,7 +352,7 @@ public class ClientHandler extends Thread {
         return response;
     }
 
-    private String getGiftCodeResult(String discountCodeAsString, String username) throws IOException {
+    private String getGiftCodeResult(String discountCodeAsString, String username) throws IOException, SQLException {
         DiscountCode discountCode = stringToObject(discountCodeAsString, DiscountCode.class);
         Account account = Database.getInstance().getAccountByUsername(username);
         ((Buyer)account).getDiscountCodes().add(discountCode.getCode());
@@ -382,7 +398,7 @@ public class ClientHandler extends Thread {
         return "True";
     }
 
-    private String getConversationAsString(String firstSide, String secondSide) throws IOException {
+    private String getConversationAsString(String firstSide, String secondSide) throws IOException, SQLException {
         Conversation conversation = Database.getInstance().getConversationByBothSides(firstSide, secondSide);
         if (conversation == null) {
             conversation = new Conversation(firstSide, secondSide);
@@ -391,7 +407,7 @@ public class ClientHandler extends Thread {
         return objectToString(conversation);
     }
 
-    private String getSaveMessageAndNotifyResult(String messageAsString) throws IOException {
+    private String getSaveMessageAndNotifyResult(String messageAsString) throws IOException, SQLException {
         Message message = stringToObject(messageAsString, Message.class);
         Conversation conversation = Database.getInstance().getConversationByBothSides(message.getSenderUsername(), message.getRecieverUsername());
         if (conversation == null)
@@ -407,7 +423,7 @@ public class ClientHandler extends Thread {
         return "False";
     }
 
-    private String getLeaveCommentResult(String productName, String commentAsString) throws IOException {
+    private String getLeaveCommentResult(String productName, String commentAsString) throws IOException, SQLException {
         Product product = Database.getInstance().getProductByName(productName);
         product.getComments().add(stringToObject(commentAsString, Comment.class));
         Database.getInstance().updateCategories();
@@ -415,14 +431,14 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getIncreaseViewResult(String productName) throws IOException {
+    private String getIncreaseViewResult(String productName) throws IOException, SQLException {
         Product product = Database.getInstance().getProductByName(productName);
         product.setViews(product.getViews() + 1);
         Database.getInstance().updateCategories();
         return "Success";
     }
 
-    private void getFileData(String name, String type) throws IOException {
+    private void getFileData(String name, String type) throws IOException, SQLException {
         File file = null;
         for (File fileInFolder : new File(uploadedFilesPath + "\\" + type).listFiles()) {
             if (fileInFolder.getName().substring(0, fileInFolder.getName().lastIndexOf(".")).equals(name))
@@ -444,7 +460,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String getUploadFileResult(String name) throws IOException {
+    private String getUploadFileResult(String name) throws IOException, SQLException {
         new File(uploadedFilesPath).mkdirs();
         new File(uploadedFilesPath + "\\accountPhoto").mkdirs();
         new File(uploadedFilesPath + "\\productPhoto").mkdirs();
@@ -461,7 +477,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getRateProductResult(String productName, String productMark, String username) throws IOException {
+    private String getRateProductResult(String productName, String productMark, String username) throws IOException, SQLException {
         if (productName.isBlank()) {
             return  "Enter product name";
         } else if (productMark.isBlank()) {
@@ -499,7 +515,7 @@ public class ClientHandler extends Thread {
         return "Success###" + objectToString(auction);
     }
 
-    private String getRequestAddOrEditAuctionResult(String data) throws IOException {
+    private String getRequestAddOrEditAuctionResult(String data) throws IOException, SQLException {
         String[] dataParts = data.split("###");
         String ID = dataParts[1].equals("null") ? null : dataParts[1];
         String startDate = dataParts[2];
@@ -547,7 +563,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String getRequestDeleteAuctionResult(String ID) throws IOException {
+    private String getRequestDeleteAuctionResult(String ID) throws IOException, SQLException {
         Auction auction = Database.getInstance().getAuctionByID(ID);
         Request request = new Request(Subject.DELETE_AUCTION, auction.toString());
         request.setAuction(auction);
@@ -556,7 +572,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getRequestAddProductResult(String data) throws IOException {
+    private String getRequestAddProductResult(String data) throws IOException, SQLException {
         String[] dataParts = data.split("###");
         String name = dataParts[1];
         String brand = dataParts[2];
@@ -604,7 +620,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String getRequestEditProductResult(String data) throws IOException {
+    private String getRequestEditProductResult(String data) throws IOException, SQLException {
         String[] dataParts = data.split("###");
         String name = dataParts[1];
         String brand = dataParts[2];
@@ -658,7 +674,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String getRequestDeleteProductResult(String name) throws IOException {
+    private String getRequestDeleteProductResult(String name) throws IOException, SQLException {
         Product product = Database.getInstance().getProductByName(name);
         Request request = new Request(Subject.DELETE_PRODUCT, product.toString());
         request.setProduct(product);
@@ -681,7 +697,7 @@ public class ClientHandler extends Thread {
         return "Success###" + objectToString(product);
     }
 
-    private String getDeleteProductResult(String name) throws IOException {
+    private String getDeleteProductResult(String name) throws IOException, SQLException {
         Product product = Database.getInstance().getProductByName(name);
         Database.getInstance().deleteProduct(product);
         return "Success";
@@ -696,7 +712,7 @@ public class ClientHandler extends Thread {
         return result;
     }
 
-    private String getDeleteCategory(String name) throws IOException {
+    private String getDeleteCategory(String name) throws IOException, SQLException {
         Category toBeDeletedCategory = Database.getInstance().getCategoryByName(name);
         if (!toBeDeletedCategory.getName().equals("root")) {
             Database.getInstance().deleteCategory(toBeDeletedCategory);
@@ -706,7 +722,7 @@ public class ClientHandler extends Thread {
         }
     }
 
-    private String getCreateOrEditCategoryResult(String data) throws IOException {
+    private String getCreateOrEditCategoryResult(String data) throws IOException, SQLException {
         String[] dataParts = data.split("###");
         String name = dataParts[1];
         String parent = dataParts[2];
@@ -780,7 +796,7 @@ public class ClientHandler extends Thread {
         return "Success###" + objectToString(category);
     }
 
-    private String getGenerateRandomCodeResult() throws IOException {
+    private String getGenerateRandomCodeResult() throws IOException, SQLException {
         Date nowDate = new Date();
         DiscountCode discountCode;
         String startDate = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(nowDate);
@@ -798,13 +814,13 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getDeleteDiscountCodeResult(String code) throws IOException {
+    private String getDeleteDiscountCodeResult(String code) throws IOException, SQLException {
         DiscountCode toBeDeletedDiscountcode = Database.getInstance().getDiscountCodeByCode(code);
         Database.getInstance().deleteDiscountCode(toBeDeletedDiscountcode);
         return "Success";
     }
 
-    private String getCreateOrEditDiscountCodeResult(String data) throws IOException {
+    private String getCreateOrEditDiscountCodeResult(String data) throws IOException, SQLException {
         String[] dataParts = data.split("###");
         String selectedCode = dataParts[1].equals("null") ? null : dataParts[1];
         String code = dataParts[2];
@@ -890,7 +906,7 @@ public class ClientHandler extends Thread {
         return result;
     }
 
-    private String getDeclineRequestResult(String requestID) throws IOException {
+    private String getDeclineRequestResult(String requestID) throws IOException, SQLException {
         Request request = Database.getInstance().getRequestByID(requestID);
         if (request.getSubject().equals(Subject.SELLER_REGISTER)) {
             String sellerUsername = request.getSeller().getUsername();
@@ -912,7 +928,7 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getAcceptRequestResult(String requestID) throws IOException {
+    private String getAcceptRequestResult(String requestID) throws IOException, SQLException {
         Request request = Database.getInstance().getRequestByID(requestID);
         if (request.getSubject().equals(Subject.SELLER_REGISTER)) {
             String sellerUsername = request.getSeller().getUsername();
@@ -1021,7 +1037,7 @@ public class ClientHandler extends Thread {
         return result;
     }
 
-    private String getUpdateAccountInfoResult(String username, String password, Account changedAccount) throws IOException {
+    private String getUpdateAccountInfoResult(String username, String password, Account changedAccount) throws IOException, SQLException, NoSuchAlgorithmException {
         Account account = Database.getInstance().getAccountByUsername(username);
         String firstName = changedAccount.getFirstName();
         String lastName = changedAccount.getLastName();
@@ -1030,7 +1046,7 @@ public class ClientHandler extends Thread {
         String companyName = changedAccount instanceof Seller ? ((Seller) changedAccount).getCompanyName() : null;
         String newPassword = changedAccount.getPassword();
 
-        if (!password.equals(account.getPassword())) {
+        if (!password.equals(encryptPassword(account.getPassword()))) {
             return "Enter current password correctly";
         } else if (!newPassword.isBlank() && !newPassword.matches("\\w+")) {
             return "Use word letters for new password";
@@ -1065,13 +1081,13 @@ public class ClientHandler extends Thread {
         return "Success";
     }
 
-    private String getSignInResult(String username, String password) {
+    private String getSignInResult(String username, String password) throws NoSuchAlgorithmException {
         Account account = Database.getInstance().getAccountByUsername(username);
         if (!username.matches("\\w+")) {
             return "Use word letters for username";
-        } else if (!password.matches("\\w+")) {
+        } else if (!password.matches("\\S+")) {
             return "Use word letters for password";
-        } else if (account == null || !account.getPassword().equals(password)) {
+        } else if (account == null || !encryptPassword(account.getPassword()).equals(password)) {
             return "Wrong username or password";
         } else if (account instanceof Seller && ((Seller) account).getStatus().equals(Status.PENDING)) {
             return "Account to be Confirmed";
@@ -1093,14 +1109,24 @@ public class ClientHandler extends Thread {
         return null;
     }
 
-    private String getSignUpResult(Account account) throws IOException {
-        if (!account.getUsername().matches("\\w+")) {
+    private String getSignUpResult(Account account) throws IOException, SQLException {
+        String str1 = validateUsername(account.getUsername());
+        String str2 = validatePassword(account.getPassword());
+        String str3 = validateName(account.getFirstName(), account.getLastName());
+        String str4 = validateEmailAddres(account.getEmailAddress());
+        String str5 = validatePhoneNumber(account.getPhoneNumber());
+        if (str1 != null) return str1;
+        if (str2 != null) return str2;
+        if (str3 != null) return str3;
+        if (str4 != null) return str4;
+        if (str5 != null) return str5;
+        if (!account.getUsername().matches("\\S+")) {
             return "Use word letters for username";
-        } else if (!account.getPassword().matches("\\w+")) {
+        } else if (!account.getPassword().matches("\\S+")) {
             return "Use word letters for password";
-        } else if (!account.getFirstName().matches("\\w+")) {
+        } else if (!account.getFirstName().matches("\\S+")) {
             return "Use word letters for first name";
-        } else if (!account.getLastName().matches("\\w+")) {
+        } else if (!account.getLastName().matches("\\S+")) {
             return "Use word letters for last name";
         } else if (!account.getEmailAddress().matches("(\\S+)@(\\S+)\\.(\\S+)")) {
             return "Email format: example@gmail.com";
@@ -1135,7 +1161,8 @@ public class ClientHandler extends Thread {
         return gson.toJson(object);
     }
 
-    private void respondToClient(String response) throws IOException {
+    private void respondToClient(String response) throws IOException, SQLException {
+        response += "###" + randomSessionKeyGenerator();
         dataOutputStream.writeUTF(response);
         dataOutputStream.flush();
     }
@@ -1146,4 +1173,136 @@ public class ClientHandler extends Thread {
         }
     }
 
+    // Security
+
+    private final String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%&*+-/!?:[]{}()";
+
+    private String randomSaltGenerator() {
+        Random random = new Random(alphabet.length());
+        String sessionKey = "";
+        for (int i = 0; i < 12; i++) {
+            sessionKey += alphabet.charAt(random.nextInt(alphabet.length()));
+        }
+        return sessionKey;
+    }
+
+    private String encryptPassword(String password) throws NoSuchAlgorithmException {
+        String encryptedPassword = "";
+        for (int i = 0; i < password.length(); i++) {
+            int position = alphabet.indexOf(password.charAt(i));
+            int newLetterPsition = ((int) (3 * position * position + Math.floor(Math.sqrt(position)) + 15)) % alphabet.length();
+            char newLetter = alphabet.charAt(newLetterPsition);
+            encryptedPassword += newLetter;
+        }
+        encryptedPassword = Hash.toHexString(Hash.getSHA(encryptedPassword));
+        encryptedPassword = randomSaltGenerator() + encryptedPassword;
+        return encryptedPassword;
+    }
+
+    static class Hash {
+        public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            return md.digest(input.getBytes(StandardCharsets.UTF_8));
+        }
+
+        public static String toHexString(byte[] hash) {
+            BigInteger number = new BigInteger(1, hash);
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            while (hexString.length() < 32) {
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
+        }
+    }
+
+    private String randomSessionKeyGenerator() {
+        Random random = new Random();
+        String sessionKey = "";
+        for (int i = 0; i < 8; i++) {
+            sessionKey += alphabet.charAt(random.nextInt(alphabet.length()));
+        }
+        allActiveSessionKeys.add(sessionKey);
+        return sessionKey;
+    }
+
+    // Security
+    private String validateUsername(String username) {
+        if (username.length() < 5)
+            return "username is short";
+        else if (username.length() > 30)
+            return "username is long";
+        else if (!username.matches("\\w+"))
+            return "illegal characters";
+        else return null;
+    }
+
+    private String validatePassword(String password) {
+        int validationStep = 0;
+        for (int i = 0; i < 26; i++) {
+            if (password.contains(alphabet.substring(i, i + 1))) {
+                validationStep++;
+                break;
+            }
+        }
+        for (int i = 26; i < 52; i++) {
+            if (password.contains(alphabet.substring(i, i + 1))) {
+                validationStep++;
+                break;
+            }
+        }
+        for (int i = 52; i < 62; i++) {
+            if (password.contains(alphabet.substring(i, i + 1))) {
+                validationStep++;
+                break;
+            }
+        }
+        for (int i = 62; i < alphabet.length(); i++) {
+            if (password.contains(alphabet.substring(i, i + 1))) {
+                validationStep++;
+                break;
+            }
+        }
+
+        if (password.length() < 5)
+            return "password should have more than 8 characters";
+        else if (password.length() > 30)
+            return "password should have less than 30 characters";
+        else if (password.contains(","))
+            return "illegal characters. you can use <<abcdefghijklmnopqrstuvwxyz0123456789%&*+-/!?:[]{}() + capital letters>>";
+        else if (validationStep != 4)
+            return "weak password. you sholud use small letters, capital letters, numbers and writing marks in your password";
+        else return null;
+    }
+
+    private String validateName(String firstName, String lastName) {
+        if (!firstName.matches("[a-zA-Z]+") || !lastName.matches("[a-zA-Z]+"))
+            return "first name and last name should be in english letters";
+        else if (firstName.length() > 30 || lastName.length() > 30)
+            return "first name or last name is too long";
+        else return null;
+    }
+
+    private String validateEmailAddres(String emailAddress) {
+        if (!emailAddress.matches("(\\w+)@gmail.com"))
+            return "wrong patten. we only accept gmails";
+        else if (emailAddress.length() > 60)
+            return "gmail address is too long please use another one";
+        else return null;
+    }
+
+    private String validatePhoneNumber(String phoneNumber) {
+        if (!phoneNumber.matches("\\d+"))
+            return "wrong patten";
+        else if (phoneNumber.length() != 13)
+            return "13 digits needed";
+        else return null;
+    }
+
+    private String validateCompanyName(String companyName) {
+        if (companyName.length() > 60)
+            return "company name is too long";
+        else return null;
+    }
 }
+
+

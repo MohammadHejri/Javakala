@@ -19,7 +19,12 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 // Client-Server : Done
@@ -134,11 +139,11 @@ public class RegisterPanelController implements Initializable {
     }
 
     @FXML
-    private void signIn(ActionEvent event) throws IOException {
+    private void signIn(ActionEvent event) throws IOException, NoSuchAlgorithmException {
         String username = signInUsernameField.getText();
         String password = signInPasswordField.getText();
 
-        String response = App.getResponseFromServer("signIn", username, password);
+        String response = App.getResponseFromServer("signIn", username, App.encryptPassword(password));
         if (response.startsWith("Success")) {
             String[] responseParts = response.split("###");
             Account account;
@@ -209,4 +214,5 @@ public class RegisterPanelController implements Initializable {
     private void disableChange() {
         loginButton.setDisable(true);
     }
+
 }

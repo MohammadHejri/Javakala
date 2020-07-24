@@ -8,7 +8,6 @@ import JavaProject.Model.Database.Database;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -18,7 +17,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import org.w3c.dom.events.MouseEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -68,7 +66,6 @@ public class ChatController implements Initializable {
                     String hadConversation = App.getResponseFromServer("hadConversation", App.getSignedInAccount().getUsername(), account.getUsername());
                     if (hadConversation.equals("True"))
                         userTable.getItems().add(account);
-                    System.out.println(account.getUsername() + "&&&" + hadConversation);
                 }
             }
         }

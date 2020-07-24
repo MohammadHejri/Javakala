@@ -14,11 +14,16 @@ import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.Random;
 
 public class App extends Application {
 
@@ -27,6 +32,7 @@ public class App extends Application {
     private static DataInputStream dataInputStream;
     private static DataOutputStream dataOutputStream;
     private static String token;
+    private static String session;
 
     private static Scene scene;
     private static Account signedInAccount;
@@ -114,13 +120,15 @@ public class App extends Application {
     }
 
     private static void connectToServer() throws IOException {
-        // socket = new Socket("0.tcp.ngrok.io", 13767);
+        // socket = new Socket("0.tcp.ngrok.io", 11173);
         socket = new Socket("127.0.0.1", 8080);
         dataInputStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         dataOutputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         dataOutputStream.writeUTF("getToken");
         dataOutputStream.flush();
-        token = dataInputStream.readUTF();
+        String[] response = dataInputStream.readUTF().split("###");
+        token = response[0];
+        session = response[1];
     }
 
     public static String getResponseFromServer(String ... messageParts) {
@@ -128,8 +136,9 @@ public class App extends Application {
         for (String messagePart : messageParts) {
             message += "###" + messagePart;
         }
-        message += "###" + token;
+        message += "###" + token + "###" + session;
         message = message.substring(3);
+        System.out.println(message);
         try {
             int index = 0;
             int length = message.length();
@@ -147,7 +156,11 @@ public class App extends Application {
             }
             dataOutputStream.writeUTF("END_OF_MESSAGE");
             dataOutputStream.flush();
-            return dataInputStream.readUTF();
+            String response = dataInputStream.readUTF();
+            session = response.substring(response.lastIndexOf("###") + 3);
+            System.out.println(session);
+            System.out.println(response.substring(0, response.lastIndexOf("###")));
+            return response.substring(0, response.lastIndexOf("###"));
         } catch (Exception e) {
             e.printStackTrace();
             return "Something went wrong";
@@ -155,7 +168,7 @@ public class App extends Application {
     }
 
     public static String uploadFilesToServer(String name, File file, String type) throws IOException {
-        dataOutputStream.writeUTF("uploadFile###" + type + "\\" + name + "###" + token);
+        dataOutputStream.writeUTF("uploadFile###" + type + "\\" + name + "###" + token + "###" + session);
         dataOutputStream.flush();
         dataInputStream.readUTF();
         dataOutputStream.writeUTF("END_OF_MESSAGE");
@@ -177,7 +190,7 @@ public class App extends Application {
         new File("src/main/resources/Data/productPhoto").mkdirs();
         new File("src/main/resources/Data/productFile").mkdirs();
         try {
-            String message = "getFileData###" + name + "###" + type + "###" + token;
+            String message = "getFileData###" + name + "###" + type + "###" + token + "###" + session;
             dataOutputStream.writeUTF(message);
             dataOutputStream.flush();
             dataInputStream.readUTF();
@@ -212,6 +225,48 @@ public class App extends Application {
         builder.serializeNulls();
         Gson gson = builder.create();
         return gson.toJson(object);
+    }
+
+    // Security
+
+    private final static String alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789%&*+-/!?:[]{}()";
+
+    private static String randomSaltGenerator() {
+        Random random = new Random(alphabet.length());
+        String sessionKey = "";
+        for (int i = 0; i < 12; i++) {
+            sessionKey += alphabet.charAt(random.nextInt(alphabet.length()));
+        }
+        return sessionKey;
+    }
+
+    public static String encryptPassword(String password) throws NoSuchAlgorithmException {
+        String encryptedPassword = "";
+        for (int i = 0; i < password.length(); i++) {
+            int position = alphabet.indexOf(password.charAt(i));
+            int newLetterPsition = ((int) (3 * position * position + Math.floor(Math.sqrt(position)) + 15)) % alphabet.length();
+            char newLetter = alphabet.charAt(newLetterPsition);
+            encryptedPassword += newLetter;
+        }
+        encryptedPassword = Hash.toHexString(Hash.getSHA(encryptedPassword));
+        encryptedPassword = randomSaltGenerator() + encryptedPassword;
+        return encryptedPassword;
+    }
+
+    static class Hash {
+        public static byte[] getSHA(String input) throws NoSuchAlgorithmException {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            return md.digest(input.getBytes(StandardCharsets.UTF_8));
+        }
+
+        public static String toHexString(byte[] hash) {
+            BigInteger number = new BigInteger(1, hash);
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            while (hexString.length() < 32) {
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
+        }
     }
 
 }
