@@ -444,8 +444,9 @@ public class ClientHandler extends Thread {
             if (fileInFolder.getName().substring(0, fileInFolder.getName().lastIndexOf(".")).equals(name))
                 file = fileInFolder;
         }
-        System.out.println(file == null ? "File not found" : file.getName());
-        dataOutputStream.writeUTF(file == null ? "File not found" : file.getName());
+        String random = "###" + randomSessionKeyGenerator();
+        System.out.println(file == null ? "File not found" : file.getName() + random);
+        dataOutputStream.writeUTF(file == null ? "File not found" : file.getName() + random);
         dataOutputStream.flush();
         if (file != null) {
             byte[] array = Files.readAllBytes(Paths.get(file.getPath()));

@@ -138,7 +138,6 @@ public class App extends Application {
         }
         message += "###" + token + "###" + session;
         message = message.substring(3);
-        System.out.println(message);
         try {
             int index = 0;
             int length = message.length();
@@ -158,8 +157,6 @@ public class App extends Application {
             dataOutputStream.flush();
             String response = dataInputStream.readUTF();
             session = response.substring(response.lastIndexOf("###") + 3);
-            System.out.println(session);
-            System.out.println(response.substring(0, response.lastIndexOf("###")));
             return response.substring(0, response.lastIndexOf("###"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,8 +181,6 @@ public class App extends Application {
         fileInputStream.close();
         String response = dataInputStream.readUTF();
         session = response.substring(response.lastIndexOf("###") + 3);
-        System.out.println(session);
-        System.out.println(response.substring(0, response.lastIndexOf("###")));
         return response.substring(0, response.lastIndexOf("###"));
     }
 
@@ -200,7 +195,8 @@ public class App extends Application {
             dataInputStream.readUTF();
             dataOutputStream.writeUTF("END_OF_MESSAGE");
             dataOutputStream.flush();
-            String fullName = dataInputStream.readUTF();
+            String str = dataInputStream.readUTF();
+            String fullName = str.substring(0, str.lastIndexOf("###"));
             if (fullName.startsWith("File not found"))
                 throw new Exception("File not found");
             int numberOfBytes = dataInputStream.readInt();
@@ -212,6 +208,7 @@ public class App extends Application {
                 numberOfBytes -= len;
             }
             fileOutputStream.close();
+            session = str.substring(str.lastIndexOf("###") + 3);
             return "src/main/resources/Data/" + type + "\\" + fullName;
         } catch (Exception e) {
             e.printStackTrace();
